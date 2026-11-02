@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="icon" href="logo.png?v=1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bids | Rig Runner</title>
+<style>
+:root{--red:#F3011B;--ink:#2A2A27;--red-dark:#c20016;--grey:#6b6b66;--line:#e2e2de;--bg:#f4f4f2;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--red-dark)}
+button{font-family:inherit}
+/* ---------- top bar ---------- */
+.topbar{background:#fff;border-bottom:4px solid var(--red);display:flex;align-items:center;gap:16px;padding:8px 24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand img{height:42px;width:auto;display:block}
+.brand .divider{width:1px;height:32px;background:#d6d6d2}
+.brand .appname{font-size:22px;font-weight:700;letter-spacing:.5px}
+.nav{display:flex;gap:4px;margin-left:12px}
+.nav a{padding:8px 14px;border-radius:6px;text-decoration:none;color:var(--grey);font-weight:600}
+.nav a.active{background:var(--ink);color:#fff}
+.nav a.disabled{opacity:.45;cursor:not-allowed}
+.topbar .spacer{flex:1}
+.demo-badge{background:#fff4d6;color:#7a5600;border:1px solid #f0d58a;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.user{display:flex;align-items:center;gap:8px;color:var(--grey);font-size:13px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+/* ---------- layout ---------- */
+main{flex:1;width:100%;max-width:1320px;margin:0 auto;padding:22px 24px 40px}
+footer.appfoot{text-align:center;color:var(--grey);font-size:12px;padding:14px;border-top:1px solid var(--line);background:#fff}
+.page-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.page-head h1{font-size:22px;margin:0}
+.page-head .sub{color:var(--grey);font-size:13px}
+.page-head .spacer{flex:1}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #cfcfca;background:#fff;color:var(--ink);padding:8px 14px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#f2f2ef}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-dark)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.dark:hover{background:#000}
+.btn.won{background:#1f8a4c;border-color:#1f8a4c;color:#fff}
+.btn.lost{background:#fff;border-color:#b3261e;color:#b3261e}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* ---------- filters / table ---------- */
+.filters{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;padding:14px 16px;border-bottom:1px solid var(--line)}
+.filters label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.4px}
+.filters select,.filters input{font-size:14px;padding:7px 10px;border:1px solid #cfcfca;border-radius:6px;min-width:160px;background:#fff;color:var(--ink)}
+.filters .count{margin-left:auto;color:var(--grey);font-size:13px;align-self:center}
+.table-wrap{overflow-x:auto}
+table.grid{width:100%;border-collapse:collapse;font-size:13.5px}
+table.grid th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--grey);background:#fafaf8;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.grid tbody tr{cursor:pointer}
+table.grid tbody tr:hover{background:#fff6f7}
+table.grid td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+table.grid th.num{text-align:right}
+.bidno{font-weight:700;color:var(--ink);white-space:nowrap}
+.route{white-space:nowrap}
+.route .arrow{color:var(--red);font-weight:700;margin:0 4px}
+.info{display:inline-flex;width:15px;height:15px;border-radius:50%;background:#e4e4e0;color:#55554f;font-size:10px;align-items:center;justify-content:center;font-weight:700;cursor:help;margin-left:4px;text-transform:none}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.Draft{background:#ececea;color:#55554f}
+.pill.Submitted{background:#e3eefc;color:#1b4f9c}
+.pill.Won{background:#e0f4e7;color:#16713d}
+.pill.Lost{background:#fde4e2;color:#a3221a}
+.joblink{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;color:#16713d;text-decoration:none;border-bottom:1px dashed #16713d}
+.empty{padding:40px;text-align:center;color:var(--grey)}
+/* ---------- form ---------- */
+.form-card{padding:6px 22px 22px}
+.section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);border-bottom:1px solid var(--line);padding:16px 0 8px;margin:0 0 14px}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.fgrid .full{grid-column:1/-1}
+.field label.lbl{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.req{color:var(--red);margin-left:2px}
+.field input[type=text],.field input[type=date],.field input[type=number],.field select,.field textarea{width:100%;font-size:14px;padding:8px 10px;border:1px solid #cfcfca;border-radius:6px;background:#fff;color:var(--ink);font-family:inherit}
+.field textarea{min-height:70px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid rgba(243,1,27,.25);border-color:var(--red)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#d0021b;background:#fff7f7}
+.err{color:#d0021b;font-size:12px;margin-top:4px;display:none;font-weight:600}
+.field.invalid > .err{display:block}
+.hint{color:var(--grey);font-size:12px;margin-top:4px}
+.sentence{background:#fafaf8;border:1px dashed #d6d6d2;border-radius:6px;padding:9px 12px;font-size:13px;margin-top:8px}
+.sentence b{color:var(--red-dark)}
+.checks{display:flex;flex-wrap:wrap;gap:8px 22px}
+.chk{display:inline-flex;align-items:center;gap:7px;font-size:14px;cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--red)}
+.equip-list{display:flex;flex-direction:column;gap:6px;max-width:560px}
+.equip-row{display:flex;align-items:center;gap:10px;min-height:38px;flex-wrap:wrap}
+.equip-row .chk{min-width:130px}
+.equip-row .qty{flex:1;min-width:140px;max-width:320px}
+.equip-row .qty input{width:100%;font-size:14px;padding:7px 9px;border:1px solid #cfcfca;border-radius:6px}
+.equip-row.invalid .qty input{border-color:#d0021b;background:#fff7f7}
+.equip-row .err{flex-basis:100%;margin:0 0 0 140px}
+.equip-row.invalid .err{display:block}
+.radios{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+.money{position:relative}
+.money span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--grey);font-weight:700}
+.money input{padding-left:24px !important}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.form-actions .left{margin-right:auto;color:var(--grey);font-size:12px;align-self:center}
+.banner{border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13.5px}
+.banner.error{background:#fff1f1;border:1px solid #f3b4b4;color:#9b1111}
+.banner.ok{background:#e9f7ee;border:1px solid #a9dbbb;color:#155d33}
+.banner.note{background:#fff8e1;border:1px solid #f1d27a;color:#6b4d00}
+.hidden{display:none !important}
+/* ---------- searchable pick list (Rig, Operator) ---------- */
+.combo{position:relative}
+.combo .combo-input{padding-right:30px}
+.combo .caret{position:absolute;right:10px;top:9px;color:var(--grey);font-size:11px;pointer-events:none}
+.combo-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid #cfcfca;border-radius:7px;box-shadow:0 8px 22px rgba(0,0,0,.14);z-index:30;display:flex;flex-direction:column;overflow:hidden}
+.combo-meta{padding:6px 10px;font-size:11px;color:var(--grey);text-transform:uppercase;letter-spacing:.4px;font-weight:700;background:#fafaf8;border-bottom:1px solid var(--line)}
+.combo-opts{max-height:252px;overflow-y:auto}
+.combo-opt{padding:7px 10px;font-size:14px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combo-opt.active{background:#fff0f2}
+.combo-opt.sel{font-weight:700}
+.combo-opt.sel:after{content:"  \2713";color:var(--red-dark)}
+.combo-opt mark{background:none;color:var(--red-dark);font-weight:700}
+.combo-none{padding:9px 10px;color:var(--grey);font-style:italic;font-size:13px}
+.combo-add{border-top:1px solid var(--line);color:var(--red-dark);font-weight:700;background:#fff}
+.combo-add.active{background:#fff0f2}
+/* ---------- quote preview ---------- */
+.qtoolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:sticky;top:0;z-index:5}
+.qtoolbar .spacer{flex:1}
+.qtoolbar .meta{font-size:13px;color:var(--grey);display:flex;gap:8px;align-items:center}
+.pages{overflow-x:auto;padding-bottom:10px}
+.qpage{width:8.5in;height:11in;margin:0 auto 26px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);padding:.42in .55in .5in;position:relative;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:8pt}
+.qpage .pgno{position:absolute;bottom:.28in;left:0;right:0;text-align:center;font-size:7pt;color:#777}
+.q-logo{width:170px;display:block;margin:6px 0 22px 40px}
+.q-bar{background:#000;color:#fff;font-weight:700;padding:4px 5px;font-size:8pt}
+table.q{width:100%;border-collapse:collapse}
+table.q td{padding:4.5px 5px;border-bottom:1px solid #d9d9d9;vertical-align:top;line-height:1.25}
+table.q td.l{width:30%;font-weight:700}
+.q-sec{background:#e8e8e8;color:#555;font-weight:700;font-size:7.5pt;font-variant:small-caps;text-transform:uppercase;letter-spacing:.3px;padding:3px 5px;margin-top:14px}
+.q-thanks td{border-bottom:none !important}
+.q-contact{border-bottom:1px solid #d9d9d9;padding:4px 5px 10px}
+.q-contact p{margin:0 0 9px}
+.q-contact .gap{height:22px}
+.q-rule{border:0;border-top:1px solid #cfcfcf;margin:0 0 8px}
+.q-valid{font-size:12.5pt;font-weight:700;margin:4px 0 12px}
+.q-terms{font-size:7.8pt;line-height:1.3;margin:6px 0 34px}
+.q-signbox{width:3.1in;height:.85in;border:1px solid #e1e1e1;border-radius:3px;position:relative;margin:14px 0 9px}
+.q-signbox:after{content:"";position:absolute;left:8px;right:8px;bottom:13px;border-top:2px solid #9a9a9a}
+.q-foot{display:flex;justify-content:space-between;align-items:center;padding:18px 50px 0;font-size:8pt}
+.q-foot .gen{font-style:italic;color:#9a9a9a}
+.q-foot .tr{color:#9a9a9a;font-size:8pt;letter-spacing:.3px}
+/* ---------- job view ---------- */
+.job-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;border-bottom:1px solid var(--line)}
+.job-head .check{width:44px;height:44px;border-radius:50%;background:#1f8a4c;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.job-head h2{margin:0;font-size:20px}
+.job-head .jobno{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:.5px}
+.job-body{padding:18px 22px 22px}
+table.map td.src{color:var(--grey);font-size:12.5px;white-space:nowrap}
+table.map tbody tr{cursor:default}
+table.map tbody tr:hover{background:transparent}
+table.map td.f{font-weight:700;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#f1f1ee;border:1px solid #e0e0dc;border-radius:6px;padding:3px 8px;font-size:12.5px;font-weight:600}
+.callout{border-left:5px solid var(--red);background:#fff4f5;padding:12px 16px;border-radius:6px;margin:0 0 16px;font-weight:700;color:#7d0010;display:flex;gap:10px;align-items:center}
+/* ---------- toast ---------- */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;opacity:0;transition:all .25s;pointer-events:none;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- responsive ---------- */
+@media (max-width:820px){
+  .topbar{padding:8px 14px;gap:10px}
+  .brand img{height:34px}
+  .brand .appname{font-size:19px}
+  .nav{margin-left:0}
+  main{padding:16px 12px 30px}
+  .fgrid{grid-template-columns:1fr}
+  .filters select{min-width:130px}
+  .filters .count{margin-left:0;flex-basis:100%}
+  .user .uname{display:none}
+}
+/* ---------- phone: reflow quote preview (screen only) ---------- */
+@media screen and (max-width:820px){
+  .qpage{width:auto;height:auto;min-height:0;padding:18px 14px 40px;font-size:11px}
+  .q-bar,.q-foot,.q-foot .tr{font-size:11px}
+  .q-sec{font-size:10px}
+  .q-terms{font-size:10px}
+  .q-valid{font-size:14px}
+  .q-logo{margin:4px auto 16px;max-width:60%}
+  .q-signbox{width:100%;max-width:3.1in}
+  .q-foot{padding:14px 0 0;flex-wrap:wrap;gap:6px}
+  .qpage .pgno{bottom:12px;font-size:10px}
+}
+/* ---------- print: quote only ---------- */
+@page{size:letter;margin:0}
+@media print{
+  html,body{background:#fff !important}
+  body{display:block;min-height:0}
+  .topbar,.appfoot,.qtoolbar,.no-print,.toast{display:none !important}
+  main{max-width:none;padding:0;margin:0}
+  .pages{overflow:visible;padding:0}
+  .qpage{margin:0;box-shadow:none;height:10.98in;page-break-after:always;break-after:page}
+  .qpage:last-child{page-break-after:auto;break-after:auto}
+  .q-bar,.q-sec{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<script src="shell.js?v=1"></script><main id="app"></main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var LOGO = 'logo.png?v=1';
+var TZ = 'America/Chicago';
+var TERMINALS = ['308 Alice','331 Jourdanton','335 Odessa','346 Kilgore'];
+var STATUSES = ['Draft','Submitted','Won','Lost'];
+var SCOPES = ['Rig Down','Load Out','Transport/Permits','Rig Up of all equipment'];
+var EQUIP = ['Crane','Tandem','Pole Truck','Forklift','Haul Truck'];
+var RIG_OPS = ['24hr Operations','12hr Operations','Other'];
+var DAYS_NIGHTS = ['Days and Nights','Only Days','Only Nights'];
+var RRD=window.RR;var customers = RRD.CUST.slice();
+var rigs = [...new Set(RRD.BIDS.map(function(b){return b.rig}).concat(['Hartline 55','Hartline 60','Cobalt 40','Cobalt 41','Sample Rig 27']))].sort();
+var operators = RRD.OPER.slice().concat(['Sample Operating LLC']);
+var salesMembers = [
+  {name:'Ray Tolbert', office:'361-555-0100', fax:'361-555-0101', cell:'361-555-0123', email:'ray.tolbert@example.com'},
+  {name:'Dana Whitfield', office:'361-555-0100', fax:'361-555-0101', cell:'361-555-0124', email:'dana.whitfield@example.com'}
+];
+function eq(o){var r={};EQUIP.forEach(function(k){r[k]=(o&&o[k]!=null)?String(o[k]):null;});return r;}
+
+var bids = RRD.BIDS.map(function(b,i){var j=RRD.JOBS.find(function(x){return x.job===b.job});var r=RRD.ROUTES[b.term][i%4];
+ return {id:b.bid,quoteDate:b.date,workStart:j?j.date:RRD.addD(b.date,14),rig:b.rig,operator:b.oper,billTo:b.cust,terminal:RRD.TERMS[b.term],pickup:j?j.from:r[0],delivery:j?j.to:r[1],distance:b.miles?('Approximately '+b.miles+' miles'):'Rig Down only',days:String(j?j.days:3),
+ scope:b.type==='Rig Down Only'?['Rig Down']:SCOPES.slice(),equip:eq({'Crane':2+i%3,'Tandem':1+i%2,'Forklift':1,'Haul Truck':10+i*2}),hse:i%2==0,truckLoad:false,rigOp:'24hr Operations',rigOpOther:'',daysNights:'Days and Nights',price:b.price,sales:salesMembers[i%2].name,notes:'',
+ status:b.status==='Pending'?'Submitted':b.status,jobId:b.job||null}});
+var jobs = bids.filter(function(b){return b.jobId}).map(function(b){return {id:b.jobId,bidId:b.id}});
+var filters = {terminal:'All', status:'All'};
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function $(sel,root){return (root||document).querySelector(sel);}
+function $all(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function fmtLong(iso){ if(!iso) return ''; var p=iso.split('-'); if(p.length!==3) return iso; return MONTHS[+p[1]-1]+' '+ordinal(+p[2])+' '+p[0]; }
+function fmtShort(iso){ if(!iso) return ''; var p=iso.split('-'); return MONTHS[+p[1]-1].slice(0,3)+' '+(+p[2])+', '+p[0]; }
+function money(n){ if(n==null||n===''||isNaN(n)) return ''; return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function parseMoney(s){ s=String(s||'').replace(/[$,\s]/g,''); if(!/^\d+(\.\d{0,2})?$/.test(s)) return null; var n=parseFloat(s); return n>0?n:null; }
+function partsIn(date){
+  var f=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'long',year:'numeric',month:'2-digit',day:'2-digit',hour:'numeric',minute:'2-digit',hour12:true,timeZoneName:'short'});
+  var o={}; f.formatToParts(date).forEach(function(p){o[p.type]=p.value;}); return o;
+}
+function todayISO(offsetDays){ var d=new Date(Date.now()+(offsetDays||0)*864e5); var o=partsIn(d); return o.year+'-'+o.month+'-'+o.day; }
+function generatedStamp(){
+  var o=partsIn(new Date());
+  return o.weekday+', '+MONTHS[+o.month-1]+' '+ordinal(+o.day)+' '+o.year+', '+o.hour+':'+o.minute+o.dayPeriod.toLowerCase()+' '+o.timeZoneName;
+}
+function getBid(id){ for(var i=0;i<bids.length;i++) if(bids[i].id===id) return bids[i]; return null; }
+function getJob(id){ for(var i=0;i<jobs.length;i++) if(jobs[i].id===id) return jobs[i]; return null; }
+function getSales(name){ for(var i=0;i<salesMembers.length;i++) if(salesMembers[i].name===name) return salesMembers[i]; return null; }
+function nextBidId(){ var m=0; bids.forEach(function(b){var n=parseInt(b.id.split('-')[2],10); if(n>m)m=n;}); return 'B-26-'+String(m+1).padStart(4,'0'); }
+function nextJobId(){ var m=0; jobs.forEach(function(j){var n=parseInt(j.id.split('-')[2],10); if(n>m)m=n;}); return 'J-26-'+String(m+1).padStart(4,'0'); }
+function rigOpText(b){ return b.rigOp==='Other' ? (b.rigOpOther||'Other') : b.rigOp; }
+function plural(k){ return k+'(s)'; }
+function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove('show');},2600); }
+function go(h){ if(location.hash==='#'+h) route(); else location.hash=h; }
+var app = $('#app');
+
+/* ---------- 1) BID LIST ---------- */
+function renderList(){
+  document.title='Bids | Rig Runner';
+  var rows = bids.filter(function(b){ return (filters.terminal==='All'||b.terminal===filters.terminal) && (filters.status==='All'||b.status===filters.status); })
+                 .slice().sort(function(a,b){ return a.id<b.id?1:-1; });
+  var opt=function(list,sel){ return ['All'].concat(list).map(function(v){return '<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>';}).join(''); };
+  var body = rows.length ? rows.map(function(b){
+    return '<tr data-id="'+esc(b.id)+'" tabindex="0">'+
+      '<td class="bidno">'+esc(b.id)+'</td>'+
+      '<td style="white-space:nowrap">'+esc(fmtShort(b.quoteDate))+'</td>'+
+      '<td>'+esc(b.rig)+'</td>'+
+      '<td>'+(b.billTo?esc(b.billTo):'<span class="hint">—</span>')+'</td>'+
+      '<td class="route">'+((b.pickup||b.delivery)?esc(b.pickup||'?')+'<span class="arrow">→</span>'+esc(b.delivery||'?'):'<span class="hint">—</span>')+'</td>'+
+      '<td class="num">'+(b.price!=null?'$'+money(b.price):'<span class="hint">—</span>')+'</td>'+
+      '<td>'+(b.sales?esc(b.sales):'<span class="hint">—</span>')+'</td>'+
+      '<td>'+(b.terminal?esc(b.terminal):'<span class="hint">—</span>')+'</td>'+
+      '<td style="white-space:nowrap"><span class="pill '+b.status+'">'+b.status+'</span>'+
+        (b.jobId?'<a class="joblink" href="#job/'+esc(b.id)+'" title="Open job created from this bid">'+esc(b.jobId)+'</a>':'')+'</td>'+
+    '</tr>'; }).join('') : '<tr><td colspan="9" class="empty">No bids match these filters.</td></tr>';
+  app.innerHTML =
+   '<div class="page-head"><h1>Bids</h1><span class="sub">Quotes for rig moves. Click a row to open its quote.</span><span class="spacer"></span>'+
+   '<button class="btn primary" id="btnNew">+ New Bid</button></div>'+
+   '<div class="card">'+
+    '<div class="filters">'+
+      '<label>Terminal<select id="fTerminal">'+opt(TERMINALS,filters.terminal)+'</select></label>'+
+      '<label>Status<select id="fStatus">'+opt(STATUSES,filters.status)+'</select></label>'+
+      '<span class="count">'+rows.length+' of '+bids.length+' bids</span>'+
+    '</div>'+
+    '<div class="table-wrap"><table class="grid"><thead><tr>'+
+      '<th>Bid #<span class="info" title="Bid numbering scheme (B-YY-####) is TBD with Kaeppel">i</span></th><th>Quote Date</th><th>Rig/Job</th><th>Bill To</th><th>Old → New location</th>'+
+      '<th class="num">Price</th><th>Sales Member</th><th>Terminal</th><th>Status</th>'+
+    '</tr></thead><tbody>'+body+'</tbody></table></div>'+
+   '</div>';
+  $('#btnNew').onclick=function(){ go('new'); };
+  $('#fTerminal').onchange=function(e){ filters.terminal=e.target.value; renderList(); };
+  $('#fStatus').onchange=function(e){ filters.status=e.target.value; renderList(); };
+  $all('tbody tr[data-id]').forEach(function(tr){
+    var open=function(){ go('quote/'+tr.getAttribute('data-id')); };
+    tr.onclick=function(e){ if(e.target.closest('a')) return; open(); };
+    tr.onkeydown=function(e){ if(e.key==='Enter') open(); };
+  });
+}
+
+/* ---------- 2) BID FORM ---------- */
+function blankBid(){
+  return {id:null, quoteDate:todayISO(0), workStart:'', rig:'', operator:'', billTo:'', terminal:'', pickup:'', delivery:'', distance:'Approximately ', days:'',
+    scope:[], equip:eq({}), hse:false, truckLoad:false, rigOp:'24hr Operations', rigOpOther:'', daysNights:'Days and Nights', price:null, sales:'', notes:'', status:'Draft', jobId:null};
+}
+function demoBid(){
+  var b=blankBid();
+  b.workStart=todayISO(10); b.rig='Helmerich & Payne #254'; b.operator='EOG Resources'; b.billTo='Cypress Energy'; b.terminal='335 Odessa'; b.pickup='Pecos,Tx'; b.delivery='Mentone,Tx';
+  b.distance='Approximately 42 miles'; b.days='2'; b.scope=['Rig Down','Load Out','Transport/Permits','Rig Up of all equipment'];
+  b.equip=eq({'Crane':'2','Tandem':'1','Haul Truck':'18 (incl. 2 lowboys)'}); b.hse=true; b.price=128500; b.sales='Demo Salesperson';
+  b.notes='Customer to provide water truck on location.';
+  return b;
+}
+function renderForm(bid, isNew){
+  document.title=(isNew?'New Bid':'Edit '+bid.id)+' | Bids | Rig Runner';
+  var custOpts='<option value="">Select customer…</option>'+customers.map(function(c){return '<option'+(c===bid.billTo?' selected':'')+'>'+esc(c)+'</option>';}).join('')+'<option value="__new">+ Add new customer</option>';
+  var termOpts='<option value="">Select terminal…</option>'+TERMINALS.map(function(t){return '<option'+(t===bid.terminal?' selected':'')+'>'+t+'</option>';}).join('');
+  var salesOpts='<option value="">Select sales member…</option>'+salesMembers.map(function(s){return '<option'+(s.name===bid.sales?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
+  var scopeHtml=SCOPES.map(function(s){return '<label class="chk"><input type="checkbox" name="scope" value="'+esc(s)+'"'+(bid.scope.indexOf(s)>=0?' checked':'')+'> '+esc(s)+'</label>';}).join('');
+  var equipHtml=EQUIP.map(function(k,i){ var on=bid.equip[k]!=null;
+    return '<div class="equip-row" data-eq="'+esc(k)+'"><label class="chk"><input type="checkbox" class="eqchk"'+(on?' checked':'')+'> '+esc(k)+'</label>'+
+      '<span class="qty'+(on?'':' hidden')+'"><input type="text" class="eqqty" placeholder="Qty / details" value="'+esc(on?bid.equip[k]:'')+'" aria-label="'+esc(k)+' quantity"></span>'+
+      '<div class="err">Enter a quantity (or uncheck '+esc(k)+').</div></div>'; }).join('');
+  var radio=function(name,list,sel){return list.map(function(v){return '<label class="chk"><input type="radio" name="'+name+'" value="'+esc(v)+'"'+(v===sel?' checked':'')+'> '+esc(v)+'</label>';}).join('');};
+  var keepStatus = !isNew && bid.status!=='Draft';
+  app.innerHTML =
+   '<div class="page-head"><h1>'+(isNew?'New Bid':'Edit Bid '+esc(bid.id))+'</h1>'+
+     (isNew?'<span class="sub">Bid # assigned on save (next: '+nextBidId()+')<span class="info" title="Bid numbering scheme is TBD with Kaeppel">i</span></span>':'<span class="pill '+bid.status+'">'+bid.status+'</span>')+
+     '<span class="spacer"></span></div>'+
+   '<div id="formErr" class="banner error hidden"></div>'+
+   '<form class="card form-card" id="bidForm" novalidate>'+
+    '<h3 class="section-title">Quote details</h3>'+
+    '<div class="fgrid">'+
+      fld('quoteDate','Quote Date',true,'<input type="date" id="quoteDate" value="'+esc(bid.quoteDate)+'">','Defaults to today.')+
+      fld('workStart','Work Start Date',true,'<input type="date" id="workStart" value="'+esc(bid.workStart)+'">')+
+      fld('rig','Rig/Job',true,comboHtml('rig',bid.rig,'rig','Search rigs, e.g. Ensign US Drlg #T137'),'Rig record from Administration &gt; Rigs (type to search, or add new).')+
+      fld('billTo','Bill To',true,'<select id="billTo">'+custOpts+'</select><input type="text" id="newCustomer" class="hidden" style="margin-top:8px" placeholder="New customer name">','Customer record (pick list or add new).')+
+      fld('operator','Operator',true,comboHtml('operator',bid.operator,'operator','Search operators, e.g. Silver Hill Ene Optg'),'Operator record from Administration &gt; Operators (type to search, or add new). Not printed on the quote; carries over to the job.')+
+      fld('terminal','Terminal',true,'<select id="terminal">'+termOpts+'</select>')+
+      fld('sales','Sales Member',true,'<select id="sales">'+salesOpts+'</select>','Contact details on the quote come from the user record.')+
+    '</div>'+
+    '<h3 class="section-title" id="sec-move">Move</h3>'+
+    '<div class="fgrid">'+
+      fld('pickup','Pickup City / Old Location',true,'<input type="text" id="pickup" placeholder="e.g. Whitsett,Tx" value="'+esc(bid.pickup)+'">')+
+      fld('delivery','Delivery City / New Location',true,'<input type="text" id="delivery" placeholder="May match pickup (rig down only)" value="'+esc(bid.delivery)+'">')+
+      fld('distance','Distance',true,'<input type="text" id="distance" value="'+esc(bid.distance)+'">','Free text, e.g. "Approximately 285 miles" or "Rig Down &amp; Scatter only".')+
+      fld('days','Schedule days',false,'<input type="number" id="days" min="1" step="1" placeholder="N" value="'+esc(bid.days)+'">')+
+      '<div class="full"><div class="sentence" id="sentence"></div></div>'+
+    '</div>'+
+    '<h3 class="section-title" id="sec-includes">Quote includes</h3>'+
+    '<div class="fgrid">'+
+      '<div class="field full"><label class="lbl">Job Description</label><div class="checks">'+scopeHtml+'</div></div>'+
+      '<div class="field full"><label class="lbl">Equipment Provided</label><div class="equip-list">'+equipHtml+'</div><div class="hint">Checking an item opens a free-text quantity box. Extra info can go in the same box.</div></div>'+
+      '<div class="field full"><div class="checks" style="flex-direction:column;gap:10px">'+
+        '<label class="chk"><input type="checkbox" id="hse"'+(bid.hse?' checked':'')+'> <span>Include HSE line on quote <span class="hint" style="margin:0;display:inline">(prints "HSE Reps and Truck Pushers Provided")</span></span></label>'+
+        '<label class="chk"><input type="checkbox" id="truckLoad"'+(bid.truckLoad?' checked':'')+'> Include "A Truck a Load for Long Hauls"</label>'+
+      '</div></div>'+
+      '<div class="field" id="f-rigOp"><label class="lbl">Rig Operation</label><div class="radios">'+radio('rigOp',RIG_OPS,bid.rigOp)+'</div>'+
+        '<input type="text" id="rigOpOther" class="'+(bid.rigOp==='Other'?'':'hidden')+'" style="margin-top:8px" placeholder="Describe rig operation" value="'+esc(bid.rigOpOther)+'"><div class="err">Describe the rig operation.</div></div>'+
+      '<div class="field"><label class="lbl">Working Days And/or Nights</label><div class="radios">'+radio('daysNights',DAYS_NIGHTS,bid.daysNights)+'</div></div>'+
+      fld('notes','Additional notes',false,'<textarea id="notes" placeholder="Optional. Prints on the quote under Quote Includes.">'+esc(bid.notes)+'</textarea>','',true)+
+    '</div>'+
+    '<h3 class="section-title">Price</h3>'+
+    '<div class="fgrid">'+
+      fld('price','Quoted Price $',true,'<div class="money"><span>$</span><input type="text" id="price" inputmode="decimal" placeholder="0.00" value="'+esc(bid.price!=null?money(bid.price):'')+'"></div>','Stored as a number; printed with commas and cents.')+
+    '</div>'+
+    '<div class="form-actions"><span class="left"><span class="req">*</span> Required. Save Draft needs only Rig/Job; Submit checks every required field.</span>'+
+      '<button type="button" class="btn" id="btnCancel">Cancel</button>'+
+      '<button type="button" class="btn dark" id="btnDraft">'+(keepStatus?'Save Changes':'Save Draft')+'</button>'+
+      '<button type="button" class="btn primary" id="btnSubmit">Submit &amp; Preview Quote</button>'+
+    '</div>'+
+   '</form>';
+
+  combos={ rig:wireCombo('rig',rigs,'rig'), operator:wireCombo('operator',operators,'operator') };
+  var newCust=$('#newCustomer'), billSel=$('#billTo');
+  billSel.onchange=function(){ newCust.classList.toggle('hidden', billSel.value!=='__new'); if(billSel.value==='__new') newCust.focus(); clearErr('billTo'); };
+  $all('.equip-row').forEach(function(row){
+    var c=$('.eqchk',row), q=$('.qty',row);
+    c.onchange=function(){ q.classList.toggle('hidden',!c.checked); row.classList.remove('invalid'); if(c.checked) $('input',q).focus(); };
+    $('input',q).oninput=function(){ row.classList.remove('invalid'); };
+  });
+  $all('input[name=rigOp]').forEach(function(r){ r.onchange=function(){ var o=$('input[name=rigOp]:checked').value==='Other'; $('#rigOpOther').classList.toggle('hidden',!o); $('#f-rigOp').classList.remove('invalid'); if(o) $('#rigOpOther').focus(); }; });
+  var upd=function(){ var n=$('#days').value.trim(); $('#sentence').innerHTML='Quote line preview: This Quote for the Above Mentioned Rig / Job is Based on a ( <b>'+(n?esc(n):'N')+'</b> ) Day Rig Move Schedule.'+(n?'':' <span class="hint">(omitted from the quote if left blank)</span>'); };
+  $('#days').oninput=upd; upd();
+  $all('#bidForm input, #bidForm select, #bidForm textarea').forEach(function(el){ el.addEventListener('input',function(){ var f=el.closest('.field'); if(f && f.id && f.id!=='f-rigOp') f.classList.remove('invalid'); }); });
+  $('#price').onblur=function(){ var n=parseMoney(this.value); if(n!=null) this.value=money(n); };
+  $('#btnCancel').onclick=function(){ go(isNew?'list':'quote/'+bid.id); };
+  $('#btnDraft').onclick=function(){ save(bid,isNew,false); };
+  $('#btnSubmit').onclick=function(){ save(bid,isNew,true); };
+}
+/* Searchable pick list: text box filters the list as you type; '+ Add new …' always sits at the bottom.
+   Picking add-new reveals a name box (same as Bill To's '+ Add new customer'). Value lives in hidden #<id>. */
+var combos={};
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function comboHtml(id,value,noun,ph){
+  return '<div class="combo" id="'+id+'Combo"><input type="text" class="combo-input" id="'+id+'Search" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="'+esc(ph)+'" value="'+esc(value)+'">'+
+    '<span class="caret">▼</span><input type="hidden" id="'+id+'" value="'+esc(value)+'"><div class="combo-list hidden" role="listbox"></div></div>'+
+    '<input type="text" id="new'+cap(id)+'" class="hidden" style="margin-top:8px" placeholder="New '+noun+' name">';
+}
+function wireCombo(id,list,noun){
+  var inp=$('#'+id+'Search'), hid=$('#'+id), box=$('#'+id+'Combo .combo-list'), nw=$('#new'+cap(id)), lbl=$('#f-'+id+' label.lbl');
+  var addLabel='+ Add new '+noun, plural=noun+'s', shown=[], active=-1;
+  if(lbl) lbl.setAttribute('for',id+'Search');
+  var tokens=function(q){ q=q.toLowerCase().replace(/\bh\s*&\s*p\b/g,'helmerich & payne').trim(); return q?q.split(/\s+/):[]; };
+  var hl=function(s,tk){ var low=s.toLowerCase(), m=new Array(s.length).fill(false);
+    tk.forEach(function(t){ var i=low.indexOf(t); while(i>=0){ for(var j=i;j<i+t.length;j++) m[j]=true; i=low.indexOf(t,i+t.length); } });
+    var out='',run='',on=false; for(var k=0;k<s.length;k++){ if(m[k]!==on){ out+=on?'<mark>'+esc(run)+'</mark>':esc(run); run=''; on=m[k]; } run+=s[k]; }
+    return out+(on?'<mark>'+esc(run)+'</mark>':esc(run)); };
+  function render(q){
+    var tk=tokens(q);
+    shown=list.filter(function(x){ var l=x.toLowerCase(); return tk.every(function(t){ return l.indexOf(t)>=0; }); });
+    active=shown.length&&tk.length?0:-1;
+    var meta=tk.length?(shown.length+' of '+list.length+' '+plural+' match'):('All '+list.length+' '+plural+' · type to search');
+    box.innerHTML='<div class="combo-meta">'+esc(meta)+'</div><div class="combo-opts">'+
+      (shown.length?shown.map(function(x,i){ return '<div class="combo-opt'+(x===hid.value?' sel':'')+(i===active?' active':'')+'" role="option" data-i="'+i+'">'+hl(x,tk)+'</div>'; }).join(''):
+        '<div class="combo-none">No '+plural+' match “'+esc(q)+'”. Use '+esc(addLabel)+' below.</div>')+
+      '</div><div class="combo-opt combo-add" role="option" data-i="add">'+esc(addLabel)+'</div>';
+    $all('.combo-opt',box).forEach(function(o){ o.onmousedown=function(e){ e.preventDefault(); var i=o.getAttribute('data-i'); pick(i==='add'?'__new':shown[+i]); }; });
+  }
+  function setActive(i){ var opts=$all('.combo-opt',box); if(!opts.length) return; i=(i+opts.length)%opts.length; active=i;
+    opts.forEach(function(o,k){ o.classList.toggle('active',k===i); }); opts[i].scrollIntoView({block:'nearest'}); }
+  function open(q){ if(q!=null) inp.value=q; render(q!=null?q:(inp.value===hid.value||inp.value===addLabel?'':inp.value)); box.classList.remove('hidden'); inp.setAttribute('aria-expanded','true'); }
+  function close(){ box.classList.add('hidden'); inp.setAttribute('aria-expanded','false'); }
+  function pick(v){
+    if(v==='__new'){ hid.value='__new'; inp.value=addLabel; nw.classList.remove('hidden'); close(); nw.focus(); }
+    else { hid.value=v||''; inp.value=v||''; nw.classList.add('hidden'); close(); }
+    clearErr(id);
+  }
+  function settle(){ // on blur: exact match picks it, blank clears it, anything else reverts to the current pick
+    var t=inp.value.trim(), hit=null; list.forEach(function(x){ if(x.toLowerCase()===t.toLowerCase()) hit=x; });
+    if(hit) pick(hit); else if(!t){ hid.value=''; nw.classList.add('hidden'); } else inp.value=(hid.value==='__new'?addLabel:hid.value);
+    close();
+  }
+  inp.onfocus=function(){ inp.select(); open(); };
+  inp.onclick=function(){ if(box.classList.contains('hidden')){ inp.select(); open(); } };
+  inp.oninput=function(){ open(inp.value); };
+  inp.onblur=settle;
+  inp.onkeydown=function(e){
+    if(e.key==='ArrowDown'){ e.preventDefault(); if(box.classList.contains('hidden')) open(); else setActive(active+1); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); setActive(active-1); }
+    else if(e.key==='Enter'){ e.preventDefault(); if(box.classList.contains('hidden')) return; var opts=$all('.combo-opt',box), o=opts[active];
+      if(o){ var i=o.getAttribute('data-i'); pick(i==='add'?'__new':shown[+i]); } }
+    else if(e.key==='Escape'){ inp.value=(hid.value==='__new'?addLabel:hid.value); close(); }
+  };
+  nw.addEventListener('input',function(){ clearErr(id); });
+  return {open:open, pick:pick, close:close};
+}
+function fld(id,label,req,control,hint,full){
+  return '<div class="field'+(full?' full':'')+'" id="f-'+id+'"><label class="lbl" for="'+id+'">'+label+(req?'<span class="req">*</span>':'')+'</label>'+control+
+    (hint?'<div class="hint">'+hint+'</div>':'')+'<div class="err">'+label.replace(/ \$$/,'')+' is required.</div></div>';
+}
+function setErr(id,msg){ var f=$('#f-'+id); if(!f) return; f.classList.add('invalid'); if(msg) $('.err',f).textContent=msg; }
+function clearErr(id){ var f=$('#f-'+id); if(f) f.classList.remove('invalid'); }
+function readForm(){
+  var v=function(id){ return $('#'+id).value.trim(); };
+  var equip={}; $all('.equip-row').forEach(function(r){ var k=r.getAttribute('data-eq'); equip[k]=$('.eqchk',r).checked ? $('.eqqty',r).value.trim() : null; });
+  var bill=$('#billTo').value; if(bill==='__new') bill='__new:'+v('newCustomer');
+  var rig=v('rig'); if(rig==='__new') rig='__new:'+v('newRig');
+  var oper=v('operator'); if(oper==='__new') oper='__new:'+v('newOperator');
+  return {quoteDate:v('quoteDate'), workStart:v('workStart'), rig:rig, operator:oper, billTo:bill, terminal:v('terminal'), pickup:v('pickup'), delivery:v('delivery'),
+    distance:v('distance'), days:v('days'), scope:$all('input[name=scope]:checked').map(function(c){return c.value;}), equip:equip,
+    hse:$('#hse').checked, truckLoad:$('#truckLoad').checked, rigOp:$('input[name=rigOp]:checked').value, rigOpOther:v('rigOpOther'),
+    daysNights:$('input[name=daysNights]:checked').value, priceRaw:v('price'), sales:v('sales'), notes:v('notes')};
+}
+function save(bid,isNew,submit){
+  $all('.field.invalid,.equip-row.invalid').forEach(function(f){f.classList.remove('invalid');});
+  var d=readForm(), errs=0, first=null;
+  var bad=function(id,msg){ setErr(id,msg); errs++; if(!first) first=$('#f-'+id); };
+  if(!d.rig) bad('rig','Rig/Job is required.');
+  if(d.rig==='__new:') bad('rig','Enter the new rig name.');
+  if(d.operator==='__new:') bad('operator','Enter the new operator name.');
+  if(d.billTo==='__new:') bad('billTo','Enter the new customer name.');
+  var price=d.priceRaw?parseMoney(d.priceRaw):null;
+  if(d.priceRaw && price==null) bad('price','Enter a valid amount, e.g. 350,000.00');
+  if(d.days && !(/^\d+$/.test(d.days) && +d.days>0)) bad('days','Enter a whole number of days.');
+  if(submit){
+    if(!d.quoteDate) bad('quoteDate');
+    if(!d.workStart) bad('workStart');
+    if(!d.billTo) bad('billTo','Bill To is required.');
+    if(!d.operator) bad('operator','Operator is required.');
+    if(!d.terminal) bad('terminal');
+    if(!d.sales) bad('sales');
+    if(!d.pickup) bad('pickup');
+    if(!d.delivery) bad('delivery');
+    if(!d.distance || d.distance==='Approximately') bad('distance','Distance is required.');
+    if(!d.priceRaw) bad('price','Quoted Price is required.');
+    EQUIP.forEach(function(k){ if(d.equip[k]==='' ){ var r=$('.equip-row[data-eq="'+k+'"]'); r.classList.add('invalid'); errs++; if(!first) first=r; } });
+    if(d.rigOp==='Other' && !d.rigOpOther){ $('#f-rigOp').classList.add('invalid'); errs++; if(!first) first=$('#f-rigOp'); }
+  }
+  var banner=$('#formErr');
+  if(errs){ banner.textContent='Please fix '+errs+' field'+(errs>1?'s':'')+' marked in red before '+(submit?'submitting':'saving')+'.'; banner.classList.remove('hidden');
+    first.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  banner.classList.add('hidden');
+  if(d.billTo.indexOf('__new:')===0){ d.billTo=d.billTo.slice(6); if(customers.indexOf(d.billTo)<0) customers.push(d.billTo); }
+  if(d.rig.indexOf('__new:')===0){ d.rig=d.rig.slice(6); if(rigs.indexOf(d.rig)<0) rigs.push(d.rig); }
+  if(d.operator.indexOf('__new:')===0){ d.operator=d.operator.slice(6); if(operators.indexOf(d.operator)<0) operators.push(d.operator); }
+  EQUIP.forEach(function(k){ if(d.equip[k]==='') d.equip[k]=null; });
+  var target = isNew ? blankBid() : bid;
+  ['quoteDate','workStart','rig','operator','billTo','terminal','pickup','delivery','distance','days','scope','equip','hse','truckLoad','rigOp','rigOpOther','daysNights','sales','notes'].forEach(function(k){ target[k]=d[k]; });
+  target.price=price;
+  if(isNew){ target.id=nextBidId(); bids.push(target); }
+  if(submit){ if(target.status==='Draft') target.status='Submitted'; toast(target.id+' submitted. Quote ready to print.'); go('quote/'+target.id); }
+  else { toast(target.id+(isNew||target.status==='Draft'?' saved as Draft.':' saved.')); go('list'); }
+}
+
+/* ---------- 3) QUOTE PREVIEW ---------- */
+function quoteRows(b){
+  var r=function(l,v){ return '<tr><td class="l">'+l+'</td><td>'+v+'</td></tr>'; };
+  return r;
+}
+function renderQuote(b){
+  document.title=b.id+' Quote | Bids | Rig Runner';
+  var r=quoteRows(b), s=getSales(b.sales)||{name:b.sales,office:'',fax:'',cell:'',email:''};
+  var top = r('Quote Date:',esc(fmtLong(b.quoteDate)))+r('Work Start Date:',esc(fmtLong(b.workStart)))+r('Rig / Job:',esc(b.rig))+r('Bill To:',esc(b.billTo))+
+    r('Pickup City / Old Location:',esc(b.pickup))+r('Delivery City / New Location:',esc(b.delivery))+r('Distance:',esc(b.distance))+
+    (b.days?r('','This Quote for the Above Mentioned Rig / Job is Based on a ( '+esc(b.days)+' ) Day Rig Move Schedule.'):'');
+  var inc = (b.scope.length?r('Job Description:',esc(b.scope.join(', '))):'');
+  EQUIP.forEach(function(k){ if(b.equip[k]!=null && b.equip[k]!=='') inc+=r(plural(k)+':',esc(b.equip[k])); });
+  if(b.hse) inc+=r('','HSE Reps and Truck Pushers Provided');
+  if(b.truckLoad) inc+=r('','A Truck a Load for Long Hauls');
+  inc+=r('Rig Operation:',esc(rigOpText(b)))+r('Working Days And/or Nights?',esc(b.daysNights));
+  if(b.notes) inc+=r('Additional Notes:',esc(b.notes).replace(/\n/g,'<br>'));
+  var job = b.jobId;
+  app.innerHTML =
+   '<div class="qtoolbar no-print">'+
+     '<button class="btn" id="qBack">← Back to bids</button>'+
+     '<button class="btn" id="qEdit">Edit</button>'+
+     '<button class="btn dark" id="qPrint">Print / Save as PDF</button>'+
+     '<span class="spacer"></span>'+
+     '<span class="meta"><b>'+esc(b.id)+'</b><span class="pill '+b.status+'">'+b.status+'</span></span>'+
+     (job ? '<button class="btn won" id="qJob">View Job '+esc(job)+' →</button>' :
+       '<button class="btn won" id="qWon"'+(b.status==='Draft'?' disabled title="Submit the bid first"':'')+'>✓ Mark Won</button>'+
+       '<button class="btn lost" id="qLost"'+(b.status==='Lost'||b.status==='Draft'?' disabled':'')+'>✕ Mark Lost</button>')+
+   '</div>'+
+   (b.status==='Draft'?'<div class="banner note no-print">This bid is a <b>Draft</b>. Use Edit → Submit &amp; Preview Quote to submit it.</div>':'')+
+   '<div class="pages">'+
+    '<section class="qpage">'+
+      '<img class="q-logo" src="'+LOGO+'" alt="Rig Runner">'+
+      '<div class="q-bar">RIG RUNNER Quote</div>'+
+      '<table class="q">'+top+'</table>'+
+      '<div class="q-sec">Quote Includes:</div>'+
+      '<table class="q">'+inc+'</table>'+
+      '<div class="q-sec">Quoted Price:</div>'+
+      '<table class="q">'+r('$',money(b.price))+'</table>'+
+      '<div class="q-contact">'+
+        '<p>Thank you for your business,</p>'+
+        '<p>'+esc(s.name)+'</p><div class="gap"></div>'+
+        '<p>Office: '+esc(s.office)+'</p><p>Fax: '+esc(s.fax)+'</p><p>Cell: '+esc(s.cell)+'</p>'+
+        '<p style="margin:0">Email: <a href="mailto:'+esc(s.email)+'" style="color:#00e">'+esc(s.email)+'</a></p>'+
+      '</div>'+
+      '<div class="pgno">1/2</div>'+
+    '</section>'+
+    '<section class="qpage">'+
+      '<hr class="q-rule" style="margin-top:.1in">'+
+      '<div class="q-valid">This quote is valid for (30) thirty days.</div>'+
+      '<div class="q-valid">Please advise if you have any questions.</div>'+
+      '<div class="q-terms">THE ESTIMATE ABOVE IS SUBJECT TO CHANGE DUE TO ANY ONE OR MORE OF THE FOLLOWING: BAD LOCATION ROAD OR LEASE ROAD CONDITIONS. BAD LOCATION CONDITIONS, INCLEMENT WEATHER, HANDLING OR MOVING RENTAL EQUIPMENT, RIG MAINTENANCE PERFORMED DURING THE RIG MOVE, OR IF ACTUAL WEIGHTS AND/OR MILEAGE VARY FROM THE ESTIMATED WEIGHTS AND MILEAGES.</div>'+
+      '<div>Please Sign Below and Return</div>'+
+      '<div class="q-signbox"></div>'+
+      '<hr class="q-rule">'+
+      '<div class="q-foot"><span class="gen">Generated '+esc(generatedStamp())+'.</span><span class="tr">Tracker</span></div>'+
+      '<div class="pgno">2/2</div>'+
+    '</section>'+
+   '</div>';
+  $('#qBack').onclick=function(){ go('list'); };
+  $('#qEdit').onclick=function(){ go('edit/'+b.id); };
+  $('#qPrint').onclick=function(){ window.print(); };
+  if($('#qJob')) $('#qJob').onclick=function(){ go('job/'+b.id); };
+  if($('#qWon')) $('#qWon').onclick=function(){ markWon(b); };
+  if($('#qLost')) $('#qLost').onclick=function(){ b.status='Lost'; toast(b.id+' marked Lost.'); renderQuote(b); };
+}
+
+/* ---------- 4) WON -> JOB ---------- */
+function markWon(b){
+  b.status='Won';
+  if(!b.jobId){ var id=nextJobId(); jobs.push({id:id,bidId:b.id}); b.jobId=id; }
+  go('job/'+b.id+'?new=1');
+}
+function renderJob(b,isNew){
+  document.title=b.jobId+' | Jobs | Rig Runner';
+  var equipChips = EQUIP.filter(function(k){return b.equip[k]!=null && b.equip[k]!=='';}).map(function(k){return '<span class="chip">'+esc(k)+' × '+esc(b.equip[k])+'</span>';}).join('') || '<span class="hint">None</span>';
+  var scopeChips = b.scope.length ? b.scope.map(function(s){return '<span class="chip">'+esc(s)+'</span>';}).join('') : '<span class="hint">None</span>';
+  var extras=[]; if(b.hse) extras.push('HSE Reps and Truck Pushers'); if(b.truckLoad) extras.push('A Truck a Load for Long Hauls');
+  var m=function(f,v,src){ return '<tr><td class="f">'+f+'</td><td>'+v+'</td><td class="src">← '+src+'</td></tr>'; };
+  app.innerHTML =
+   '<div class="card">'+
+    '<div class="job-head"><div class="check">✓</div><div><h2>'+(isNew?'Job created':'Job created from won bid')+'</h2>'+
+      '<div class="hint" style="font-size:13px">Bid '+esc(b.id)+' marked <span class="pill Won">Won</span> and converted to a job.</div></div>'+
+      '<span style="flex:1"></span><div style="text-align:right"><div class="hint">Job #</div><div class="jobno">'+esc(b.jobId)+'</div></div></div>'+
+    '<div class="job-body">'+
+      '<div class="callout">⚠ Field mapping to be confirmed with Kaeppel</div>'+
+      '<div class="table-wrap"><table class="grid map"><thead><tr><th>Job field</th><th>Value carried over</th><th>From bid field</th></tr></thead><tbody>'+
+        m('Customer / Bill To',esc(b.billTo),'Bill To')+
+        m('Rig',esc(b.rig),'Rig / Job')+
+        m('Operator',b.operator?esc(b.operator):'<span class="hint">—</span>','Operator (not printed on quote)')+
+        m('Old location',esc(b.pickup),'Pickup City / Old Location')+
+        m('New location',esc(b.delivery),'Delivery City / New Location')+
+        m('Job start date',esc(fmtLong(b.workStart)),'Work Start Date')+
+        m('Distance',esc(b.distance),'Distance')+
+        m('Schedule days',esc(b.days||'-'),'Schedule days')+
+        m('Job scope','<div class="chips">'+scopeChips+'</div>','Job Description')+
+        m('Planned resources','<div class="chips">'+equipChips+'</div>'+(extras.length?'<div class="hint" style="margin-top:6px">Also: '+esc(extras.join('; '))+'</div>':''),'Equipment Provided (+ HSE / truck-a-load)')+
+        m('Rig Operation',esc(rigOpText(b)),'Rig Operation')+
+        m('Days / Nights',esc(b.daysNights),'Working Days And/or Nights')+
+        m('Job revenue','$'+money(b.price),'Quoted Price')+
+        m('Sales member',esc(b.sales),'Sales Member')+
+        m('Terminal',esc(b.terminal),'Terminal')+
+        m('Source Bid #','<a href="#quote/'+esc(b.id)+'">'+esc(b.id)+'</a>','Bid #')+
+      '</tbody></table></div>'+
+      '<div class="form-actions" style="border-top:0;padding-top:0"><span class="left">In the live system this would open the job in Dispatch. Not part of this demo.</span>'+
+        '<button class="btn" id="jQuote">View quote</button><button class="btn primary" id="jBack">Back to bids</button></div>'+
+    '</div>'+
+   '</div>';
+  $('#jBack').onclick=function(){ go('list'); };
+  $('#jQuote').onclick=function(){ go('quote/'+b.id); };
+}
+
+/* ---------- router ---------- */
+function shotQ(q){ if(!q) return ''; q=q.replace(/\+/g,' '); try{ return decodeURIComponent(q); }catch(e){ return q; } } // q may be double-encoded so '&' survives, e.g. q=H%2526P
+function shotHook(p){ // demo/screenshot states, e.g. #new?demo=1&shot=rig-open&q=Helmerich
+  if(!p.shot) return;
+  if(p.shot==='rig-open') combos.rig.open(shotQ(p.q));
+  if(p.shot==='op-open') combos.operator.open(shotQ(p.q));
+  if(p.shot==='op-addnew'){ combos.operator.pick('__new'); }
+  if(p.shot==='validate-op'){ combos.operator.pick(''); var siv=Element.prototype.scrollIntoView; Element.prototype.scrollIntoView=function(){}; $('#btnSubmit').click(); Element.prototype.scrollIntoView=siv; } // keep page at top so the error banner + field both show
+}
+function notFound(what){ app.innerHTML='<div class="card empty">'+esc(what)+' not found. <a href="#list">Back to bids</a></div>'; }
+function route(){
+  var h=decodeURIComponent(location.hash.replace(/^#/,''))||'list';
+  var q=h.split('?'), path=q[0].split('/'), params={};
+  (q[1]||'').split('&').forEach(function(kv){ if(kv){ var p=kv.split('='); params[p[0]]=p[1]||'1'; } });
+  window.scrollTo(0,0);
+  switch(path[0]){
+    case 'new': renderForm(params.demo?demoBid():blankBid(), true); shotHook(params); if(params.scroll){ var se=$('#sec-'+params.scroll); if(se) window.scrollTo(0, se.getBoundingClientRect().top+window.pageYOffset-12); } break;
+    case 'edit': var e=getBid(path[1]); e?renderForm(e,false):notFound('Bid '+path[1]); break;
+    case 'quote': var b=getBid(path[1]); b?renderQuote(b):notFound('Bid '+path[1]); break;
+    case 'job':
+      var id=path[1], bb=getBid(id); if(!bb){ var j=getJob(id); if(j) bb=getBid(j.bidId); }
+      if(bb && !bb.jobId){ markWon(bb); return; }
+      if(bb && bb.jobId && !params['new'] && /^\d+$|^J-26-1/.test(bb.jobId)){ location.href='job-index.html?v=1'; return; }
+      bb?renderJob(bb,!!params['new']):notFound('Job '+id); break;
+    default: renderList();
+  }
+}
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
+<script>window.NOCRUMB=true;</script><script>rrChrome("Bids")</script></body>
+</html>

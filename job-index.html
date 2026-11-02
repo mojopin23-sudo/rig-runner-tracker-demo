@@ -1,0 +1,275 @@
+<!DOCTYPE html><html><head><link rel="icon" href="logo.png?v=1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta charset="utf-8"><title>Job #214 | Rig Runner</title><style>:root{--red:#F3011B;--ink:#2A2A27;--red-dark:#c20016;--grey:#6b6b66;--line:#e2e2de;--bg:#f4f4f2;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--red-dark)}
+button{font-family:inherit}
+/* ---------- top bar ---------- */
+.topbar{background:#fff;border-bottom:4px solid var(--red);display:flex;align-items:center;gap:16px;padding:8px 24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand img{height:42px;width:auto;display:block}
+.brand .divider{width:1px;height:32px;background:#d6d6d2}
+.brand .appname{font-size:22px;font-weight:700;letter-spacing:.5px}
+.nav{display:flex;gap:4px;margin-left:12px}
+.nav a{padding:8px 14px;border-radius:6px;text-decoration:none;color:var(--grey);font-weight:600}
+.nav a.active{background:var(--ink);color:#fff}
+.nav a.disabled{opacity:.45;cursor:not-allowed}
+.topbar .spacer{flex:1}
+.demo-badge{background:#fff4d6;color:#7a5600;border:1px solid #f0d58a;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.user{display:flex;align-items:center;gap:8px;color:var(--grey);font-size:13px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+/* ---------- layout ---------- */
+main{flex:1;width:100%;max-width:1320px;margin:0 auto;padding:22px 24px 40px}
+footer.appfoot{text-align:center;color:var(--grey);font-size:12px;padding:14px;border-top:1px solid var(--line);background:#fff}
+.page-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.page-head h1{font-size:22px;margin:0}
+.page-head .sub{color:var(--grey);font-size:13px}
+.page-head .spacer{flex:1}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #cfcfca;background:#fff;color:var(--ink);padding:8px 14px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#f2f2ef}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-dark)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.dark:hover{background:#000}
+.btn.won{background:#1f8a4c;border-color:#1f8a4c;color:#fff}
+.btn.lost{background:#fff;border-color:#b3261e;color:#b3261e}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* ---------- filters / table ---------- */
+.filters{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;padding:14px 16px;border-bottom:1px solid var(--line)}
+.filters label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.4px}
+.filters select,.filters input{font-size:14px;padding:7px 10px;border:1px solid #cfcfca;border-radius:6px;min-width:160px;background:#fff;color:var(--ink)}
+.filters .count{margin-left:auto;color:var(--grey);font-size:13px;align-self:center}
+.table-wrap{overflow-x:auto}
+table.grid{width:100%;border-collapse:collapse;font-size:13.5px}
+table.grid th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--grey);background:#fafaf8;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.grid tbody tr{cursor:pointer}
+table.grid tbody tr:hover{background:#fff6f7}
+table.grid td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+table.grid th.num{text-align:right}
+.bidno{font-weight:700;color:var(--ink);white-space:nowrap}
+.route{white-space:nowrap}
+.route .arrow{color:var(--red);font-weight:700;margin:0 4px}
+.info{display:inline-flex;width:15px;height:15px;border-radius:50%;background:#e4e4e0;color:#55554f;font-size:10px;align-items:center;justify-content:center;font-weight:700;cursor:help;margin-left:4px;text-transform:none}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.Draft{background:#ececea;color:#55554f}
+.pill.Submitted{background:#e3eefc;color:#1b4f9c}
+.pill.Won{background:#e0f4e7;color:#16713d}
+.pill.Lost{background:#fde4e2;color:#a3221a}
+.joblink{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;color:#16713d;text-decoration:none;border-bottom:1px dashed #16713d}
+.empty{padding:40px;text-align:center;color:var(--grey)}
+/* ---------- form ---------- */
+.form-card{padding:6px 22px 22px}
+.section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);border-bottom:1px solid var(--line);padding:16px 0 8px;margin:0 0 14px}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.fgrid .full{grid-column:1/-1}
+.field label.lbl{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.req{color:var(--red);margin-left:2px}
+.field input[type=text],.field input[type=date],.field input[type=number],.field select,.field textarea{width:100%;font-size:14px;padding:8px 10px;border:1px solid #cfcfca;border-radius:6px;background:#fff;color:var(--ink);font-family:inherit}
+.field textarea{min-height:70px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid rgba(243,1,27,.25);border-color:var(--red)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#d0021b;background:#fff7f7}
+.err{color:#d0021b;font-size:12px;margin-top:4px;display:none;font-weight:600}
+.field.invalid > .err{display:block}
+.hint{color:var(--grey);font-size:12px;margin-top:4px}
+.sentence{background:#fafaf8;border:1px dashed #d6d6d2;border-radius:6px;padding:9px 12px;font-size:13px;margin-top:8px}
+.sentence b{color:var(--red-dark)}
+.checks{display:flex;flex-wrap:wrap;gap:8px 22px}
+.chk{display:inline-flex;align-items:center;gap:7px;font-size:14px;cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--red)}
+.equip-list{display:flex;flex-direction:column;gap:6px;max-width:560px}
+.equip-row{display:flex;align-items:center;gap:10px;min-height:38px;flex-wrap:wrap}
+.equip-row .chk{min-width:130px}
+.equip-row .qty{flex:1;min-width:140px;max-width:320px}
+.equip-row .qty input{width:100%;font-size:14px;padding:7px 9px;border:1px solid #cfcfca;border-radius:6px}
+.equip-row.invalid .qty input{border-color:#d0021b;background:#fff7f7}
+.equip-row .err{flex-basis:100%;margin:0 0 0 140px}
+.equip-row.invalid .err{display:block}
+.radios{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+.money{position:relative}
+.money span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--grey);font-weight:700}
+.money input{padding-left:24px !important}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.form-actions .left{margin-right:auto;color:var(--grey);font-size:12px;align-self:center}
+.banner{border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13.5px}
+.banner.error{background:#fff1f1;border:1px solid #f3b4b4;color:#9b1111}
+.banner.ok{background:#e9f7ee;border:1px solid #a9dbbb;color:#155d33}
+.banner.note{background:#fff8e1;border:1px solid #f1d27a;color:#6b4d00}
+.hidden{display:none !important}
+/* ---------- searchable pick list (Rig, Operator) ---------- */
+.combo{position:relative}
+.combo .combo-input{padding-right:30px}
+.combo .caret{position:absolute;right:10px;top:9px;color:var(--grey);font-size:11px;pointer-events:none}
+.combo-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid #cfcfca;border-radius:7px;box-shadow:0 8px 22px rgba(0,0,0,.14);z-index:30;display:flex;flex-direction:column;overflow:hidden}
+.combo-meta{padding:6px 10px;font-size:11px;color:var(--grey);text-transform:uppercase;letter-spacing:.4px;font-weight:700;background:#fafaf8;border-bottom:1px solid var(--line)}
+.combo-opts{max-height:252px;overflow-y:auto}
+.combo-opt{padding:7px 10px;font-size:14px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combo-opt.active{background:#fff0f2}
+.combo-opt.sel{font-weight:700}
+.combo-opt.sel:after{content:"  \2713";color:var(--red-dark)}
+.combo-opt mark{background:none;color:var(--red-dark);font-weight:700}
+.combo-none{padding:9px 10px;color:var(--grey);font-style:italic;font-size:13px}
+.combo-add{border-top:1px solid var(--line);color:var(--red-dark);font-weight:700;background:#fff}
+.combo-add.active{background:#fff0f2}
+/* ---------- quote preview ---------- */
+.qtoolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:sticky;top:0;z-index:5}
+.qtoolbar .spacer{flex:1}
+.qtoolbar .meta{font-size:13px;color:var(--grey);display:flex;gap:8px;align-items:center}
+.pages{overflow-x:auto;padding-bottom:10px}
+.qpage{width:8.5in;height:11in;margin:0 auto 26px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);padding:.42in .55in .5in;position:relative;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:8pt}
+.qpage .pgno{position:absolute;bottom:.28in;left:0;right:0;text-align:center;font-size:7pt;color:#777}
+.q-logo{width:170px;display:block;margin:6px 0 22px 40px}
+.q-bar{background:#000;color:#fff;font-weight:700;padding:4px 5px;font-size:8pt}
+table.q{width:100%;border-collapse:collapse}
+table.q td{padding:4.5px 5px;border-bottom:1px solid #d9d9d9;vertical-align:top;line-height:1.25}
+table.q td.l{width:30%;font-weight:700}
+.q-sec{background:#e8e8e8;color:#555;font-weight:700;font-size:7.5pt;font-variant:small-caps;text-transform:uppercase;letter-spacing:.3px;padding:3px 5px;margin-top:14px}
+.q-thanks td{border-bottom:none !important}
+.q-contact{border-bottom:1px solid #d9d9d9;padding:4px 5px 10px}
+.q-contact p{margin:0 0 9px}
+.q-contact .gap{height:22px}
+.q-rule{border:0;border-top:1px solid #cfcfcf;margin:0 0 8px}
+.q-valid{font-size:12.5pt;font-weight:700;margin:4px 0 12px}
+.q-terms{font-size:7.8pt;line-height:1.3;margin:6px 0 34px}
+.q-signbox{width:3.1in;height:.85in;border:1px solid #e1e1e1;border-radius:3px;position:relative;margin:14px 0 9px}
+.q-signbox:after{content:"";position:absolute;left:8px;right:8px;bottom:13px;border-top:2px solid #9a9a9a}
+.q-foot{display:flex;justify-content:space-between;align-items:center;padding:18px 50px 0;font-size:8pt}
+.q-foot .gen{font-style:italic;color:#9a9a9a}
+.q-foot .tr{color:#9a9a9a;font-size:8pt;letter-spacing:.3px}
+/* ---------- job view ---------- */
+.job-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;border-bottom:1px solid var(--line)}
+.job-head .check{width:44px;height:44px;border-radius:50%;background:#1f8a4c;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.job-head h2{margin:0;font-size:20px}
+.job-head .jobno{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:.5px}
+.job-body{padding:18px 22px 22px}
+table.map td.src{color:var(--grey);font-size:12.5px;white-space:nowrap}
+table.map tbody tr{cursor:default}
+table.map tbody tr:hover{background:transparent}
+table.map td.f{font-weight:700;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#f1f1ee;border:1px solid #e0e0dc;border-radius:6px;padding:3px 8px;font-size:12.5px;font-weight:600}
+.callout{border-left:5px solid var(--red);background:#fff4f5;padding:12px 16px;border-radius:6px;margin:0 0 16px;font-weight:700;color:#7d0010;display:flex;gap:10px;align-items:center}
+/* ---------- toast ---------- */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;opacity:0;transition:all .25s;pointer-events:none;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- responsive ---------- */
+@media (max-width:820px){
+  .topbar{padding:8px 14px;gap:10px}
+  .brand img{height:34px}
+  .brand .appname{font-size:19px}
+  .nav{margin-left:0}
+  main{padding:16px 12px 30px}
+  .fgrid{grid-template-columns:1fr}
+  .filters select{min-width:130px}
+  .filters .count{margin-left:0;flex-basis:100%}
+  .user .uname{display:none}
+}
+/* ---------- print: quote only ---------- */
+@page{size:letter;margin:0}
+@media print{
+  html,body{background:#fff !important}
+  body{display:block;min-height:0}
+  .topbar,.appfoot,.qtoolbar,.no-print,.toast{display:none !important}
+  main{max-width:none;padding:0;margin:0}
+  .pages{overflow:visible;padding:0}
+  .qpage{margin:0;box-shadow:none;height:10.98in;page-break-after:always;break-after:page}
+  .qpage:last-child{page-break-after:auto;break-after:auto}
+  .q-bar,.q-sec{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+main{max-width:1320px}
+table.grid{min-width:760px}.table-wrap,.tw{overflow-x:auto}select.inp,input.inp,textarea.inp{font-family:inherit;color:var(--ink)}textarea.inp{display:block}a.btn{text-decoration:none}
+.mback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center}.mback.on{display:flex}.mbox{background:#fff;border-radius:10px;padding:20px 22px;width:520px;max-width:94vw;max-height:90vh;overflow:auto;border-top:4px solid var(--red)}.mbox h3{margin:0 0 12px}.mbox label{display:block;font-size:12.5px;font-weight:700;margin:10px 0 4px}.mbox .inp{width:100%}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-weight:700;opacity:0;transition:.2s;z-index:60;pointer-events:none}.toast.on{opacity:1}
+.btn,.del,.ico{cursor:pointer}.clk{color:var(--red);font-size:11.5px;font-weight:700;margin-top:3px}.desc{font-size:14px;margin:-6px 0 10px;color:var(--ink)}
+.jt{font-size:26px;margin:6px 0 10px;display:flex;align-items:center;gap:10px}
+.stepbar{display:flex;justify-content:flex-end;margin-bottom:18px}.stepbar a{text-decoration:none;background:#fff;border:1px solid var(--line);border-left:none;padding:7px 14px 7px 18px;font-size:12.5px;font-weight:700;color:var(--red-dark);position:relative}
+.stepbar a:first-child{border-left:1px solid var(--line);border-radius:6px 0 0 6px}.stepbar a:last-child{border-radius:0 6px 6px 0}
+.stepbar a+a:before{content:"›";position:absolute;left:5px;color:#bbb}.stepbar a.cur{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sbar{background:#8f8f8a;color:#fff;font-weight:700;font-size:15px;padding:9px 14px;border-radius:6px;display:flex;align-items:center;gap:10px;margin:18px 0 10px}.sbar>span:first-child{flex:1}.sbar .btn{padding:4px 10px;font-size:12px}
+.inp{display:inline-flex;align-items:center;justify-content:space-between;border:1px solid #cfcfca;border-radius:6px;padding:6px 9px;background:#fff;font-size:13px;min-height:32px;box-sizing:border-box}
+.inp.sel:after{content:"▾";color:var(--grey);margin-left:8px}.inp.date{width:150px}.inp.date i{font-style:normal;font-size:11px}.inp.ta{min-height:58px;align-items:flex-start;width:100%}
+.none{color:#9a9a94;font-style:italic}
+.ico{display:inline-flex;width:28px;height:26px;border:1px solid #cfcfca;border-radius:5px;align-items:center;justify-content:center;font-size:12px;background:#fff;margin-right:3px}.ico.on{background:#1f8a4c;color:#fff;border-color:#1f8a4c}
+.del{display:inline-flex;width:30px;height:26px;border-radius:5px;background:var(--red);color:#fff;align-items:center;justify-content:center;font-size:12px}
+.fl{display:grid;gap:14px 20px}.fl label{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--tc);white-space:nowrap}.tchip i{width:9px;height:9px;border-radius:50%;background:var(--tc)}
+.stepfoot{display:flex;gap:8px;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}.stepfoot .spacer{flex:1}
+.note{background:#fff8e1;border:1px solid #f0d58a;color:#7a5600;border-radius:6px;padding:9px 12px;font-weight:700;font-size:13px;margin:6px 0 10px}
+.row{display:flex;gap:10px;align-items:center;margin:8px 0}.row .spacer{flex:1}
+table.grid.static tbody tr{cursor:default}table.grid td{padding:8px 10px}table.grid th{padding:8px 10px}table.grid tfoot td{font-weight:700;background:#fafaf8}
+.nodata{text-align:center;color:var(--grey);font-style:italic}
+.btn.sm{padding:4px 10px;font-size:12px}.btn.blue{background:var(--ink);color:#fff;border-color:var(--ink)}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}.three h3{font-size:13.5px;margin:4px 0 6px;display:flex;justify-content:space-between}.three h3 a{font-size:12px;font-weight:600}
+table.kv{width:100%;border-collapse:collapse;font-size:13px}table.kv td{padding:6px 6px;border-bottom:1px solid var(--line)}table.kv td:last-child{text-align:right}table.kv.l td:last-child{text-align:left}
+table.kv tr.ind td:first-child{padding-left:20px;color:var(--grey)}tr.g td{background:#1f8a4c;color:#fff;font-weight:700}tr.p td{background:#fde4e2;font-weight:700}tr.b td{font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.oe{background:#fde4e2;font-weight:700}
+.map{background:repeating-linear-gradient(45deg,#ecece8 0 12px,#e4e4df 12px 24px);border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--grey);font-weight:700;min-height:190px}
+.phasebox{display:flex;gap:24px;align-items:flex-end;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:6px}
+.vis{font-size:12px;color:var(--grey);font-weight:400}.sbar .vis{color:#fff;opacity:.85}
+</style></head><body>
+
+<main><div class="crumb"><a href="jobs.html?v=1">&larr; Back to Jobs</a></div><h1 class="jt">Job Summary - Job #214 - Rig Sample Rig 27 <span class="pill Won" id=status>Active</span></h1><div class="stepbar"><a href="job-1-rig-job-details.html?v=1" class="">Rig &amp; Job Details</a><a href="job-2-day-resources.html?v=1" class="">Day Resources</a><a href="job-3-night-resources.html?v=1" class="">Night Resources</a><a href="job-4-job-addons.html?v=1" class="">Additional Costs</a><a href="job-5-move-in.html?v=1" class="">Move In</a><a href="job-6-move-out.html?v=1" class="">Move Out</a><a href="job-time-records.html?v=1" class="">Time Records</a><a href="job-index.html?v=1" class="cur">Job Summary</a></div><div class="sbar"><span>Job Summary</span><span class="btn">Edit Job Details…</span><span class="btn dark">Change Job Status…</span></div><div class="three"><div><h3>Job Characteristics</h3><table class="kv l"><tr class=""><td>Company</td><td>Rig Runner</td></tr><tr class=""><td>Job Name</td><td>Sample Ranch Unit 12 Move</td></tr><tr class=""><td>Originating Terminal</td><td><span class="tchip" style="--tc:#1f8a4c"><i></i>331 Jourdanton</span></td></tr><tr class=""><td>Rig</td><td>Sample Rig 27</td></tr><tr class=""><td>Customer</td><td>Sample Drilling Co.</td></tr><tr class=""><td>Operator</td><td>Sample Energy Partners</td></tr><tr class=""><td>Old End Lease/Well</td><td>Sample Lease #4H</td></tr><tr class=""><td>New End Lease/Well</td><td>Sample Ranch Unit 12 #1</td></tr><tr class=""><td>Job Type</td><td>Full Rig Move</td></tr><tr class=""><td>Anticipated Move Date</td><td>11/02/2026</td></tr><tr class=""><td>Duration</td><td>4</td></tr><tr class=""><td>Miles</td><td>38</td></tr><tr class=""><td>Linked Bid</td><td><a href=#>B-26-0142</a></td></tr><tr class=""><td>Auto clockout is disabled</td><td>Yes</td></tr></table></div><div><h3>Job Costs <a href=#>Job P&amp;L</a></h3><table class="kv "><tr class="b"><td>Personnel Costs</td><td>$60,500.00</td></tr><tr class="ind"><td>Move In</td><td>$29,090.00</td></tr><tr class="ind"><td>(Move Out)</td><td>$31,410.00</td></tr><tr class="b"><td>Equipment Costs</td><td>$70,000.00</td></tr><tr class="ind"><td>Move In</td><td>$36,300.00</td></tr><tr class="ind"><td>(Move Out)</td><td>$33,700.00</td></tr><tr class=""><td>Other Costs (per diem)</td><td>$4,650.00</td></tr><tr class=""><td>Agent Costs (owner operators)</td><td>$6,717.50</td></tr><tr class=""><td>Subcontractor Costs</td><td>$20,400.00</td></tr><tr class=""><td>Permit Costs</td><td>$1,980.00</td></tr><tr class=""><td>Additional Costs (hotel)</td><td>$569.68</td></tr><tr class="g"><td>Total Costs</td><td>$164,817.18</td></tr><tr class=""><td><a href=#>Job Price</a> ✎</td><td>$145,000.00</td></tr><tr class=""><td>Subcontractors</td><td>$24,050.00</td></tr><tr class=""><td>Permits</td><td>$2,200.00</td></tr><tr class=""><td>Additional Costs</td><td>$0.00</td></tr><tr class="g"><td>TOTAL INVOICE</td><td>$171,250.00</td></tr><tr class="p"><td>Net Profit</td><td>$6,432.82 (3.8%)</td></tr></table><div class="vis" style="margin-top:6px">Costs visible to Admin, Management and Dispatch.</div></div><div><h3>Job Administrative Details <a href=#>Rig Tracker Report</a></h3><table class="kv "><tr class=""><td>Job created on</td><td>10/26/2026</td></tr><tr class=""><td>Job created by</td><td>Demo User</td></tr><tr class=""><td>Job last Edited on</td><td>10/30/2026</td></tr><tr class=""><td>Job last Edited by</td><td>Demo User</td></tr><tr class=""><td><a href=#>Assigned Dispatcher</a></td><td>Sample Dispatcher</td></tr><tr class=""><td>Master Ticket</td><td><span class="btn sm blue">Create Master Ticket</span></td></tr><tr class=""><td>Rig Folder</td><td><span class="btn sm">View</span></td></tr><tr class=""><td>Route Survey</td><td><span class="pill Won">Approved</span> 10/28/2026 · <a href=#>📄 route-survey-job-214.pdf</a></td></tr></table></div></div><div class="sbar"><span>Job Location</span><span class="btn">Edit Job Location…</span></div><div class="vis" style="margin-bottom:8px"><b style="color:var(--ink)">Total Miles: 38</b></div><div class="two"><div><table class="kv l"><tr class="oe"><td>Old End</td><td></td></tr><tr class=""><td>Location</td><td>Pecos, TX</td></tr><tr class=""><td>Directions</td><td>FM 1450 north 3.2 mi, lease road left</td></tr><tr class=""><td>Latitude/Longitude</td><td>31.41250, -103.49300</td></tr><tr class="oe"><td>New End</td><td></td></tr><tr class=""><td>Location</td><td>Monahans, TX</td></tr><tr class=""><td>Directions</td><td>TX-18 south 6.0 mi, east 2.1 mi</td></tr><tr class=""><td>Latitude/Longitude</td><td>31.59420, -102.89270</td></tr></table></div><div class="map">Map placeholder — Old End → New End (38 mi)</div></div><div class="sbar"><span>Personnel Summary <span class="adminbadge" title="Per-employee totals visible to Admin and above only">Total by Employee: Admin+ only</span></span><label class="viewas">View as <select id="viewas" class="inp" style="width:auto"><option>Super Admin</option><option selected>Admin</option><option>Dispatch</option></select></label><span class="btn">Edit Job Resources…</span><span class="btn">Time Records…</span><span class="btn dark">⊕ Add Time Record</span></div><table class="grid static rsum"><thead><tr><th>Type</th><th>Resource</th><th>Job End</th><th>Start Day</th><th>End Day</th><th>Exceptions</th><th class="num">Hours</th><th class="num">Total</th></tr></thead><tbody><tr><td>Pusher</td><td>R. Alvarez</td><td>Old End</td><td>Mon 11/02/2026</td><td>Tue 11/03/2026</td><td></td><td class="num">25.50</td><td class="num">$1,071.00</td></tr><tr><td>Field Safety</td><td>K. Benton</td><td>Old End</td><td>Mon 11/02/2026</td><td>Tue 11/03/2026</td><td></td><td class="num">24.00</td><td class="num">$1,008.00</td></tr><tr><td>Crane Operator</td><td>D. Ortiz</td><td>Old End</td><td>Mon 11/02/2026</td><td>Tue 11/03/2026</td><td></td><td class="num">23.00</td><td class="num">$966.00</td></tr><tr><td>Tandem Operator</td><td>L. Garza</td><td>Old End</td><td>Mon 11/02/2026</td><td>Tue 11/03/2026</td><td>Late clock-out</td><td class="num">22.00</td><td class="num">$924.00</td></tr><tr><td>Rigger</td><td>C. Wade</td><td>Old End</td><td>Mon 11/02/2026</td><td>Tue 11/03/2026</td><td></td><td class="num">24.00</td><td class="num">$1,008.00</td></tr><tr><td>Pusher</td><td>R. Alvarez</td><td>New End</td><td>Wed 11/04/2026</td><td>Thu 11/05/2026</td><td></td><td class="num">24.00</td><td class="num">$1,008.00</td></tr><tr><td>Crane Operator</td><td>M. Haynes</td><td>New End</td><td>Wed 11/04/2026</td><td>Thu 11/05/2026</td><td></td><td class="num">22.50</td><td class="num">$945.00</td></tr><tr><td>Tandem Operator</td><td>A. Reyes</td><td>New End</td><td>Wed 11/04/2026</td><td>Thu 11/05/2026</td><td></td><td class="num">22.00</td><td class="num">$924.00</td></tr><tr><td>Swamper</td><td>G. Ibarra</td><td>New End</td><td>Wed 11/04/2026</td><td>Thu 11/05/2026</td><td>Missed clock-in</td><td class="num">20.00</td><td class="num">$840.00</td></tr></tbody><tfoot><tr><td></td><td></td><td></td><td></td><td></td><td>Total Hours</td><td class="num">207.00</td><td class="num">$8,694.00</td></tr></tfoot></table><div class="sbar"><span>Equipment Summary <span class="vis" style="color:#fff">(from operators' daily clock-in picks)</span></span></div><table class="grid static "><thead><tr><th>Equipment</th><th>Type</th><th>Terminal</th><th>Operator</th><th>Day</th><th class="num">Hours</th><th class="num">Cost</th></tr></thead><tbody><tr><td><b>T-1184</b></td><td>Tandem tractor</td><td><span class="tchip" style="--tc:#e0700f"><i></i>308 Alice</span></td><td>L. Garza</td><td>Mon 11/02</td><td class="num">11.5</td><td class="num">$13,350.00</td></tr><tr><td><b>C-0512</b></td><td>Crane (50 ton)</td><td><span class="tchip" style="--tc:#e0700f"><i></i>308 Alice</span></td><td>D. Ortiz</td><td>Mon 11/02</td><td class="num">12.0</td><td class="num">$20,000.00</td></tr><tr><td><b>F-2210</b></td><td>Forklift (Gradall)</td><td><span class="tchip" style="--tc:#1f8a4c"><i></i>331 Jourdanton</span></td><td>J. Pruitt</td><td>Mon 11/02</td><td class="num">12.5</td><td class="num">$9,800.00</td></tr><tr><td><b>P-0904</b></td><td>Pole truck</td><td><span class="tchip" style="--tc:#1f8a4c"><i></i>331 Jourdanton</span></td><td>S. Nunez</td><td>Tue 11/03</td><td class="num">10.5</td><td class="num">$8,000.00</td></tr><tr><td><b>C-3520</b></td><td>Crane (50 ton)</td><td><span class="tchip" style="--tc:#1b4f9c"><i></i>335 Odessa</span></td><td>M. Haynes</td><td>Wed 11/04</td><td class="num">11.5</td><td class="num">$13,450.00</td></tr><tr><td><b>T-4602</b></td><td>Tandem tractor</td><td><span class="tchip" style="--tc:#7b3fa0"><i></i>346 Kilgore</span></td><td>A. Reyes</td><td>Thu 11/05</td><td class="num">11.0</td><td class="num">$5,400.00</td></tr></tbody><tfoot><tr><td>Total Cost</td><td></td><td></td><td></td><td></td><td class="num">69.0</td><td class="num"><b>$70,000.00</b></td></tr></tfoot></table><div class="sbar"><span>Costs by Terminal</span></div><table class="grid static "><thead><tr><th>Terminal</th><th class="num">Personnel</th><th class="num">Equipment</th><th class="num">Per Diem</th><th class="num">Total</th></tr></thead><tbody><tr><td><span class="tchip" style="--tc:#e0700f"><i></i>308 Alice</span></td><td class="num">$26,060.00</td><td class="num">$33,350.00</td><td class="num">$1,650.00</td><td class="num"><b>$61,060.00</b></td></tr><tr><td><span class="tchip" style="--tc:#1f8a4c"><i></i>331 Jourdanton</span></td><td class="num">$15,570.00</td><td class="num">$17,800.00</td><td class="num">$1,350.00</td><td class="num"><b>$34,720.00</b></td></tr><tr><td><span class="tchip" style="--tc:#1b4f9c"><i></i>335 Odessa</span></td><td class="num">$12,290.00</td><td class="num">$13,450.00</td><td class="num">$1,050.00</td><td class="num"><b>$26,790.00</b></td></tr><tr><td><span class="tchip" style="--tc:#7b3fa0"><i></i>346 Kilgore</span></td><td class="num">$6,580.00</td><td class="num">$5,400.00</td><td class="num">$600.00</td><td class="num"><b>$12,580.00</b></td></tr></tbody><tfoot><tr><td>Total</td><td class="num">$60,500.00</td><td class="num">$70,000.00</td><td class="num">$4,650.00</td><td class="num"><b>$135,150.00</b></td></tr></tfoot></table><style>.adminbadge{font-size:11px;font-weight:600;background:#fff;color:#7a1f1f;border-radius:10px;padding:1px 8px;margin-left:8px}.viewas{font-size:12px;color:#fff;margin-right:8px}.viewas select{padding:1px 4px;height:auto}body.dispatch .rsum th:last-child,body.dispatch .rsum td:last-child{display:none}</style><script>(function(){var v=document.getElementById("viewas");function f(){document.body.classList.toggle("dispatch",v.value=="Dispatch")}v.addEventListener("change",f);f()})()</script><div class="sbar"><span>Agent Costs <span class="vis">(owner operators)</span></span></div><table class="grid static "><thead><tr><th>Agent / Owner Operator</th><th>Unit / Truck</th><th>Terminal</th><th>Phase</th><th class="num">Loads or Hours</th><th class="num">Rate</th><th class="num">Cost</th></tr></thead><tbody><tr><td>Sample Trucking LLC (owner operator)</td><td><b>Truck 901</b></td><td><span class="tchip" style="--tc:#e0700f"><i></i>308 Alice</span></td><td>Move Out</td><td class="num">6 loads</td><td class="num">$425.00 / load</td><td class="num">$2,550.00</td></tr><tr><td>Sample Hauling Co. (owner operator)</td><td><b>Truck 914</b></td><td><span class="tchip" style="--tc:#1f8a4c"><i></i>331 Jourdanton</span></td><td>Move Out</td><td class="num">11.0 hrs</td><td class="num">$95.00 / hr</td><td class="num">$1,045.00</td></tr><tr><td>Sample Trucking LLC (owner operator)</td><td><b>Truck 901</b></td><td><span class="tchip" style="--tc:#e0700f"><i></i>308 Alice</span></td><td>Move In</td><td class="num">5 loads</td><td class="num">$425.00 / load</td><td class="num">$2,125.00</td></tr><tr><td>Sample Lone Star Hauling (owner operator)</td><td><b>Truck 927</b></td><td><span class="tchip" style="--tc:#1b4f9c"><i></i>335 Odessa</span></td><td>Move In</td><td class="num">10.5 hrs</td><td class="num">$95.00 / hr</td><td class="num">$997.50</td></tr></tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td class="num"></td><td class="num"></td><td class="num">$6,717.50</td></tr></tfoot></table><div class="sbar"><span>Subcontractor Costs</span></div><table class="grid static "><thead><tr><th>Type</th><th>Company</th><th class="num">Cost</th><th class="num">Price</th></tr></thead><tbody><tr><td>Escorts</td><td>Sample Escort Services</td><td class="num">$3,200.00</td><td class="num">$3,850.00</td></tr><tr><td>Trucks</td><td>Sample Haulers Inc.</td><td class="num">$7,800.00</td><td class="num">$9,200.00</td></tr><tr><td>Rig-Up Equipment</td><td>Sample Rig-Up Crew Co.</td><td class="num">$9,400.00</td><td class="num">$11,000.00</td></tr></tbody><tfoot><tr><td>Total</td><td></td><td class="num">$20,400.00</td><td class="num">$24,050.00</td></tr></tfoot></table><div class="sbar"><span>Additional Costs</span><span class="btn">Edit Additional Costs…</span></div><table class="grid static "><thead><tr><th>Item</th><th>Category</th><th class="num">Cost</th><th class="num">Price</th></tr></thead><tbody><tr><td>Hotel expense – crew lodging, 2 rooms x 2 nights</td><td>Hotel Expense</td><td class="num">$569.68</td><td class="num">$0.00</td></tr><tr><td>11/02/2026 per diem</td><td>Per Diem</td><td class="num">$1,140.00</td><td class="num">$0.00</td></tr><tr><td>11/03/2026 per diem</td><td>Per Diem</td><td class="num">$1,350.00</td><td class="num">$0.00</td></tr><tr><td>11/04/2026 per diem</td><td>Per Diem</td><td class="num">$1,260.00</td><td class="num">$0.00</td></tr><tr><td>11/05/2026 per diem</td><td>Per Diem</td><td class="num">$900.00</td><td class="num">$0.00</td></tr><tr><td>Escort service, 2 cars, both ends</td><td>Subcontractor</td><td class="num">$3,200.00</td><td class="num">$3,850.00</td></tr><tr><td>Third-party haul trucks (6 loads)</td><td>Subcontractor</td><td class="num">$7,800.00</td><td class="num">$9,200.00</td></tr><tr><td>Rig up equipment, derrick raise</td><td>Subcontractor</td><td class="num">$9,400.00</td><td class="num">$11,000.00</td></tr></tbody><tfoot><tr><td>Total (per diem shown in Job Costs as Other Costs)</td><td></td><td class="num">$5,219.68</td><td class="num">$0.00</td></tr></tfoot></table><div class="sbar"><span>Job Activity <span class="vis" style="color:#fff">(from app users, incl. pusher notes)</span></span></div><table class="grid static "><thead><tr><th>Date</th><th>End</th><th>User</th><th>Activity</th><th>Image Uploads</th></tr></thead><tbody><tr><td>11/02/2026 6:05 AM</td><td>Old End</td><td>R. Alvarez</td><td>Rig down started</td><td>2 photos</td></tr><tr><td>11/02/2026 7:36 AM</td><td>Old End</td><td>R. Alvarez</td><td>Load Count — L1 / Truck 3151 / Bolsters, DP</td><td></td></tr><tr><td>11/02/2026 8:14 AM</td><td>Old End</td><td>R. Alvarez</td><td>Load Count — L2 / Truck 3139 / DP, racks</td><td></td></tr><tr><td>11/02/2026 8:38 AM</td><td>Old End</td><td>K. Benton</td><td>All Good — Truck 3139 pipe and pipe racks secured</td><td></td></tr><tr><td>11/02/2026 3:40 PM</td><td>Old End</td><td>R. Alvarez</td><td>All Good — Gen package out and stacked. Waiting to lower derrick; finishing wires on VFD house.</td><td></td></tr><tr><td>11/02/2026 6:02 PM</td><td>Old End</td><td>R. Alvarez</td><td>All Good — Crown is on the ground</td><td></td></tr><tr><td>11/03/2026 3:13 AM</td><td>Old End</td><td>W. Tate</td><td>All Good — Rig scattered, subs getting washed</td><td></td></tr><tr><td>11/04/2026 6:22 AM</td><td>New End</td><td>R. Alvarez</td><td>Load Count — Load 1 jack box and mats, Truck 3161</td><td></td></tr><tr><td>11/04/2026 7:30 AM</td><td>New End</td><td>R. Alvarez</td><td>Load Count — Load 5 Texas deck</td><td></td></tr><tr><td>11/04/2026 3:40 PM</td><td>New End</td><td>R. Alvarez</td><td>All Good — Mast raised, no incidents</td><td>1 photo</td></tr></tbody></table><div class="sbar"><span>Job Notes <span class="vis" style="color:#fff">(from dispatch office / web users)</span></span><span class="btn dark">⊕ Add Note</span></div><table class="grid static "><thead><tr><th>Note</th><th>Date</th><th>User</th></tr></thead><tbody><tr><td>Customer requests mast up before dark on day 3.</td><td>10/29/2026</td><td>Demo User</td></tr></tbody></table><div class="sbar"><span>Waybills <span class="vis" style="color:#fff">(one waybill covers multiple loads)</span></span><span class="btn primary">+ New Waybill</span></div><table class="grid static "><thead><tr><th>Waybill #</th><th>Type</th><th>Date</th><th>Driver</th><th>Equipment</th><th>Origin</th><th>Destination</th><th>Start</th><th>End</th><th class="num">Total Miles</th><th class="num">Loaded Miles</th><th class="num">Load Count</th></tr></thead><tbody><tr><td><b>WB-26-10481</b></td><td>03</td><td>11/02/2026</td><td>L. Garza</td><td>4 Axle Winch Truck - 3151</td><td>Pecos, TX</td><td>Monahans, TX</td><td>6:10 AM</td><td>5:45 PM</td><td class="num">214</td><td class="num">76</td><td class="num"><b>9</b></td></tr><tr><td><b>WB-26-10482</b></td><td>03</td><td>11/02/2026</td><td>B. Cole</td><td>Slickback Truck - 3139</td><td>Pecos, TX</td><td>Monahans, TX</td><td>6:25 AM</td><td>6:02 PM</td><td class="num">198</td><td class="num">76</td><td class="num"><b>7</b></td></tr><tr><td><b>WB-26-10483</b></td><td>03</td><td>11/03/2026</td><td>S. Nunez</td><td>30 Ton Pole Truck - 5110</td><td>Pecos, TX</td><td>Monahans, TX</td><td>5:58 AM</td><td>4:40 PM</td><td class="num">176</td><td class="num">76</td><td class="num"><b>8</b></td></tr><tr><td><b>WB-26-10484</b></td><td>03</td><td>11/03/2026</td><td>E. Morales</td><td>3 Axle Winch Truck - 3146</td><td>Jourdanton Yard</td><td>Pecos, TX</td><td>4:05 AM</td><td>3:10 PM</td><td class="num">402</td><td class="num">0</td><td class="num"><b>1</b></td></tr><tr><td><b>WB-26-10485</b></td><td>03</td><td>11/04/2026</td><td>A. Reyes</td><td>4 Axle Winch Truck - 3161</td><td>Pecos, TX</td><td>Monahans, TX</td><td>6:20 AM</td><td>7:15 PM</td><td class="num">228</td><td class="num">114</td><td class="num"><b>10</b></td></tr><tr><td><b>WB-26-10486</b></td><td>03</td><td>11/04/2026</td><td>V. Dean</td><td>Slickback Truck - 3150</td><td>Pecos, TX</td><td>Monahans, TX</td><td>6:40 AM</td><td>5:30 PM</td><td class="num">190</td><td class="num">76</td><td class="num"><b>6</b></td></tr><tr><td><b>WB-26-10487</b></td><td>03</td><td>11/05/2026</td><td>A. Reyes</td><td>4 Axle Winch Truck - 3161</td><td>Monahans, TX</td><td>Jourdanton Yard</td><td>7:05 AM</td><td></td><td class="num"></td><td class="num">0</td><td class="num"><b>5</b></td></tr></tbody><tfoot><tr><td>7 waybills</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="num">1408</td><td class="num">418</td><td class="num"><b>46</b></td></tr></tfoot></table><div class="sbar"><span>Field Safety Reports</span><span class="btn dark">⊕ New</span></div><table class="grid static "><thead><tr><th>PDF</th><th>Date</th><th>Submitted By</th><th>Summary</th></tr></thead><tbody><tr><td>📄</td><td>11/02/2026</td><td>K. Benton</td><td>Arrived on location 6:00 AM, old end, day shift. Safety meeting held, equipment inspected. Started rig down: pipe and racks out, gen package stacked, mud pumps pulled. 22 loads out; shift change 6:00 PM.</td></tr><tr><td>📄</td><td>11/04/2026</td><td>T. Sosa</td><td>JSA held at muster area with operator HSE rep, rig crew and all Rig Runner crew on the job. Set bottom subs, Texas deck, top subs, hopper/processing pits; lowered MCC skid and mud pumps. 47 loads in; shift change 6:00 PM.</td></tr></tbody></table><div class="sbar"><span>Equipment JSAs</span><span class="btn dark">⊕ Upload</span></div><table class="grid static "><thead><tr><th>Date</th><th>Equipment</th><th>Type</th><th>File</th></tr></thead><tbody><tr><td>11/01/2026</td><td><b>5102</b></td><td>40 Ton Tandem Truck</td><td><a href=#>📄 truck-5102-jsa-job-214.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>7101</b></td><td>Crane</td><td><a href=#>📄 crane-7101-jsa-job-214.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>7104</b></td><td>Crane</td><td><a href=#>📄 crane-7104-jsa-job-214.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>7108</b></td><td>Crane</td><td><a href=#>📄 crane-7108-jsa-job-214.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>6107</b></td><td>Forklift</td><td><a href=#>📄 forklift-6107-jsa-job-214.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>6108</b></td><td>Forklift</td><td><a href=#>📄 forklift-6108-jsa-job-214.pdf</a></td></tr></tbody></table><div class="sbar"><span>Inspection Reports</span><span class="btn dark">⊕ Upload</span></div><table class="grid static "><thead><tr><th>Date</th><th>Equipment</th><th>Type</th><th>Submitted By</th><th>File</th></tr></thead><tbody><tr><td>11/03/2026</td><td><b>5102</b></td><td>40 Ton Tandem Truck</td><td>E. Morales</td><td><a href=#>📄 inspection-20101.pdf</a></td></tr><tr><td>11/05/2026</td><td><b>5110</b></td><td>30 Ton Pole Truck</td><td>S. Nunez</td><td><a href=#>📄 inspection-20102.pdf</a></td></tr><tr><td>11/02/2026</td><td><b>6107</b></td><td>Forklift</td><td>J. Pruitt</td><td><a href=#>📄 inspection-20103.pdf</a></td></tr><tr><td>11/03/2026</td><td><b>6107</b></td><td>Forklift</td><td>F. Molina</td><td><a href=#>📄 inspection-20104.pdf</a></td></tr><tr><td>11/04/2026</td><td><b>6108</b></td><td>Forklift</td><td>J. Pruitt</td><td><a href=#>📄 inspection-20105.pdf</a></td></tr><tr><td>11/05/2026</td><td><b>6108</b></td><td>Forklift</td><td>F. Molina</td><td><a href=#>📄 inspection-20106.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>7101 Move</b></td><td>Crane Move</td><td>W. Tate</td><td><a href=#>📄 inspection-20107.pdf</a></td></tr><tr><td>11/01/2026</td><td><b>7101 Move</b></td><td>Rigging</td><td>W. Tate</td><td><a href=#>📄 inspection-20108.pdf</a></td></tr><tr><td>11/02/2026</td><td><b>7101</b></td><td>Crane</td><td>D. Ortiz</td><td><a href=#>📄 inspection-20109.pdf</a></td></tr><tr><td>11/02/2026</td><td><b>7101</b></td><td>Rigging</td><td>C. Wade</td><td><a href=#>📄 inspection-20110.pdf</a></td></tr><tr><td>11/04/2026</td><td><b>7104</b></td><td>Crane</td><td>M. Haynes</td><td><a href=#>📄 inspection-20111.pdf</a></td></tr><tr><td>11/04/2026</td><td><b>7104</b></td><td>Rigging</td><td>P. Lynch</td><td><a href=#>📄 inspection-20112.pdf</a></td></tr></tbody></table><div class="sbar"><span>Permits</span><span class="btn dark">⊕ Upload Permit</span></div><table class="grid static "><thead><tr><th>Date</th><th>Type</th><th>Uploaded By</th><th class="num">Cost</th><th>File</th></tr></thead><tbody><tr><td>10/30/2026</td><td>Oversize/Overweight Permits (6)</td><td>Demo User</td><td class="num">$1,980.00</td><td><a href=#>📄 oversize-overweight-permits-job-214.pdf</a></td></tr></tbody></table><div class="sbar"><span>Good Catch / Near Miss</span><span class="btn dark">⊕ New</span></div><table class="grid static "><thead><tr><th>Date</th><th>Reporter</th><th>Observation</th><th>Potential</th><th>Severity</th><th>Red Flag(s)</th><th>Description</th><th>Event</th></tr></thead><tbody><tr><td>11/03/2026</td><td>K. Benton</td><td>Swing radius</td><td>Struck-by</td><td>Medium</td><td>1</td><td>Barricade moved; reset and briefed crew.</td><td><a href="#gc-1042">View event GC-1042 →</a></td></tr></tbody></table><div class="sbar"><span>Uploaded Documents</span><span class="btn dark">⊕ Upload</span></div><table class="grid static "><thead><tr><th>Date</th><th>Document</th><th>Uploaded By</th><th>File</th></tr></thead><tbody><tr><td>11/02/2026</td><td>Safety Message</td><td>K. Benton</td><td><a href=#>📄 11-02-26-safety-message.pdf</a></td></tr><tr><td>10/29/2026</td><td>Meeting Notes</td><td>Sample Dispatcher</td><td><a href=#>📄 job-214-meeting-notes.pdf</a></td></tr><tr><td>10/29/2026</td><td>Flex 5 Loadout Sheet</td><td>Demo User</td><td><a href=#>📄 flex-5-loadout-sheet.pdf</a></td></tr><tr><td>10/29/2026</td><td>Texas Deck Load Securement</td><td>Demo User</td><td><a href=#>📄 texas-deck-load-securement.pdf</a></td></tr><tr><td>10/28/2026</td><td>Route Survey</td><td>Sample Dispatcher</td><td><a href=#>📄 route-survey-job-214.pdf</a></td></tr></tbody></table></main>
+<div class=toast id=toast></div><div id=modal class=mback><div class=mbox><h3 id=mt></h3><div id=mf></div><div class=row><span class=spacer></span><span class=btn id=mc>Cancel</span><span class='btn primary' id=mo>Save</span></div></div></div><script>(function(){
+var PT=['Pusher','Field Safety','Crane Operator','Forklift Operator','Tandem Operator','Pole Truck Operator','Rigger','Swamper','Escort'];
+var NAMES=['None Selected','R. Alvarez','K. Benton','D. Ortiz','M. Haynes','J. Pruitt','T. Sosa','L. Garza','B. Cole','A. Reyes','S. Nunez','C. Wade','E. Morales','P. Lynch','G. Ibarra','H. Price','V. Dean','W. Tate','F. Molina'];
+var PG=location.pathname.split('/').pop()||'job-index.html?v=1';
+function $(s,c){return (c||document).querySelector(s)}function $$(s,c){return [].slice.call((c||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('on')},2200)}
+function opts(l,v){return l.map(function(x){return '<option'+(x===v?' selected':'')+'>'+x+'</option>'}).join('')}
+function today(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+d.getFullYear()}
+var tables=$$('table.grid');tables.forEach(function(t,i){t.dataset.k=PG+':'+i;var w=document.createElement('div');w.className='tw';t.parentNode.insertBefore(w,t);w.appendChild(t)});
+// persistence
+function save(t){$$('input,textarea',t).forEach(function(e){e.setAttribute('value',e.value);if(e.tagName=='TEXTAREA')e.textContent=e.value});$$('select',t).forEach(function(s){$$('option',s).forEach(function(o){o.selected?o.setAttribute('selected',''):o.removeAttribute('selected')})});localStorage.setItem('rrjob3:'+t.dataset.k,t.tBodies[0].innerHTML)}
+tables.forEach(function(t){var v=localStorage.getItem('rrjob3:'+t.dataset.k);if(v)t.tBodies[0].innerHTML=v});
+var st=localStorage.getItem('rrjob3:status');if(st&&$('#status'))setStatus(st);
+function setStatus(v){var p=$('#status');p.textContent=v;p.className='pill '+({Active:'Won',Scheduled:'Submitted',Complete:'Won',Invoiced:'Draft','On Hold':'Lost',Cancelled:'Lost'}[v]||'Won')}
+document.addEventListener('change',function(e){if(e.target.classList.contains('cat')||(e.target.tagName=='SELECT'&&e.target.closest('#addons,table.grid')&&e.target.closest('tr')&&$('.subf',e.target.closest('tr'))&&!e.target.closest('.subf'))){var f=$('.subf',e.target.closest('tr'));if(f)f.style.display=e.target.value=='Subcontractor'?'':'none';calc()}var t=e.target.closest('table.grid');if(t)save(t)});
+document.addEventListener('input',function(e){if(e.target.closest('table.grid'))calc()});
+function num(v){return parseFloat(String(v).replace(/[^0-9.\-]/g,''))||0}
+function M(v){return '$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function calc(){if(!$('#tcost'))return;var c=0,p=0;$$('input.cost').forEach(function(e){c+=num(e.value)});$$('input.price').forEach(function(e){p+=num(e.value)});$('#tcost').textContent=M(c);$('#tprice').textContent=M(p);var sc=0,sp=0;$$('select.cat').forEach(function(s){if(s.value=='Subcontractor'){var r=s.closest('tr');sc+=num($('input.cost',r).value);sp+=num($('input.price',r).value)}});if($('#tsub'))$('#tsub').textContent='Subcontractor: '+M(sc)+' cost / '+M(sp)+' price'}
+calc();
+function tableFor(btn){var box=btn.closest('.sbar,.row,.stepfoot')||btn;var n=box.nextElementSibling;while(n){var t=n.matches('table.grid')?n:$('table.grid',n);if(t)return t;if(n.classList.contains('sbar'))break;n=n.nextElementSibling}
+ n=box.previousElementSibling;while(n){var t2=n.matches('table.grid')?n:$('table.grid',n);if(t2)return t2;n=n.previousElementSibling}return null}
+function nodata(t){var r=$('td.nodata',t);if(r)r.parentNode.remove()}
+// modal
+var mcb=null;function modal(title,fields,cb){$('#mt').textContent=title;$('#mf').innerHTML=fields.map(function(f,i){var id='mf'+i;var c=f.opts?'<select class=inp id='+id+'>'+opts(f.opts,f.v)+'</select>':f.ta?'<textarea class="inp ta" id='+id+'>'+(f.v||'')+'</textarea>':f.file?'<input class=inp type=file id='+id+'>':'<input class=inp id='+id+' value="'+esc(f.v||'')+'">';return '<label>'+f.l+'</label>'+c}).join('');mcb=cb;$('#modal').classList.add('on')}
+$('#mc').onclick=function(){$('#modal').classList.remove('on')};
+$('#mo').onclick=function(){var v=$$('#mf .inp').map(function(e){return e.type=='file'?(e.files[0]?e.files[0].name:'Sample upload.pdf'):e.value});$('#modal').classList.remove('on');mcb&&mcb(v)};
+function addRow(t,cells){nodata(t);var tr=document.createElement('tr');var nums=$$('thead th',t).map(function(h){return h.classList.contains('num')});tr.innerHTML=cells.map(function(c,i){return '<td'+(nums[i]?' class=num':'')+'>'+c+'</td>'}).join('');t.tBodies[0].appendChild(tr);save(t);tr.style.background='#fff6d6';return tr}
+var GO={'Edit Job Details':'job-1-rig-job-details.html?v=1','Edit Job Location':'job-1-rig-job-details.html?v=1','Edit Job Resources':'job-2-day-resources.html?v=1','Edit Additional Costs':'job-4-job-addons.html?v=1','Time Records':'job-time-records.html?v=1','Add Time Record':'time-records.html?v=1#add'};
+var DEL='<span class="del">🗑</span>';
+document.addEventListener('click',function(e){
+ var el=e.target.closest('.btn,.del,.ico,.nav a,.jh-link');if(!el||el.id=='mo'||el.id=='mc')return;
+ if(el.tagName=='A'&&el.getAttribute('href')&&!el.closest('.nav'))return;
+ var tx=el.textContent.replace(/[⊕+…✉➤]/g,'').trim();
+ if(el.closest('.nav')){if(tx!='Jobs'){e.preventDefault();toast(tx+' is not part of this mockup')}return}
+ for(var k in GO)if(tx.indexOf(k)==0){location.href=GO[k];return}
+ if(el.classList.contains('del')){var tr=el.closest('tr'),t=el.closest('table');tr.remove();save(t);calc();toast('Row removed (mockup)');return}
+ if(el.classList.contains('ico')){if(el.textContent=='➤'){el.classList.add('on');toast('Notification sent (mockup)')}else toast('Resource list (mockup)');return}
+ var t=tableFor(el);
+ if(tx=='Save Progress'){toast('Saved (mockup)');return}
+ if(tx=='Send Notifications'){toast('Notifications sent to assigned crew (mockup)');return}
+ if(tx.indexOf('Add Resource')==0){ if(!t)return;
+   if(tx=='Add Resource to Job'){var rows=$$('tbody tr',t);var end=rows.length?rows[0].cells[2].textContent:'New End';var d=rows.length?$$('input',rows[0]).map(function(i){return i.value}):['',''];
+     modal('Add Resource to Job',[{l:'Type',opts:PT},{l:'Resource',opts:NAMES.slice(1)}],function(v){addRow(t,[v[0],v[1],end,'<input class="inp date" value="'+d[0]+'">','<input class="inp date" value="'+d[1]+'">']);toast('Resource added')});return}
+   var r0=$('tbody tr',t),dates=r0?$$('input',r0).map(function(i){return i.value}):['',''];
+   addRow(t,['<select class=inp style="width:100%">'+opts(PT,'Pusher')+'</select>','<select class=inp style="width:150px">'+opts(NAMES,'None Selected')+'</select>','<span class="ico">➤</span><span class="ico">☰</span>','<input class="inp date" value="">','<input class="inp date" value="'+(dates[1]||'')+'">',DEL]);toast('Resource row added — pick type and resource');return}
+ if(tx=='New Additional Cost'){var at=$('table.grid');addRow(at,['<textarea class="inp ta" style="min-height:40px"></textarea>','<select class=inp style="width:150px">'+opts(['Per Diem','Hotel Expense','Subcontractor'],'Per Diem')+'</select>','<div class=subf style="display:none"><select class="inp sco" style="width:190px">'+opts(['Sample Escort Services','Sample Crane Rental','Sample Haulers Inc.','Sample Rig-Up Crew Co.','Sample Pilot Car Co.'],'')+'</select><div style="height:4px"></div><select class="inp sty" style="width:190px">'+opts(['Escorts','Trucks','Rig-Up Personnel','Rig-Up Equipment'],'')+'</select></div>','<input class="inp cost" style="width:110px" value="0.00">','<input class="inp price" style="width:110px" value="0.00">',DEL]);calc();return}
+ if(tx=='Change Job Status'){modal('Change Job Status',[{l:'Status',opts:['Scheduled','Active','On Hold','Complete','Invoiced','Cancelled'],v:$('#status').textContent},{l:'Reason / note',ta:1}],function(v){setStatus(v[0]);localStorage.setItem('rrjob3:status',v[0]);toast('Status changed to '+v[0]+' (mockup)')});return}
+ if(tx=='New Waybill'){var n=10487+$$('tbody tr',t).length-6;modal('New Waybill',[{l:'Waybill #',v:'WB-26-'+n},{l:'Type',v:'03'},{l:'Date',v:today()},{l:'Driver',opts:NAMES.slice(1)},{l:'Equipment',v:'4 Axle Winch Truck - 3161'},{l:'Origin',v:'Pecos, TX'},{l:'Destination',v:'Monahans, TX'},{l:'Start',v:'6:00 AM'},{l:'End',v:''},{l:'Total Miles',v:'0'},{l:'Loaded Miles',v:'0'},{l:'Load Count',v:'6'}],function(v){addRow(t,v.map(function(x,k){x=esc(x);return k==0||k==11?'<b>'+x+'</b>':x}));toast('Waybill created')});return}
+ if(tx=='Add Rig'||tx=='Add Customer'||tx=='Add Operator'){var lbl=tx.slice(4);modal(tx,[{l:lbl+' name',v:'Sample '+lbl+' 2'}],function(v){var s=$$('select').filter(function(s){var lb=s.closest('div').querySelector('label');return lb&&lb.textContent.indexOf(lbl)==0})[0]||$$('select')[0];var o=new Option(v[0],v[0],true,true);s.add(o);toast(lbl+' added (mockup)')});return}
+ if(tx=='Change Date'){modal('Change Start Date',[{l:'New start date',v:'11/02/2026'}],function(v){el.parentNode.previousElementSibling.textContent=v[0];toast('Start date changed (mockup)')});return}
+ if(tx=='Create Master Ticket'){el.outerHTML='<b>MT-26-0214</b>';toast('Master ticket created (mockup)');return}
+ if(tx=='View'){toast('Rig folder opens here (mockup)');return}
+ if(t){var hs=$$('thead th',t).map(function(h){return h.textContent.trim()});
+   modal(tx,hs.map(function(h){var H=h.toUpperCase();if(H=='PDF'||H=='FILE')return {l:'File',file:1};if(H.indexOf('DATE')==0)return {l:h,v:today()};if(/USER|BY|PUSHER|REPORTER|SUBMITTED$/.test(H))return {l:h,v:'Demo User'};if(H=='NOTE'||H=='DESCRIPTION'||H=='SUMMARY'||H=='OBSERVATION')return {l:h,ta:1};return {l:h}}),
+   function(v){addRow(t,v.map(function(x,i){var H=hs[i].toUpperCase();return (H=='PDF'||H=='FILE')?'📄 '+esc(x):esc(x)}));toast('Added (mockup)')});return}
+ toast(tx+' (mockup)');
+});
+})();
+</script><script>window.NOCRUMB=true;</script><script src="shell.js?v=1"></script><script>rrChrome("Jobs")</script></body></html>

@@ -1,0 +1,44 @@
+const D30=[...Array(30)].map((_,i)=>addD(TODAY,i-15));const D7=PERIOD.slice(0,7);
+const dh=d=>new Date(d+'T12:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
+const row=(term,cells)=>({term,cells});
+const jt=j=>jobOf(j).term;
+const REP=[
+['Personnel','p30','30 Day Personnel View',()=>['Resource','Occupation'].concat(D30.map(dh)),()=>EMP.map((e,n)=>row(e.term,[e.name,e.occ].concat(D30.map((d,i)=>(n+i)%5===0?'Off':(d>TODAY?'Sched':e.job.slice(5)))))),'Occupation'],
+['Personnel','daily','Daily Log',()=>['Resource','Per Diem','Occupation'].concat(D7.map(dh)),()=>EMP.map((e,n)=>row(e.term,[e.name,n%3?'$75':'—',e.occ].concat(e.h.slice(0,7).map(h=>h||'—')))),'Occupation'],
+['Personnel','training','Training / Certification Expiration',()=>['Name','Primary','Secondary'].concat(COURSES),()=>TRAIN.map(t=>row(t.term,[t.name,t.prim,t.sec].concat(t.c.map(d=>fd(d)+(d<TODAY?' '+tag('Expired'):d<=addD(TODAY,30)?' '+tag('Expiring'):''))))),'Primary'],
+['Personnel','jobres','Job Resources',()=>['Job','Resource','Type','Date','Hours'],()=>EMP.flatMap(e=>[0,1,2].map(i=>row(e.term,[e.job,e.name,e.occ,fd(addD(TODAY,-i)),e.h[8-i]||0]))),'Job'],
+['Payroll & Time','payroll','Payroll Period Report',()=>['Employee','Resource Type'].concat(PERIOD.map(dh),['TOT','Reg','O/T']),()=>EMP.map(e=>row(e.term,[e.name,e.occ].concat(e.h,[e.tot,e.reg,e.ot]))),'Resource Type'],
+['Payroll & Time','gross','Gross Payroll Report',()=>['Employee','Resource Type'].concat(PERIOD.map(dh),['Reg','OT','Wages Due','Total']),()=>EMP.map(e=>row(e.term,[e.name,e.occ].concat(e.h,[e.reg,e.ot,canMoney()?money(e.wage):'—',canMoney()?money(e.wage+(e.occ==='Owner Operator'?0:0)):'—']))),'Resource Type',true],
+['Payroll & Time','time','Time Records',()=>['Employee','Job #','Clock In','Clock Out','Notes'],()=>EMP.map((e,n)=>row(e.term,[e.name,e.job,'11/01 0'+(4+n%3)+':'+(10+n*3)%60+' AM','11/01 0'+(5+n%4)+':'+(20+n*7)%60+' PM',n%4?'':'Fuel stop logged'])),'Job #'],
+['Payroll & Time','exception','Exception Queue',()=>['Job','Resource','Clock In','Clock Out','Reason','Action'],()=>EXC.map(x=>row(x.term,[x.job,x.res,x.ci,x.co,x.reason,readOnly()?'<span class="muted">View only</span>':`<button class="btn" onclick="event.stopPropagation();toast('Approved (mock)')">Approve</button> <button class="btn" onclick="event.stopPropagation();toast('Sent back (mock)')">Edit</button>`])),'Reason'],
+['Payroll & Time','perdiem','Per Diem',()=>['Date','Recipient','Acct #','Amount','Reason','Issuer','Issued On'],()=>EMP.filter((e,n)=>n%3).map((e,n)=>row(e.term,[fd(addD(TODAY,-(n%4))),e.name,e.acct,'$75','Overnight on '+e.job,DISPATCH[e.term],fd(addD(TODAY,-(n%4)))])),'Issuer'],
+['Jobs & Bids','bids','Bids',()=>['Bid #','Status','Date','Customer','Operator','Terminal','Rig Name','Job Type','Job #','Miles','Bid Price','Final Price'],()=>BIDS.map(b=>row(b.term,[b.bid,tag(b.status),fd(b.date),b.cust,b.oper,b.term,b.rig,b.type,b.job||'—',b.miles,canMoney()?money(b.price):'—',b.final&&canMoney()?money(b.final):'—'])),'Status'],
+['Jobs & Bids','jobs','Jobs',()=>['Job Name','Status','Date','Bid','Customer','Operator','Terminal','Rig Name','Job Type'],()=>JOBS.map(j=>row(j.term,[j.job,tag(j.status),fd(j.date),j.bid,j.cust,j.oper,j.term,j.rig,j.type])),'Status'],
+['Jobs & Bids','dispatch','Dispatch (edits audit)',()=>['Dispatcher','Bid #','Job #','Changed At','Person Affected','Field','Edited Values'],()=>JOBS.filter(j=>j.status!=='Complete').map((j,n)=>row(j.term,[DISPATCH[j.term],j.bid,j.job,fd(addD(TODAY,-1))+' 0'+(2+n%7)+':15 PM',(L=>L[n%L.length])(EMP.filter(e=>e.term===j.term)).name,['Shift','Truck','Start time','Crew'][n%4],['Day → Night','T-'+j.term+'-07 → T-'+j.term+'-14','6:00 → 5:30 AM','Added to crew'][n%4]])),'Field'],
+['Jobs & Bids','waybills','Waybills',()=>['Waybill #','Job #','Equipment Type','Equipment ID','Date','Employee','Customer','Hours','Miles','Loads','Loaded Miles'],()=>EMP.filter(e=>e.occ==='Driver'||e.occ==='Owner Operator').map((e,n)=>{const j=jobOf(e.job);return row(e.term,['WB-'+(88200+n),j.job,'Tractor','T-'+e.term+'-'+(10+n),fd(addD(TODAY,-1)),e.name,j.cust,11+n%3,j.miles*2,3+n%3,j.miles*(3+n%3)])}),'Employee'],
+['Jobs & Bids','rigfolder','Rig Folder',()=>['Rig','Job','Document','Uploaded By','Date'],()=>JOBS.flatMap(j=>['Rig layout.pdf','Route survey.pdf'].map((d,i)=>row(j.term,[j.rig,j.job,`<a href="#" onclick="toast('Opens PDF (mock)');return false">${d}</a>`,DISPATCH[j.term],fd(addD(j.date,-3-i))]))),'Rig'],
+['Jobs & Bids','oo','Owner Operator Uploads',()=>['Submitted By','Date of Service','Waybill #','Master Ticket #','Bill-to Customer','Files','Notes'],()=>[['Owen Riggs','346','J-26-1186'],['Owen Riggs','346','J-26-1177'],['Shane Whitlow','335','J-26-1184'],['Rudy Saenz','331','214']].map(([n,t,j],i)=>row(t,[n,fd(addD(TODAY,-i-1)),'WB-'+(88300+i),'MT-'+(5100+i),jobOf(j).cust,'<a href="#" onclick="return false">'+(2+i%2)+' files</a>',i%2?'Fuel receipt attached':''])),'Submitted By'],
+['Equipment','eqdates','Equipment Dates',()=>['Status','Ownership','Unit','Year','Make','VIN','Plate #','Permit #','Registration Exp','DOT Insp','Equipment Insp'],()=>EQ.map(q=>{const m=[q.reg,q.dot,q.insp].sort()[0];return row(q.term,[tag(m<TODAY?'Expired':m<=addD(TODAY,30)?'Expiring':'Valid'),q.own,q.unit,q.year,q.make,q.vin,q.plate,q.permit,fd(q.reg),fd(q.dot),fd(q.insp)])}),'Ownership'],
+['Equipment','inventory','Equipment Inventory',()=>['Serial','Item','Description','Assigned To','Issued On','Expires On','Days Until Expiration','Attachment'],()=>INV.map(v=>row(v.term,[v.serial,v.item,v.desc,v.to,fd(v.issued),fd(v.exp),Math.round((new Date(v.exp)-new Date(TODAY))/864e5),'<a href="#" onclick="return false">receipt.pdf</a>'])),'Item'],
+['Equipment','maint','Maintenance Requests',()=>['ID','Date','Submitted By','Type','Unit','Status','Completed','Notes'],()=>MAINT.map(m=>row(m.term,[m.id,fd(m.date),m.by,m.type,m.unit,tag(m.status),m.done?fd(m.done):'—',m.notes])),'Status'],
+['Equipment','inspect','Inspection Reports',()=>['PDF','Type','Equipment','Engine Hours','Date','Job #','Rig','Submitted By'],()=>EQ.map((q,n)=>{const e=EMP.filter(x=>x.term===q.term)[n%2];const j=jobOf(e.job);return row(q.term,['<a href="#" onclick="return false">PDF</a>',n%2?'Post-trip':'Pre-trip',q.unit,4200+n*311,fd(addD(TODAY,-n%3)),j.job,j.rig,e.name])}),'Type'],
+['Safety & Comms','gcnm','Good Catch / Near Miss (formerly SIF)',()=>['Date','Submitter','Job','Type','Potential','Severity','Description','View'],()=>GC.map(g=>row(g.term,[fd(g.date),g.by,g.job,g.type,tag(g.pot),g.sev,g.desc,'<a href="#" onclick="toast(\'Opens report (mock)\');return false">View</a>'])),'Type'],
+['Safety & Comms','notif','Notifications',()=>['Date','Job','Sender','Title','Recipients'],()=>NOTIF.map(n=>row(n.term,[fd(n.date),n.job,n.sender,n.title,n.rcp])),'Sender']
+].map(([group,key,name,cols,rows,fcol,money])=>({group,key,name,cols,rows,fcol,money}));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function render(){
+ const q=new URLSearchParams(location.search),k=q.get('r');
+ if(!k){const gs=[...new Set(REP.map(r=>r.group))];
+  $('#page').innerHTML=`<h1>Reports</h1><div class="sub">${REP.length} reports · every report has a required Terminal filter</div><div class="wgrid">${gs.map(g=>`<section class="card"><div class="body rgroup"><h3>${g}</h3>${REP.filter(r=>r.group===g).map(r=>`<a href="?r=${r.key}">${r.name} &rarr;</a>`).join('')}</div></section>`).join('')}</div>`;return}
+ const r=REP.find(x=>x.key===k),cols=r.cols(),fi=cols.indexOf(r.fcol),all=r.rows();
+ const opts=[...new Set(all.map(x=>strip(x.cells[fi])))].sort();
+ $('#page').innerHTML=`<div><a href="reports.html?v=1">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">Mock data</div><section class="card"><div class="filters">
+ <label>Terminal *<select id="rt"><option value="all">All terminals</option>${Object.entries(TERMS).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></label>
+ <label>${r.fcol}<select id="rf"><option value="">All</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select></label>
+ <label>Search<input id="rs" placeholder="Filter rows"></label><span class="spacer"></span><span id="rc" class="muted"></span><button class="btn primary" onclick="toast('Export to Excel/PDF (stub)')">Export</button></div><div id="rtab"></div></section>`;
+ $('#rt').value=S.t;if(q.get('status'))$('#rf').value=q.get('status');
+ const draw=()=>{const f=$('#rf').value,s=$('#rs').value.toLowerCase();
+  const rows=all.filter(x=>inT(x)&&(!f||strip(x.cells[fi])===f)&&(!s||strip(x.cells.join(' ')).toLowerCase().includes(s)));
+  $('#rc').textContent=rows.length+' rows';$('#rtab').innerHTML=table(cols,rows.map(x=>x.cells))};
+ $('#rt').onchange=e=>{S.t=e.target.value;$('#tsel').value=S.t;draw()};$('#rf').onchange=draw;$('#rs').oninput=draw;draw();
+}
