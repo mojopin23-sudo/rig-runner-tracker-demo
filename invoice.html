@@ -20,7 +20,7 @@ textarea{width:100%;min-height:60px;font:14px Arial;box-sizing:border-box;border
 .tag{font-size:10px;background:#e8f0ff;color:#234;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:400;font-style:normal}
 @media print{.bar,.tag,.ro{display:none}body{background:#fff}.pg{box-shadow:none;margin:0}textarea{border:0}}
 </style></head><body>
-<div class="bar"><a id="back" href="job-index.html?v=31">← Job Summary</a><span class="demo">Demo mockup · sample data</span><span class="sp"></span><span id="mode"></span><button onclick="print()">Print / PDF</button></div>
+<div class="bar"><a id="back" href="job-index.html?v=32">← Job Summary</a><span class="demo">Demo mockup · sample data</span><span class="sp"></span><span id="mode"></span><button onclick="print()">Print / PDF</button></div>
 <div class="pg" id="inv"></div>
 <script>
 const CUST={"Sample Drilling Co.":{addr:"PO Box 1001",city:"Pleasanton",st:"TX",zip:"78064",contact:"Accounts Payable",email:"ap@sampledrilling.example",phone:"(555) 010-2001",vendor:"—",method:"Regular",portal:"—",summary:"—"},
@@ -37,13 +37,13 @@ const md=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return `${m}/${d}/${y}`
 const money=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const sp=s=>{const m=String(s||'').match(/^(.*),\s*([A-Z]{2})$/);return m?[m[1],m[2]]:[s||'—','']};
 if(!J){document.getElementById('inv').innerHTML='<h2>Job not found</h2><p>Open an invoice from a Job Summary.</p>'}else{
- document.getElementById('back').href='job-index.html?v=31'+(J.job=='214'?'':'&id='+encodeURIComponent(J.job));
+ document.getElementById('back').href='job-index.html?v=32'+(J.job=='214'?'':'&id='+encodeURIComponent(J.job));
  const C=CUST[J.cust]||{};const NK='rrInvNotes:'+J.job+(addl?':addl':'');
  const seq=addl?'02':'01',num='INV-'+String(J.job).replace(/^J-/,'')+'-'+seq;
  document.getElementById('mode').textContent=addl?'Additional invoice':'Master invoice';
  const T=x=>`<span class="tag">${x}</span>`,[fc,fs]=sp(J.from),[tc,ts]=sp(J.to);
  document.getElementById('inv').innerHTML=`
-<div class="hd"><img src="logo.png?v=31" alt="Rig Runner"><div class="co"><b>Rig Runner</b><br><i>100 Demo Way<br>Sample City, TX 77000</i></div>
+<div class="hd"><img src="logo.png?v=32" alt="Rig Runner"><div class="co"><b>Rig Runner</b><br><i>100 Demo Way<br>Sample City, TX 77000</i></div>
 <div class="ih"><h1>Invoice</h1><div>Invoice Date: <b>${new Date().toLocaleDateString('en-US')}</b></div><div><b>Invoice #:${num}</b></div><div><b>Job #:</b> ${e(J.job)} ${T('job')}</div><div><b>Salesperson:</b> ${e(J.sales||'S. Sample')} ${T('job')}</div></div></div>
 <div class="bt"><span class="k">Customer:</span><span>${e(J.cust)} ${T('customer')}</span>
 <span class="k">Billing Address:</span><span>${e(C.addr)}<br>${e(C.city)}, ${e(C.st)} ${e(C.zip)} ${T('customer')}</span>
