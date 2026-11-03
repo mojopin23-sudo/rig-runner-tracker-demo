@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="logo.png?v=26"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tracker · Manage Daily Log</title><link rel="stylesheet" href="style.css?v=26"><style>main{max-width:none!important}</style></head>
+<body><main>
+<div class="page-head"><h1>Manage Daily Log</h1><span class="sub" id="sub"></span><span class="spacer"></span>
+<label style="font-size:12.5px;font-weight:700">Terminal <select id="dlt"><option value="all">All</option><option value="308">308 Alice</option><option value="331">331 Jourdanton</option><option value="335">335 Odessa</option><option value="346">346 Kilgore</option></select></label>
+<span class="btn" onclick="wk(-7)">◀ Prev week</span><span class="btn" onclick="wk(7)">Next week ▶</span></div>
+<div class="muted" style="margin:-4px 0 10px">Rows are employees, one column per day. A day with a job assignment fills in the job # and rig automatically. Other days take a status. Per diem fills in from approved time records and accrues only when the time ticket requesting it is approved. The last column shows the job the per diem was charged to (read-only). Sample data only.</div>
+<section class="card"><div class="table-wrap" id="dl"></div><div class="muted" style="margin-top:8px">Legend: <span class="pill ok">Job</span> assigned (prefilled) · <span class="pill warn">Per diem pending</span> ticket not yet approved · <span class="pill">Status</span> chosen from the list</div></section></main>
+<script src="app.js?v=26"></script><script>
+const DLS=['PTO','Vacation','Sick','FMLA','Sales','Office','Shop','Route Survey','Travel From Home','Travel to Home','Safety Meeting','Pre-Rig Meeting','New Hire','No-show / Call','No-show / No call','Terminated'];
+const DLE=[['Callister, Wade','331'],['Barrientos, Luis','331'],['Nash, Corey','335'],['Pruitt, Dale','335'],['Okafor, Jesse','308'],['Gallegos, Mario','335'],['Pham, Andre','335'],['Ellery, Travis','346'],['Hollins, Marcus','346'],['Riggs, Owen','346']];
+const DLJ={'214':'Sample Rig 27','211':'Sample Rig 41','219':'Demo Rig X05'};
+// [emp index] -> per-day: 'J214' job (approved per diem), 'P214' job with per diem pending, or status
+const DLP=[['J214','J214','J214','J214','J214','',''],['J214','J214','P214','','Shop','',''],['J211','J211','J211','J211','Travel to Home','',''],['Safety Meeting','J211','J211','J211','J211','',''],['Office','Office','Route Survey','Office','Office','',''],['J219','J219','J219','P219','','',''],['PTO','PTO','J219','J219','J219','',''],['J214','J214','J214','J214','Pre-Rig Meeting','',''],['Sick','J214','J214','J214','','',''],['Travel From Home','J219','J219','J219','J219','','']];
+let dlBase=new Date(2026,10,2),dlSaved=JSON.parse(localStorage.rrDailyLog||'{}');
+function wk(n){dlBase.setDate(dlBase.getDate()+n);draw()}
+function dlDays(){return [...Array(7)].map((_,i)=>{const d=new Date(dlBase);d.setDate(d.getDate()+i);return d})}
+function draw(){const t=$('#dlt').value,ds=dlDays(),off=Math.round((dlBase-new Date(2026,10,2))/864e5);
+ const rows=DLE.map((e,i)=>[e,i]).filter(([e])=>t=='all'||e[1]==t);
+ const head='<tr><th>Employee</th><th>Terminal</th>'+ds.map(d=>`<th>${d.toLocaleDateString('en-US',{weekday:'short'})}<br><span class="muted">${d.getMonth()+1}/${d.getDate()}</span></th>`).join('')+'<th>Per Diem Days</th><th>Per Diem Charged To (read-only)</th></tr>';
+ const body=rows.map(([e,i])=>{let pd=[],pend=0;const cells=ds.map((d,j)=>{const v=off==0?DLP[i][j]:'';const k=i+'|'+d.toISOString().slice(0,10);
+   if(v&&/^[JP]\d/.test(v)){const n=v.slice(1);if(v[0]=='J')pd.push(n);else pend++;return `<td><span class="pill ok">#${n}</span><div class="muted" style="font-size:11.5px">${DLJ[n]}</div>${v[0]=='P'?'<span class="pill warn" style="font-size:10.5px">Per diem pending</span>':''}</td>`}
+   const cur=dlSaved[k]||v||'';return `<td><select data-k="${k}" style="max-width:104px;font-size:12px"><option value="">—</option>${DLS.map(s=>`<option ${s==cur?'selected':''}>${s}</option>`).join('')}</select></td>`}).join('');
+  const jobs=[...new Set(pd)];return `<tr><td><b>${e[0]}</b></td><td>${TERMS[e[1]]}</td>${cells}<td>${pd.length}${pend?` <span class="muted">(+${pend} pending)</span>`:''}</td><td style="background:#f6f6f3">${jobs.length?jobs.map(n=>'#'+n+' · '+DLJ[n]).join('<br>'):'<span class="muted">—</span>'}</td></tr>`}).join('')||'<tr><td colspan=11 class="hint">No employees for this terminal</td></tr>';
+ $('#dl').innerHTML=`<table class="grid"><thead>${head}</thead><tbody>${body}</tbody></table>`;
+ $('#sub').textContent=`Week of ${ds[0].toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} · ${rows.length} employees`;
+ $('#dl').querySelectorAll('select').forEach(s=>s.onchange=()=>{dlSaved[s.dataset.k]=s.value;localStorage.rrDailyLog=JSON.stringify(dlSaved);toast('Saved (demo)')})}
+function render(){const tt=(typeof S!=='undefined'&&S.t&&S.t!='all')?S.t:null;if(tt&&!$('#dlt').dataset.set)$('#dlt').value=tt;draw()}
+$('#dlt').onchange=()=>{$('#dlt').dataset.set=1;draw()};</script><script>chrome("Admin");if(typeof render==='function')render()</script></body></html>
