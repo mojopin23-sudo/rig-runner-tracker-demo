@@ -123,13 +123,13 @@ const FORMS=[
 ['Employee','orient','Orientation Policies Agreement',[['Orientation date','date'],['I agree to the policies','sel',['Yes']]]],
 ['Employee','vehicle','Vehicle Use Policy',[['Unit #','sel',EQ.map(q=>q.unit)],['Acknowledged','sel',['Yes']]]],
 ['Employee','elec','Electronic Equipment Policy & Installation Receipt',[['Device','sel',['ELD tablet','Dash camera','Phone']],['Serial','text']]],
-['Employee','timesheet',"Driver's Time Sheet",[['Date','date'],['Job #','sel',JOBS.map(j=>j.job)],['Hours','text']]],
+
 ['Equipment','loadlist','Load List',[['Job #','sel',JOBS.map(j=>j.job)],['Loads','text'],['Notes','text']]],
 ['Equipment','stock','Equipment Stock Addition',[['Item','text'],['Quantity','text'],['Unit #','sel',EQ.map(q=>q.unit)]]],
 ['Equipment','mumm','Multiple Unit Monthly Maintenance Report',[['Month','sel',['October 2026','November 2026']],['Units checked','text'],['Issues found','text']]]
 ].map(([group,id,name,fields])=>({group,id,name,fields}));
 const SEED=[['jsa','2026-11-02','Wade Callister','308','Job #: J-26-1182 · Load type: OS/OW'],['bbs','2026-11-01','Dale Pruitt','331','Behavior observed: Safe'],
-['timesheet','2026-11-01','Mario Gallegos','335','Job #: J-26-1184 · Hours: 13'],['med','2026-10-31','Travis Ellery','346','New expiration: 2028-10-31'],
+['med','2026-10-31','Travis Ellery','346','New expiration: 2028-10-31'],
 ['loadlist','2026-10-31','Corey Nash','308','Loads: 34'],['cjsa','2026-10-30','Grant Tolliver','346','Customer: Sabine Ridge Oil'],
 ['mumm','2026-10-30','Andre Pham','335','Month: October 2026 · Units checked: 9'],['jsa','2026-10-29','Rudy Saenz','331','Job #: 214 · Load type: OW (Overweight)']]
 .map(([form,date,by,term,summary])=>({form,date,by,term,summary}));
