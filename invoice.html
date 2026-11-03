@@ -1,0 +1,64 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Invoice · Tracker demo</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#eee;margin:0;color:#111}
+.bar{background:#222;color:#fff;padding:10px 16px;display:flex;gap:10px;align-items:center;font-size:14px}.bar a{color:#fff}.bar .sp{flex:1}
+.bar button{background:#c8102e;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer}
+.demo{background:#fff3c4;color:#5a4500;padding:2px 8px;border-radius:10px;font-size:12px}
+.pg{background:#fff;max-width:820px;margin:18px auto;padding:36px 44px;box-shadow:0 2px 10px #0002}
+.hd{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start}.hd img{height:64px}
+.co{text-align:center}.co b{font-size:20px;font-weight:400}.co i{font-size:12px}
+.ih{text-align:right}.ih h1{margin:0;font-size:24px}.ih div{font-size:13px;margin-top:3px}
+.bt{display:grid;grid-template-columns:150px 1fr;gap:2px 8px;margin:22px 0 12px 40px;font-size:14px}.bt .k{text-align:right;font-weight:700}
+.sec{border-top:1px solid #000;border-bottom:1px solid #000;text-align:center;font-weight:700;padding:4px;margin:14px 0}
+.stop{display:grid;grid-template-columns:120px 90px 1fr;gap:3px 8px;font-size:14px;margin:14px 0 14px 50px}.stop .t{font-weight:700;font-style:italic}.stop .k{text-align:right;font-weight:700}
+.tot{display:flex;justify-content:flex-end;gap:60px;align-items:center;font-size:20px;font-weight:700;border-bottom:1px solid #000;padding:8px 0}.tot span:last-child{border:2px solid #000;padding:2px 8px}
+.ro{font-size:11px;color:#666;text-align:right;margin-top:3px}
+.lines{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.lines th,.lines td{border-bottom:1px solid #ddd;padding:4px;text-align:left}.lines td.n,.lines th.n{text-align:right}
+textarea{width:100%;min-height:60px;font:14px Arial;box-sizing:border-box;border:1px dashed #c8102e;padding:6px;background:#fffdf3}
+.afe{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:26px;font-size:14px}.afe div{border-bottom:1px dashed #999;padding-bottom:8px;line-height:2}
+.remit{margin-top:40px;font-size:13px;line-height:1.5}
+.tag{font-size:10px;background:#e8f0ff;color:#234;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:400;font-style:normal}
+@media print{.bar,.tag,.ro{display:none}body{background:#fff}.pg{box-shadow:none;margin:0}textarea{border:0}}
+</style></head><body>
+<div class="bar"><a id="back" href="job-index.html?v=29">← Job Summary</a><span class="demo">Demo mockup · sample data</span><span class="sp"></span><span id="mode"></span><button onclick="print()">Print / PDF</button></div>
+<div class="pg" id="inv"></div>
+<script>
+const CUST={"Sample Drilling Co.":{addr:"PO Box 1001",city:"Pleasanton",st:"TX",zip:"78064",contact:"Accounts Payable",email:"ap@sampledrilling.example",phone:"(555) 010-2001",vendor:"—",method:"Regular",portal:"—",summary:"—"},
+"Demo Energy LLC":{addr:"500 Example Ave, Suite 200",city:"Midland",st:"TX",zip:"79701",contact:"Pat Example",email:"billing@demoenergy.example",phone:"(555) 010-2002",vendor:"V-100245",method:"Regular + Summary",portal:"Sample e-invoice portal",summary:"summary@demoenergy.example"},
+"Example Resources Inc":{addr:"12 Placeholder Rd",city:"Longview",st:"TX",zip:"75601",contact:"Accounts Payable",email:"ap@exampleresources.example",phone:"(555) 010-2003",vendor:"—",method:"Summary",portal:"—",summary:"—"}};
+const JOBS={"214":{job:"214",cust:"Sample Drilling Co.",rig:"Sample Rig 27",oper:"Sample Energy Partners",type:"Full Rig Move",term:"335 Odessa",date:"2026-10-28",end:"2026-10-31",from:"Monahans, TX",to:"Pecos, TX",oldLease:"Sample Lease #4H",newLease:"Sample Ranch Unit 12 #1",price:171250,sales:"S. Sample",scope:"Load out, haul, rig up, 32 trucks, 2 cranes, 2 forklifts, HSE rep, pusher, permits"},
+"J-26-1194":{job:"J-26-1194",cust:"Demo Energy LLC",rig:"Demo Rig X05",oper:"Sample Operating Co.",type:"Full Rig Move",term:"346 Kilgore",date:"2026-11-24",end:"2026-11-27",from:"Longview, TX",to:"Carthage, TX",oldLease:"Demo Unit 3 #2H",newLease:"Example Ranch #7",price:154000,sales:"S. Sample",scope:"Full rig move from the won bid"}};
+const TN={308:"308 Alice",331:"331 Jourdanton",335:"335 Odessa",346:"346 Kilgore"};
+const q=new URLSearchParams(location.search),id=q.get('job')||'214',addl=q.get('addl')=='1';
+let J=JOBS[id];
+try{const d=JSON.parse(localStorage.rrDemoJobs||'[]').find(x=>x.job===id);if(d){const s=d.src||{};J=Object.assign({},J||{},{job:d.job,cust:d.cust||(J&&J.cust),rig:d.rig,oper:d.oper,type:d.type,term:TN[d.term]||d.term,date:d.date,end:d.end,from:d.from,to:d.to,oldLease:s.oldLease,newLease:s.newLease,price:d.rev||(J&&J.price)||0,sales:s.sales,scope:s.scope})}}catch(e){}
+const e=s=>String(s??'—').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const md=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return `${m}/${d}/${y}`};
+const money=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const sp=s=>{const m=String(s||'').match(/^(.*),\s*([A-Z]{2})$/);return m?[m[1],m[2]]:[s||'—','']};
+if(!J){document.getElementById('inv').innerHTML='<h2>Job not found</h2><p>Open an invoice from a Job Summary.</p>'}else{
+ document.getElementById('back').href='job-index.html?v=29'+(J.job=='214'?'':'&id='+encodeURIComponent(J.job));
+ const C=CUST[J.cust]||{};const NK='rrInvNotes:'+J.job+(addl?':addl':'');
+ const seq=addl?'02':'01',num='INV-'+String(J.job).replace(/^J-/,'')+'-'+seq;
+ document.getElementById('mode').textContent=addl?'Additional invoice':'Master invoice';
+ const T=x=>`<span class="tag">${x}</span>`,[fc,fs]=sp(J.from),[tc,ts]=sp(J.to);
+ document.getElementById('inv').innerHTML=`
+<div class="hd"><img src="logo.png?v=29" alt="Rig Runner"><div class="co"><b>Rig Runner</b><br><i>100 Demo Way<br>Sample City, TX 77000</i></div>
+<div class="ih"><h1>Invoice</h1><div>Invoice Date: <b>${new Date().toLocaleDateString('en-US')}</b></div><div><b>Invoice #:${num}</b></div><div><b>Job #:</b> ${e(J.job)} ${T('job')}</div><div><b>Salesperson:</b> ${e(J.sales||'S. Sample')} ${T('job')}</div></div></div>
+<div class="bt"><span class="k">Customer:</span><span>${e(J.cust)} ${T('customer')}</span>
+<span class="k">Billing Address:</span><span>${e(C.addr)}<br>${e(C.city)}, ${e(C.st)} ${e(C.zip)} ${T('customer')}</span>
+<span class="k">Billing Contact:</span><span>${e(C.contact)} · ${e(C.email)} · ${e(C.phone)} ${T('customer')}</span>
+<span class="k">Vendor / Supplier #:</span><span>${e(C.vendor)} ${T('customer')}</span>
+<span class="k">Billing Method:</span><span>${e(C.method)} · Portal: ${e(C.portal)} ${T('customer')}</span>
+<span class="k">Operator / Rig:</span><span>${e(J.oper)} · ${e(J.rig)} ${T('job')}</span></div>
+<div class="sec">Stop Information</div>
+<div class="stop"><span class="t">Pickup</span><span class="k">Name:</span><span>${e(J.rig)} ${T('job')}</span><span></span><span class="k">Address:</span><span>${e(J.oldLease)}</span><span></span><span class="k">City, St:</span><span>${e(fc)} &nbsp; ${e(fs)}</span><span></span><span class="k">Est date:</span><span>${md(J.date)}</span></div>
+<div class="stop"><span class="t">Delivery</span><span class="k">Name:</span><span>${e(J.rig)} ${T('job')}</span><span></span><span class="k">Address:</span><span>${e(J.newLease)}</span><span></span><span class="k">City, St:</span><span>${e(tc)} &nbsp; ${e(ts)}</span><span></span><span class="k">Est date:</span><span>${md(J.end)}</span></div>
+<table class="lines"><thead><tr><th>Line</th><th>Description</th><th class="n">Amount</th></tr></thead><tbody><tr><td>1</td><td>${e(J.type)} · ${e(J.term)} · ${e(J.scope)}</td><td class="n">${money(J.price)}</td></tr></tbody></table>
+<div class="tot"><span>Total:</span><span id="total">${money(J.price)}</span></div><div class="ro">🔒 Read-only: from the job's Job Price</div>
+<p style="margin:18px 0 4px"><b>Additional Notes:</b> <span class="tag" style="background:#ffe3e3">only manual field</span></p>
+<textarea id="notes" placeholder="Type notes for this invoice…"></textarea>
+<div class="afe"><div>Well: ____________ Date: ________<br>AFE: ____________ Code: ________<br>Desc: ____________ Amount: ______<br>Rep: ______________________<br>Sign: _____________________</div><div>Well: ____________ Date: ________<br>AFE: ____________ Code: ________<br>Desc: ____________ Amount: ______<br>Rep: ______________________<br>Sign: _____________________</div></div>
+<div class="remit">REMIT TO:<br>RIG RUNNER (DEMO)<br>PO BOX 0000<br>SAMPLE CITY, TX 77000-0000</div>`;
+ const n=document.getElementById('notes');n.value=localStorage.getItem(NK)||'';n.oninput=()=>localStorage.setItem(NK,n.value)}
+</script></body></html>

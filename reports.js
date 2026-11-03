@@ -1,4 +1,4 @@
-if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=28');
+if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=29');
 const D30=[...Array(30)].map((_,i)=>addD(TODAY,i-15));const D7=PERIOD.slice(0,7);
 const dh=d=>new Date(d+'T12:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
 const row=(term,cells)=>({term,cells});
@@ -33,7 +33,7 @@ function render(){
   $('#page').innerHTML=`<h1>Reports</h1><div class="sub">${REP.length} reports · every report has a required Terminal filter</div><div class="wgrid">${gs.map(g=>`<section class="card"><div class="body rgroup"><h3>${g}</h3>${REP.filter(r=>r.group===g).map(r=>`<a href="?r=${r.key}">${r.name} &rarr;</a>`).join('')}</div></section>`).join('')}</div>`;return}
  const r=REP.find(x=>x.key===k),cols=r.cols(),fi=cols.indexOf(r.fcol),all=r.rows();
  const opts=[...new Set(all.map(x=>strip(x.cells[fi])))].sort();
- $('#page').innerHTML=`<div><a href="reports.html?v=28">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">Mock data</div><section class="card"><div class="filters">
+ $('#page').innerHTML=`<div><a href="reports.html?v=29">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">Mock data</div><section class="card"><div class="filters">
  <label>Terminal *<select id="rt"><option value="all">All terminals</option>${Object.entries(TERMS).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></label>
  <label>${r.fcol}<select id="rf"><option value="">All</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select></label>
  <label>Search<input id="rs" placeholder="Filter rows"></label><span class="spacer"></span><span id="rc" class="muted"></span><button class="btn primary" onclick="toast('Export to Excel/PDF (stub)')">Export</button></div><div id="rtab"></div></section>`;
