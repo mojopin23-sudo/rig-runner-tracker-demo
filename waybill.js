@@ -35,7 +35,7 @@ function toast(t,ms){var e=$('#toast');e.innerHTML=t;e.classList.add('on');clear
 function modal(title,html,ok){$('#mt').innerHTML=title;$('#mf').innerHTML=html;$('#modal').classList.add('on');$('#mo').style.display=ok?'':'none';$('#mo').textContent='OK';$('#mo').onclick=function(){if(ok&&ok()!==false)close()};}
 function close(){$('#modal').classList.remove('on')}
 function termsHTML(){return '<div class="terms"><h2>TERMS AND CONDITIONS</h2><ol>'+TERMS.map(function(t){return '<li>'+t+'</li>'}).join('')+'</ol></div>'}
-function showTerms(){modal('Terms and Conditions',termsHTML()+'<p class=vis>Printed as page 2 of every waybill PDF and attached to every waybill email. <a href="waybill-terms.html?v=27" target=_blank>Open as page</a></p>')}
+function showTerms(){modal('Terms and Conditions',termsHTML()+'<p class=vis>Printed as page 2 of every waybill PDF and attached to every waybill email. <a href="waybill-terms.html?v=28" target=_blank>Open as page</a></p>')}
 function eq(id){return EQUIP.filter(function(e){return e.id==id})[0]}
 function fmtD(d){if(!d)return '';var p=d.split('-');return p[1]+'/'+p[2]+'/'+p[0]}
 function fmtT(t){if(!t)return '';var h=+t.slice(0,2),m=t.slice(3);return (h%12||12)+':'+m+(h<12?' AM':' PM')}
@@ -91,15 +91,15 @@ function initForm(){var f=$('#wbform');if(!f)return;var A=f.dataset.mode=='A';
   return r}
  function save(r){localStorage.setItem('wbNext',Math.max(+(localStorage.getItem('wbNext')||0),+r.wb+1));var s=JSON.parse(localStorage.getItem('wbSaved')||'[]').filter(function(x){return x.wb!=r.wb});s.push(r);try{localStorage.setItem('wbSaved',JSON.stringify(s))}catch(e){r.stamp='';localStorage.setItem('wbSaved',JSON.stringify(s))}}
  $('#btnsave').onclick=function(){var r=collect();save(r);toast('Waybill #'+r.wb+' saved — now in the Waybills report');if(A&&window.refreshJobList)refreshJobList()};
- $('#btnpdf').onclick=function(){var r=collect();save(r);location.href='waybill-pdf.html?v=27&id='+r.wb};
+ $('#btnpdf').onclick=function(){var r=collect();save(r);location.href='waybill-pdf.html?v=28&id='+r.wb};
  $('#btnmail').onclick=function(){var r=collect();if(!r.cust){toast('Pick a Bill To customer first');return}save(r);mailToast(r)};
  calc()}
 function mailToast(r){toast('✉ Waybill #'+r.wb+' emailed to '+CUST[r.cust].bill+'<br><small>Attached: Waybill-'+r.wb+'.pdf — page 1 Bill of Lading + page 2 Terms and Conditions</small>',6000)}
-function rowHTML(r){var e=eq(r.truck)||{};return '<tr><td><b>'+r.wb+'</b></td><td>'+fmtD(r.date)+'</td><td>'+r.driver+'</td><td>'+(e.type||'')+' - '+r.truck+'</td><td>'+r.orig+' → '+r.dest+'</td><td class=num>'+miles(r)+'</td><td class=num>'+loadCount(r)+'</td><td><a class="btn sm" href="waybill-pdf.html?v=27&id='+r.wb+'">📄 PDF</a> <a href=# class=vt>Terms</a></td></tr>'}
+function rowHTML(r){var e=eq(r.truck)||{};return '<tr><td><b>'+r.wb+'</b></td><td>'+fmtD(r.date)+'</td><td>'+r.driver+'</td><td>'+(e.type||'')+' - '+r.truck+'</td><td>'+r.orig+' → '+r.dest+'</td><td class=num>'+miles(r)+'</td><td class=num>'+loadCount(r)+'</td><td><a class="btn sm" href="waybill-pdf.html?v=28&id='+r.wb+'">📄 PDF</a> <a href=# class=vt>Terms</a></td></tr>'}
 function addRow(r){var tb=$('#joblist tbody');if(tb){$$('tr',tb).forEach(function(t){if(t.firstChild.textContent==r.wb)t.remove()});tb.insertAdjacentHTML('beforeend',rowHTML(r));bindVT()}}
 function bindVT(){$$('.vt').forEach(function(a){a.onclick=function(e){e.preventDefault();showTerms()}})}
 function initJobList(){var tb=$('#joblist tbody');if(!tb)return;window.refreshJobList=function(){tb.innerHTML=allWB().filter(function(r){return r.job=='214'}).map(rowHTML).join('');bindVT()};refreshJobList();
- $('#newwb').onclick=function(){var cur=$('#loadno').textContent;if(JSON.parse(localStorage.getItem('wbSaved')||'[]').some(function(x){return x.wb==cur})){location.href='job-index.html?v=27&n='+Date.now()+'#new';return}$('#formwrap').style.display='';$('#formwrap').scrollIntoView({behavior:'smooth'})};
+ $('#newwb').onclick=function(){var cur=$('#loadno').textContent;if(JSON.parse(localStorage.getItem('wbSaved')||'[]').some(function(x){return x.wb==cur})){location.href='job-index.html?v=28&n='+Date.now()+'#new';return}$('#formwrap').style.display='';$('#formwrap').scrollIntoView({behavior:'smooth'})};
  if(location.hash=='#new')setTimeout(function(){$('#formwrap').style.display='';$('#formwrap').scrollIntoView()},50)}
 // ---------- report ----------
 function initReport(){var tb=$('#rep tbody');if(!tb)return;var all=allWB();
@@ -109,7 +109,7 @@ function initReport(){var tb=$('#rep tbody');if(!tb)return;var all=allWB();
   var rows=all.filter(function(r){var e=eq(r.truck)||{};return (!c||r.cust==c)&&(!p||r.driver==p)&&(!j||r.job==j)&&(!t||e.type==t)&&(!q||r.truck==q)&&(!d1||r.date>=d1)&&(!d2||r.date<=d2)});
   window._rows=rows;var T=[0,0,0,0];
   tb.innerHTML=rows.map(function(r){var e=eq(r.truck)||{};var m=miles(r)||0,h=+hrs(r)||0,lc=loadCount(r),lm=loadedMiles(r);T[0]+=h;T[1]+=m;T[2]+=lc;T[3]+=lm;
-   return '<tr><td><b>'+r.wb+'</b></td><td>'+(r.job?'<a href="job-index.html?v=27#waybills">#'+r.job+'</a>':'— (standalone)')+'</td><td>'+e.type+'</td><td>'+r.truck+'</td><td>'+fmtD(r.date)+'</td><td>'+r.driver+'</td><td>'+r.cust+'</td><td class=num>'+h.toFixed(1)+'</td><td class=num>'+m+'</td><td class=num>'+lc+'</td><td class=num>'+lm+'</td><td><a class="btn sm" href="waybill-pdf.html?v=27&id='+r.wb+'">📄 PDF</a></td></tr>'}).join('')||'<tr><td colspan=12 class=nodata>No waybills match</td></tr>';
+   return '<tr><td><b>'+r.wb+'</b></td><td>'+(r.job?'<a href="job-index.html?v=28#waybills">#'+r.job+'</a>':'— (standalone)')+'</td><td>'+e.type+'</td><td>'+r.truck+'</td><td>'+fmtD(r.date)+'</td><td>'+r.driver+'</td><td>'+r.cust+'</td><td class=num>'+h.toFixed(1)+'</td><td class=num>'+m+'</td><td class=num>'+lc+'</td><td class=num>'+lm+'</td><td><a class="btn sm" href="waybill-pdf.html?v=28&id='+r.wb+'">📄 PDF</a></td></tr>'}).join('')||'<tr><td colspan=12 class=nodata>No waybills match</td></tr>';
   $('#rep tfoot').innerHTML='<tr><td colspan=7>'+rows.length+' waybills</td><td class=num>'+T[0].toFixed(1)+'</td><td class=num>'+T[1]+'</td><td class=num>'+T[2]+'</td><td class=num>'+T[3]+'</td><td></td></tr>'}
  $$('.filters select,.filters input').forEach(function(e){e.onchange=draw});$('#r_clear').onclick=function(){$$('.filters select,.filters input').forEach(function(e){e.value=''});draw()};draw();
  $('#r_xls').onclick=function(){var h=['Waybill #','Job #','Equipment Type','Equipment ID','Date','Employee','Customer','Equipment Hours','Equipment Miles','Loads','Loaded Miles'];var csv=[h].concat(_rows.map(function(r){return [r.wb,r.job,(eq(r.truck)||{}).type,r.truck,fmtD(r.date),r.driver,r.cust,hrs(r),miles(r),loadCount(r),loadedMiles(r)]})).map(function(a){return a.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}).join(',')}).join('\r\n');
