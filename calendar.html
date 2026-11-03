@@ -1,8 +1,8 @@
-<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Rig Move Calendar</title><link rel="stylesheet" href="style.css?v=3"></head>
-<body><main><div class="page-head"><h1>Rig Move Calendar</h1><span class="sub">Each bar starts on the anticipated move date and spans the job's days. Click a bar to open the job.</span><span class="spacer"></span><a class="btn" href="index.html?v=3">Dashboard</a></div>
+<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=4"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Rig Move Calendar</title><link rel="stylesheet" href="style.css?v=4"></head>
+<body><main><div class="page-head"><h1>Rig Move Calendar</h1><span class="sub">Each bar starts on the anticipated move date and spans the job's days. Click a bar to open the job.</span><span class="spacer"></span><a class="btn" href="index.html?v=4">Dashboard</a></div>
 <section class="card"><div class="calbar"><button class="btn" id="prev">&#9664;</button><h2 id="mtitle"></h2><button class="btn" id="nxt">&#9654;</button><button class="btn" id="tod">Today</button><span class="spacer" style="flex:1"></span><div class="legend" id="leg"></div></div>
 <div class="cal-dow"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div id="cal"></div></section></main>
-<script src="app.js?v=3"></script><script>
+<script src="app.js?v=4"></script><script>
 let ym=localStorage.rrCal||TODAY.slice(0,7);
 function render(){localStorage.rrCal=ym;const [y,m]=ym.split('-').map(Number);const first=new Date(y,m-1,1,12);
  $('#mtitle').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
