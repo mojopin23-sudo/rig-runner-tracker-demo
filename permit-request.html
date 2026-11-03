@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=33"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Permit Request</title><link rel="stylesheet" href="style.css?v=33"><style>@media print{.noprint,header,nav,.topbar,.side{display:none!important}body{background:#fff}}</style></head>
+<body><main id="page"></main><script src="app.js?v=33"></script><script src="pmcore.js?v=33"></script><script>
+chrome('Forms');
+const q=new URLSearchParams(location.search),P=$('#page');
+function jobs(){const L=[{v:'job:214',t:'Job #214 · Sample Rig 27'}];JOBS.forEach(j=>L.push({v:'job:'+j.job,t:'Job '+j.job+' · '+j.rig+' · '+(TERMS[j.term]||j.term)}));return L}
+const PEOPLE=EMP.map(e=>[e.name,e.occ]);
+function mail(r){const to=prompt('Email Permit Request '+r.id+' (PDF attached) to:','dispatch@rigrunner.example');if(to)toast(PM.mailText(r,to))}
+function jobHref(r){const id=r.link.slice(4);return id==='214'?'job-index.html?v=33':'job-index.html?v=33&job='+id}
+function unitHref(r){const i=EQ.findIndex(x=>x.unit===r.unit);return 'resources.html?v=33&id=u'+(i+1)}
+const id=q.get('id')||q.get('pdf');
+if(id){const r=PM.get(id);
+ P.innerHTML=r?`<div class="noprint" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><a class="btn" href="permit-request.html?v=33">← Permit Requests</a><a class="btn" href="${jobHref(r)}">Open ${PM.esc(r.linkLabel.split(' · ')[0])}</a><a class="btn" href="${unitHref(r)}">Open unit ${PM.esc(r.unit)}</a><span style="flex:1"></span><button class="btn" id="pdf">📄 PDF</button><button class="btn" id="em">✉ Email</button></div>
+ <section class="card noprint" style="margin-bottom:12px"><h2>Update status</h2><div class="body" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end"><label>Status<br><select id="st">${PM.STATUS.map(s=>`<option${s===r.status?' selected':''}>${s}</option>`).join('')}</select></label><label>Permit number<br><input id="no" value="${PM.esc(r.permitNo||'')}" placeholder="Required when Issued"></label><label style="flex:1;min-width:200px">Note<br><input id="nt" style="width:100%" placeholder="Required when Denied"></label><button class="btn primary" id="save">Save status</button><span id="sterr" style="color:#c8102e;font-weight:700"></span></div></section>
+ <section class="card"><div class="body" style="background:#fff">${PM.docHTML(r)}</div></section>`:'<h1>Permit request not found</h1>';
+ if(r){$('#pdf').onclick=()=>window.print();$('#em').onclick=()=>mail(r);if(q.get('pdf'))setTimeout(()=>window.print(),400);
+  $('#save').onclick=()=>{const e=PM.setStatus(r.id,$('#st').value,$('#no').value.trim(),$('#nt').value.trim(),'Dispatch');if(e){$('#sterr').textContent=e;return}toast('Permit '+r.id+' is now '+$('#st').value);setTimeout(()=>location.reload(),600)}}
+}else{
+ const all=PM.all();
+ P.innerHTML=`<div class="crumb"><a href="forms.html?v=33">← Forms</a></div><h1>Permit Request</h1><div class="sub">Oversize / overweight permit · links to a job and a unit</div>
+ <section class="card" style="max-width:860px;margin-bottom:16px"><h2>New permit request<a class="more" href="#" id="demo">Fill sample data</a></h2><div class="body" id="pmroot">${PM.formHTML({jobs:jobs(),people:PEOPLE,pre:q.get('link')||'',unit:q.get('unit')||'',today:TODAY})}<div style="margin-top:12px;display:flex;gap:8px"><button class="btn primary" id="sub">Submit permit request</button></div></div></section>
+ <section class="card" style="max-width:860px"><h2>Submissions (${all.length})</h2><div class="body">${table(['Request','Job','Unit','Move date','Status',''],all.slice().reverse().map(r=>[`<a href="permit-request.html?v=33&id=${r.id}">${r.id}</a>`,PM.esc(r.linkLabel.split(' · ')[0]),PM.esc(r.unit),r.start,PM.pill(r.status)+(r.permitNo?' '+PM.esc(r.permitNo):''),`<a class="btn sm" href="permit-request.html?v=33&pdf=${r.id}">📄 PDF</a> <a class="btn sm" href="#" data-em="${r.id}">✉ Email</a>`]))}</div></section>`;
+ const B=PM.bind($('#pmroot'),{people:PEOPLE});
+ $('#demo').onclick=e=>{e.preventDefault();B.demo()};
+ document.querySelectorAll('[data-em]').forEach(a=>a.onclick=e=>{e.preventDefault();mail(PM.get(a.dataset.em))});
+ $('#sub').onclick=()=>{const r=B.read();if(!r)return;PM.submit(r);toast('Permit request '+r.id+' submitted · on '+r.linkLabel.split(' · ')[0]+' and unit '+r.unit);setTimeout(()=>location.href='permit-request.html?v=33&id='+r.id,700)};
+}
+</script></body></html>
