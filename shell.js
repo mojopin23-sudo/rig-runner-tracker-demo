@@ -1,7 +1,7 @@
 (function(){
 // Rig Runner Tracker - dashboard mockup. ALL DATA IS FAKE.
-const URLS={jobs:'jobs.html?v=14',job:'job-index.html?v=14',bids:'bids.html?v=14',res:'resources.html?v=14'};
-const JOBURL=j=>'job-index.html?v=14';const BIDURL=b=>'bids.html?v=14#quote/'+b;
+const URLS={jobs:'jobs.html?v=15',job:'job-index.html?v=15',bids:'bids.html?v=15',res:'resources.html?v=15'};
+const JOBURL=j=>'job-index.html?v=15';const BIDURL=b=>'bids.html?v=15#quote/'+b;
 const TERMS={'308':'308 Alice','331':'331 Jourdanton','335':'335 Odessa','346':'346 Kilgore'};
 const TODAY='2026-11-02';
 const S={get t(){return localStorage.rrT||'all'},set t(v){localStorage.rrT=v},get role(){return localStorage.rrRole||'Admin'},set role(v){localStorage.rrRole=v}};
@@ -44,6 +44,8 @@ const JOBS=[
 ['J-26-1177','346','Cobalt 11','Complete','2026-10-19',3,'B-4393',0,'Full Rig Move',36,168500,140100,11],
 ['J-26-1193','346','Cobalt 26','Scheduled','2026-11-23',3,'B-4433',1,'Full Rig Move',24,139000,104700,9]
 ].map(([job,term,rig,status,date,days,bid,c,type,miles,rev,cost,crew],i)=>{const r=ROUTES[term][i%4];return {job,term,rig,status,date,days,end:addD(date,days-1),bid,cust:CUST[c],oper:OPER[i%2],type,miles,rev,cost,crew,from:r[0],to:r[1]}});
+// demo: jobs created from won bids on the Bids page
+try{JSON.parse(localStorage.getItem('rrDemoJobs')||'[]').forEach(j=>JOBS.push(j))}catch(e){}
 const ACTIVE=['In Progress'];
 const dayOf=j=>Math.round((new Date(TODAY)-new Date(j.date))/864e5)+1;
 const BIDS=JOBS.map(j=>({bid:j.bid,status:'Won',date:addD(j.date,-12),cust:j.cust,oper:j.oper,term:j.term,rig:j.rig,type:j.type,job:j.job,miles:j.miles,price:Math.round(j.rev*0.97/100)*100,final:j.rev})).concat([
@@ -52,6 +54,11 @@ const BIDS=JOBS.map(j=>({bid:j.bid,status:'Won',date:addD(j.date,-12),cust:j.cus
 ['B-4427','335','Draft','2026-10-30',2,'Cobalt 31','Full Rig Move',72,246000],['B-4428','335','Submitted','2026-10-30',3,'Hartline 50','Partial Move',18,69000],['B-4429','335','Pending','2026-10-31',0,'Hartline 52','Rig Down Only',0,66000],
 ['B-4422','346','Submitted','2026-10-27',1,'Cobalt 33','Full Rig Move',31,152000],['B-4415','346','Lost','2026-10-18',0,'Hartline 41','Partial Move',9,51000]
 ].map(([bid,term,status,date,c,rig,type,miles,price],i)=>({bid,status,date,cust:CUST[c],oper:OPER[i%2],term,rig,type,job:'',miles,price,final:''})));
+// demo: bids created or changed on the Bids page
+(()=>{let D=[],S={};try{D=JSON.parse(localStorage.getItem('rrDemoBids')||'[]');S=JSON.parse(localStorage.getItem('rrBidStatus')||'{}')}catch(e){}
+ D.filter(b=>!b.jobId).forEach(b=>BIDS.push({bid:b.id,status:b.status,date:b.quoteDate,cust:b.billTo,oper:b.operator,term:String(b.terminal||'').slice(0,3),rig:b.rig,type:b.moveType||'Full Rig Move',job:'',miles:+b.miles||0,price:b.price||0,final:'',demo:true}));
+ BIDS.forEach(b=>{const o=S[b.bid];if(o&&!b.job){b.status=o.status}});
+ const seen={};for(let i=0;i<BIDS.length;i++){if(seen[BIDS[i].bid]){BIDS.splice(i,1);i--}else seen[BIDS[i].bid]=1}})();
 const jobOf=id=>JOBS.find(j=>j.job===id);
 const EXC=[['J-26-1182','Luis Barrientos','11/01 05:12 AM','—','Missing clock out'],['J-26-1182','Corey Nash','11/01 04:48 AM','11/01 09:55 PM','Shift over 16 hrs'],
 ['214','Rudy Saenz','11/01 06:02 AM','11/01 06:40 PM','Clock in outside geofence'],['214','Jesse Okafor','—','11/01 07:15 PM','Missing clock in'],
@@ -87,22 +94,22 @@ EMP.forEach(e=>{e.h=PERIOD.map((_,i)=>hrs(e,i));e.tot=e.h.reduce((a,b)=>a+b,0);e
 // ---------- chrome ----------
 function chrome(active){
  {const p=new URLSearchParams(location.search).get('t');if(p&&(p==='all'||TERMS[p]))S.t=p;}
- const nav=[['Dashboard','index.html?v=14'],['Calendar','calendar.html?v=14'],['Jobs',URLS.jobs],['Bids',URLS.bids],['Resources',URLS.res],['Reports','reports.html?v=14'],['Forms','forms.html?v=14'],['Documents','documents.html?v=14'],['Admin','admin.html?v=14']];
+ const nav=[['Dashboard','index.html?v=15'],['Calendar','calendar.html?v=15'],['Bids',URLS.bids],['Jobs',URLS.jobs],['Resources',URLS.res],['Reports','reports.html?v=15'],['Forms','forms.html?v=15'],['Documents','documents.html?v=15'],['Admin','admin.html?v=15']];
  const mnav=`<button class="hamb" onclick="document.body.classList.toggle('navopen')" aria-label="Menu">&#9776;</button>`;
- document.body.insertAdjacentHTML('afterbegin',`<header class="topbar">${mnav}<a class="brand" href="index.html?v=14"><img src="logo.png?v=14" alt="Rig Runner"><span class="divider"></span><span class="appname">Tracker</span></a>
+ document.body.insertAdjacentHTML('afterbegin',`<header class="topbar">${mnav}<a class="brand" href="index.html?v=15"><img src="logo.png?v=15" alt="Rig Runner"><span class="divider"></span><span class="appname">Tracker</span></a>
  <nav class="nav">${nav.map(([n,h])=>`<a href="${h}" class="${n===active?'active':''}">${n}</a>`).join('')}</nav><span class="spacer"></span>
  <div class="gs"><input id="gq" type="search" placeholder="Search jobs, bids, people, reports, forms, docs…" oninput="rrGsearch(this.value)" onfocus="rrGsearch(this.value)"><div id="gres"></div></div>
  <span class="tsel"><label for="tsel">Terminal</label><select id="tsel"><option value="all">View All</option>${Object.entries(TERMS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></span>
  <span class="demo-badge">Demo mockup · sample data</span>
  <span class="user"><span class="avatar">RT</span><span class="who"><b>Ray Tolbert</b><select id="rsel" title="Role (demo switcher)">${['Admin','Dispatch','Management'].map(r=>`<option value="${r}">${r==='Management'?'Management (read-only)':r}</option>`).join('')}</select></span></span></header>`);
- if(active!=='Dashboard'&&!window.NOCRUMB)document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="crumb"><a href="index.html?v=14">&larr; Back to Dashboard</a></div>');
+ if(active!=='Dashboard'&&!window.NOCRUMB)document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="crumb"><a href="index.html?v=15">&larr; Back to Dashboard</a></div>');
  document.body.insertAdjacentHTML('beforeend','<footer class="appfoot">&copy; Rig Runner 2026 · Tracker demo · all names and figures are fictional</footer>'+(document.getElementById('toast')?'':'<div class="toast" id="toast"></div>'));
  $('#tsel').value=S.t;$('#tsel').onchange=e=>{S.t=e.target.value;rr()};
  $('#rsel').value=S.role;$('#rsel').onchange=e=>{S.role=e.target.value;rr()};
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
 const go=u=>location.href=u;
-const R=k=>'reports.html?v=14&r='+k;
+const R=k=>'reports.html?v=15&r='+k;
 function table(cols,rows,link){return `<div class="table-wrap"><table class="grid"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr class="${link?'click':''}" ${link?`onclick="go('${link(i)}')"`:''}>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="muted">No rows for this terminal.</td></tr>`}</tbody></table></div>`}
 // ---------- forms ----------
 const F_TERM=['Terminal','sel',Object.values(TERMS)];
@@ -136,17 +143,17 @@ function gsearch(q){q=q.trim().toLowerCase();const box=$('#gres');if(q.length<2)
  const m=s=>String(s).toLowerCase().includes(q);
  const G=[['Jobs',JOBS.filter(j=>m(j.job+' '+j.rig+' '+j.cust+' '+j.status+' '+j.term)).map(j=>[j.job+' · '+j.rig,j.status+' · '+TERMS[j.term],URLS.job])],
  ['Bids',BIDS.filter(b=>m(b.bid+' '+b.rig+' '+b.cust+' '+b.status)).map(b=>[b.bid+' · '+b.rig,b.status+' · '+b.cust,BIDURL(b.bid)])],
- ['Resources',EMP.filter(e=>m(e.name+' '+e.occ)).map(e=>[e.name,e.occ+' · '+TERMS[e.term],'resources.html?v=14&id=p'+(EMP.indexOf(e)+1)]).concat(EQ.filter(x=>m(x.unit+' '+x.make)).map(x=>[x.unit,x.year+' '+x.make,'resources.html?v=14&id=u'+(EQ.indexOf(x)+1)]))],
- ['Reports',REPNAMES.filter(r=>m(r[1])).map(r=>[r[1],'Report','reports.html?v=14&r='+r[0]])],
- ['Forms',FORMS.filter(f=>m(f.name+' '+f.group)).map(f=>[f.name,f.group+' form','forms.html?v=14&fill='+f.id])],
- ['Documents',DOCS.filter(d=>m(d.title+' '+d.cat)).map(d=>[d.title,d.cat,'documents.html?v=14&q='+encodeURIComponent(d.title)])],['Jobs list',[['All jobs','Jobs list','jobs.html?v=14']].filter(x=>m('jobs list all'))]].filter(g=>g[1].length);
+ ['Resources',EMP.filter(e=>m(e.name+' '+e.occ)).map(e=>[e.name,e.occ+' · '+TERMS[e.term],'resources.html?v=15&id=p'+(EMP.indexOf(e)+1)]).concat(EQ.filter(x=>m(x.unit+' '+x.make)).map(x=>[x.unit,x.year+' '+x.make,'resources.html?v=15&id=u'+(EQ.indexOf(x)+1)]))],
+ ['Reports',REPNAMES.filter(r=>m(r[1])).map(r=>[r[1],'Report','reports.html?v=15&r='+r[0]])],
+ ['Forms',FORMS.filter(f=>m(f.name+' '+f.group)).map(f=>[f.name,f.group+' form','forms.html?v=15&fill='+f.id])],
+ ['Documents',DOCS.filter(d=>m(d.title+' '+d.cat)).map(d=>[d.title,d.cat,'documents.html?v=15&q='+encodeURIComponent(d.title)])],['Jobs list',[['All jobs','Jobs list','jobs.html?v=15']].filter(x=>m('jobs list all'))]].filter(g=>g[1].length);
  box.innerHTML=G.length?G.map(([g,r])=>`<div class="gh">${g} (${r.length})</div>`+r.slice(0,5).map(([t,s,u])=>`<a href="${u}"><b>${t}</b><span>${s}</span></a>`).join('')).join(''):'<div class="gh">No results</div>';box.style.display='block'}
 document.addEventListener("click",e=>{if(!e.target.closest(".gs")){const b=document.getElementById("gres");if(b)b.style.display="none"}});
 
 function rr(){if(typeof render==='function')render();else location.reload()}
 window.rrGsearch=gsearch;
 // cache-busting for any internal link
-document.addEventListener('click',e=>{const l=e.target.closest&&e.target.closest('a[href]');if(!l)return;const h=l.getAttribute('href');if(!h||l.hasAttribute('download')||/^(https?:|#|mailto:|javascript:|blob:|data:)/.test(h)||/[?&]v=/.test(h))return;e.preventDefault();const [p,hash]=h.split('#');location.href=p+(p.includes('?')?'&':'?')+'v=14'+(hash?'#'+hash:'')},true);
+document.addEventListener('click',e=>{const l=e.target.closest&&e.target.closest('a[href]');if(!l)return;const h=l.getAttribute('href');if(!h||l.hasAttribute('download')||/^(https?:|#|mailto:|javascript:|blob:|data:)/.test(h)||/[?&]v=/.test(h))return;e.preventDefault();const [p,hash]=h.split('#');location.href=p+(p.includes('?')?'&':'?')+'v=15'+(hash?'#'+hash:'')},true);
 
 window.rrChrome=chrome;window.RR={JOBS,BIDS,EMP,EQ,TERMS,TCOLOR,CUST,OPER,DISPATCH,ROUTES,INV,MAINT,TRAIN,COURSES,fd,addD};
 })();

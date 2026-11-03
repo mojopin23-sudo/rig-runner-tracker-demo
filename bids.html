@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><link rel="icon" href="logo.png?v=14"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=14">
+<head><link rel="icon" href="logo.png?v=15"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=15">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bids | Rig Runner</title>
@@ -201,14 +201,14 @@ table.map td.f{font-weight:700;white-space:nowrap}
 </head>
 <body>
 
-<script src="shell.js?v=14"></script><main id="app"></main>
+<script src="shell.js?v=15"></script><main id="app"></main>
 
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
 'use strict';
-var LOGO = 'logo.png?v=14';
+var LOGO = 'logo.png?v=15';
 var TZ = 'America/Chicago';
 var TERMINALS = ['308 Alice','331 Jourdanton','335 Odessa','346 Kilgore'];
 var STATUSES = ['Draft','Submitted','Won','Lost'];
@@ -229,6 +229,17 @@ var bids = RRD.BIDS.map(function(b,i){var j=RRD.JOBS.find(function(x){return x.j
  return {id:b.bid,quoteDate:b.date,workStart:j?j.date:RRD.addD(b.date,14),rig:b.rig,operator:b.oper,billTo:b.cust,terminal:RRD.TERMS[b.term],pickup:j?j.from:r[0],delivery:j?j.to:r[1],distance:b.miles?('Approximately '+b.miles+' miles'):'Rig Down only',days:String(j?j.days:3),
  scope:b.type==='Rig Down Only'?['Rig Down']:SCOPES.slice(),equip:eq({'Crane':2+i%3,'Tandem':1+i%2,'Forklift':1,'Haul Truck':10+i*2}),hse:i%2==0,truckLoad:false,rigOp:'24hr Operations',rigOpOther:'',daysNights:'Days and Nights',price:b.price,sales:salesMembers[i%2].name,notes:'',
  status:b.status==='Pending'?'Submitted':b.status,jobId:b.job||null}});
+var DEMO_B=[],DEMO_S={};try{DEMO_B=JSON.parse(localStorage.getItem('rrDemoBids')||'[]');DEMO_S=JSON.parse(localStorage.getItem('rrBidStatus')||'{}');}catch(e){}
+var demoIds={};DEMO_B.forEach(function(b){demoIds[b.id]=1;});
+bids=bids.filter(function(b){return !demoIds[b.id];});
+var ORIG={};bids.forEach(function(b){ORIG[b.id]={status:b.status,jobId:b.jobId}; var o=DEMO_S[b.id]; if(o){b.status=o.status;b.jobId=o.jobId;b._demoJob=o.demoJob||false;}});
+bids=bids.concat(DEMO_B);
+function persist(){
+  localStorage.setItem('rrDemoBids',JSON.stringify(bids.filter(function(b){return b._demo;})));
+  var st={};bids.forEach(function(b){ if(!b._demo){var o=ORIG[b.id]; if(o.status!==b.status||o.jobId!==b.jobId) st[b.id]={status:b.status,jobId:b.jobId,demoJob:!!b._demoJob};} });
+  localStorage.setItem('rrBidStatus',JSON.stringify(st));
+}
+function jobUrl(b){ return (b._demoJob||b._demo)&&b.jobId ? 'job-demo.html?v=15&id='+encodeURIComponent(b.jobId) : '#job/'+b.id; }
 var jobs = bids.filter(function(b){return b.jobId}).map(function(b){return {id:b.jobId,bidId:b.id}});
 var filters = {terminal:'All', status:'All'};
 
@@ -254,8 +265,8 @@ function generatedStamp(){
 function getBid(id){ for(var i=0;i<bids.length;i++) if(bids[i].id===id) return bids[i]; return null; }
 function getJob(id){ for(var i=0;i<jobs.length;i++) if(jobs[i].id===id) return jobs[i]; return null; }
 function getSales(name){ for(var i=0;i<salesMembers.length;i++) if(salesMembers[i].name===name) return salesMembers[i]; return null; }
-function nextBidId(){ var m=0; bids.forEach(function(b){var n=parseInt(b.id.split('-')[2],10); if(n>m)m=n;}); return 'B-26-'+String(m+1).padStart(4,'0'); }
-function nextJobId(){ var m=0; jobs.forEach(function(j){var n=parseInt(j.id.split('-')[2],10); if(n>m)m=n;}); return 'J-26-'+String(m+1).padStart(4,'0'); }
+function nextBidId(){ var m=0; bids.forEach(function(b){var x=String(b.id).match(/(\d+)$/), n=x?parseInt(x[1],10):0; if(n>m)m=n;}); return 'B-'+(m+1); }
+function nextJobId(){ var m=0; jobs.map(function(j){return j.id;}).concat(RRD.JOBS.map(function(j){return j.job;})).forEach(function(id){var x=String(id).match(/^J-26-(\d+)$/); if(x&&+x[1]>m)m=+x[1];}); return 'J-26-'+(m+1); }
 function rigOpText(b){ return b.rigOp==='Other' ? (b.rigOpOther||'Other') : b.rigOp; }
 function plural(k){ return k+'(s)'; }
 function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove('show');},2600); }
@@ -279,11 +290,11 @@ function renderList(){
       '<td>'+(b.sales?esc(b.sales):'<span class="hint">—</span>')+'</td>'+
       '<td>'+(b.terminal?esc(b.terminal):'<span class="hint">—</span>')+'</td>'+
       '<td style="white-space:nowrap"><span class="pill '+b.status+'">'+b.status+'</span>'+
-        (b.jobId?'<a class="joblink" href="#job/'+esc(b.id)+'" title="Open job created from this bid">'+esc(b.jobId)+'</a>':'')+'</td>'+
+        (b.jobId?' <span class="hint" style="display:inline">, converted to</span> <a class="joblink" href="'+jobUrl(b)+'" title="Open job created from this bid">Job #'+esc(b.jobId)+'</a>':(b.status==='Submitted'?' <span class="hint" style="display:inline">(Open)</span>':''))+'</td>'+
     '</tr>'; }).join('') : '<tr><td colspan="9" class="empty">No bids match these filters.</td></tr>';
   app.innerHTML =
    '<div class="page-head"><h1>Bids</h1><span class="sub">Quotes for rig moves. Click a row to open its quote.</span><span class="spacer"></span>'+
-   '<button class="btn primary" id="btnNew">+ New Bid</button></div>'+
+   '<button class="btn" id="btnReset" title="Clears bids and jobs created in this demo">↺ Reset demo</button><button class="btn primary" id="btnNew">+ New Bid</button></div>'+
    '<div class="card">'+
     '<div class="filters">'+
       '<label>Terminal<select id="fTerminal">'+opt(TERMINALS,filters.terminal)+'</select></label>'+
@@ -296,6 +307,7 @@ function renderList(){
     '</tr></thead><tbody>'+body+'</tbody></table></div>'+
    '</div>';
   $('#btnNew').onclick=function(){ go('new'); };
+  $('#btnReset').onclick=function(){ if(!confirm('Reset demo? This removes bids and jobs created in this demo.')) return; ['rrDemoBids','rrBidStatus','rrDemoJobs'].forEach(function(k){localStorage.removeItem(k);}); location.hash='list'; location.reload(); };
   $('#fTerminal').onchange=function(e){ filters.terminal=e.target.value; renderList(); };
   $('#fStatus').onchange=function(e){ filters.status=e.target.value; renderList(); };
   $all('tbody tr[data-id]').forEach(function(tr){
@@ -308,13 +320,15 @@ function renderList(){
 /* ---------- 2) BID FORM ---------- */
 function blankBid(){
   return {id:null, quoteDate:todayISO(0), workStart:'', rig:'', operator:'', billTo:'', terminal:'', pickup:'', delivery:'', distance:'Approximately ', days:'',
-    scope:[], equip:eq({}), hse:false, truckLoad:false, rigOp:'24hr Operations', rigOpOther:'', daysNights:'Days and Nights', price:null, sales:'', notes:'', status:'Draft', jobId:null};
+    scope:[], equip:eq({}), hse:false, truckLoad:false, rigOp:'24hr Operations', rigOpOther:'', daysNights:'Days and Nights', price:null, sales:'', notes:'', status:'Draft', jobId:null,
+    moveType:'Full Rig Move', miles:'', workEnd:'', oldLease:'', newLease:'', oldLat:'', oldLng:'', newLat:'', newLng:'', pers:{Pusher:'',"Field Safety":'',Rigger:'',Swamper:''}};
 }
 function demoBid(){
   var b=blankBid();
-  b.workStart=todayISO(10); b.rig='Helmerich & Payne #254'; b.operator='EOG Resources'; b.billTo='Cypress Energy'; b.terminal='335 Odessa'; b.pickup='Pecos,Tx'; b.delivery='Mentone,Tx';
-  b.distance='Approximately 42 miles'; b.days='2'; b.scope=['Rig Down','Load Out','Transport/Permits','Rig Up of all equipment'];
-  b.equip=eq({'Crane':'2','Tandem':'1','Haul Truck':'18 (incl. 2 lowboys)'}); b.hse=true; b.price=128500; b.sales='Demo Salesperson';
+  b.workStart=todayISO(10); b.workEnd=todayISO(12); b.rig='Sample Rig 41'; b.operator=operators[0]; b.billTo=customers[0]; b.terminal='335 Odessa'; b.pickup='Pecos, TX'; b.delivery='Mentone, TX';
+  b.moveType='Full Rig Move'; b.miles='42'; b.oldLease='Sample Draw Unit 3H'; b.newLease='Sample Flats 22 #1H'; b.oldLat='31.42210'; b.oldLng='-103.49170'; b.newLat='31.70530'; b.newLng='-103.59880';
+  b.distance='Approximately 42 miles'; b.days='3'; b.scope=['Rig Down','Load Out','Transport/Permits','Rig Up of all equipment'];
+  b.equip=eq({'Crane':'2','Tandem':'1','Pole Truck':'1','Forklift':'2','Haul Truck':'14'}); b.pers={Pusher:'1','Field Safety':'1',Rigger:'6',Swamper:'4'}; b.hse=true; b.price=154000; b.sales=salesMembers[0].name;
   b.notes='Customer to provide water truck on location.';
   return b;
 }
@@ -340,9 +354,9 @@ function renderForm(bid, isNew){
     '<div class="fgrid">'+
       fld('quoteDate','Quote Date',true,'<input type="date" id="quoteDate" value="'+esc(bid.quoteDate)+'">','Defaults to today.')+
       fld('workStart','Work Start Date',true,'<input type="date" id="workStart" value="'+esc(bid.workStart)+'">')+
-      fld('rig','Rig/Job',true,comboHtml('rig',bid.rig,'rig','Search rigs, e.g. Ensign US Drlg #T137'),'Rig record from Administration &gt; Rigs (type to search, or add new).')+
+      fld('rig','Rig/Job',true,comboHtml('rig',bid.rig,'rig','Search rigs, e.g. Sample Rig 41'),'Rig record from Administration &gt; Rigs (type to search, or add new).')+
       fld('billTo','Bill To',true,'<select id="billTo">'+custOpts+'</select><input type="text" id="newCustomer" class="hidden" style="margin-top:8px" placeholder="New customer name">','Customer record (pick list or add new).')+
-      fld('operator','Operator',true,comboHtml('operator',bid.operator,'operator','Search operators, e.g. Silver Hill Ene Optg'),'Operator record from Administration &gt; Operators (type to search, or add new). Not printed on the quote; carries over to the job.')+
+      fld('operator','Operator',true,comboHtml('operator',bid.operator,'operator','Search operators, e.g. Sample Operating LLC'),'Operator record from Administration &gt; Operators (type to search, or add new). Not printed on the quote; carries over to the job.')+
       fld('terminal','Terminal',true,'<select id="terminal">'+termOpts+'</select>')+
       fld('sales','Sales Member',true,'<select id="sales">'+salesOpts+'</select>','Contact details on the quote come from the user record.')+
     '</div>'+
@@ -352,11 +366,19 @@ function renderForm(bid, isNew){
       fld('delivery','Delivery City / New Location',true,'<input type="text" id="delivery" placeholder="May match pickup (rig down only)" value="'+esc(bid.delivery)+'">')+
       fld('distance','Distance',true,'<input type="text" id="distance" value="'+esc(bid.distance)+'">','Free text, e.g. "Approximately 285 miles" or "Rig Down &amp; Scatter only".')+
       fld('days','Schedule days',false,'<input type="number" id="days" min="1" step="1" placeholder="N" value="'+esc(bid.days)+'">')+
+      fld('moveType','Move Type',false,'<select id="moveType">'+['Full Rig Move','Partial Move','Skid / Walk','Rig Down Only','Rig Up Only'].map(function(t){return '<option'+(t===bid.moveType?' selected':'')+'>'+t+'</option>';}).join('')+'</select>')+
+      fld('miles','Mileage',false,'<input type="number" id="miles" min="0" step="1" placeholder="e.g. 42" value="'+esc(bid.miles)+'">','Route miles; carries to the job.')+
+      fld('workEnd','Move End Date',false,'<input type="date" id="workEnd" value="'+esc(bid.workEnd)+'">')+
+      fld('oldLease','Old End Lease/Well',false,'<input type="text" id="oldLease" value="'+esc(bid.oldLease)+'">')+
+      fld('newLease','New End Lease/Well',false,'<input type="text" id="newLease" value="'+esc(bid.newLease)+'">')+
+      fld('oldLat','Old End Lat / Long',false,'<div style="display:flex;gap:6px"><input type="text" id="oldLat" placeholder="Latitude" value="'+esc(bid.oldLat)+'"><input type="text" id="oldLng" placeholder="Longitude" value="'+esc(bid.oldLng)+'"></div>')+
+      fld('newLat','New End Lat / Long',false,'<div style="display:flex;gap:6px"><input type="text" id="newLat" placeholder="Latitude" value="'+esc(bid.newLat)+'"><input type="text" id="newLng" placeholder="Longitude" value="'+esc(bid.newLng)+'"></div>')+
       '<div class="full"><div class="sentence" id="sentence"></div></div>'+
     '</div>'+
     '<h3 class="section-title" id="sec-includes">Quote includes</h3>'+
     '<div class="fgrid">'+
       '<div class="field full"><label class="lbl">Job Description</label><div class="checks">'+scopeHtml+'</div></div>'+
+      '<div class="field full"><label class="lbl">Personnel (resource allocation)</label><div style="display:flex;gap:12px;flex-wrap:wrap">'+['Pusher','Field Safety','Rigger','Swamper'].map(function(k){var p=bid.pers||{};return '<label class="chk" style="gap:6px">'+k+' <input type="number" min="0" class="persq" data-p="'+k+'" style="width:70px" value="'+esc(p[k]||'')+'"></label>';}).join('')+'</div><div class="hint">Head count per shift. Equipment below and personnel become the job\'s Day/Night resource lines.</div></div>'+
       '<div class="field full"><label class="lbl">Equipment Provided</label><div class="equip-list">'+equipHtml+'</div><div class="hint">Checking an item opens a free-text quantity box. Extra info can go in the same box.</div></div>'+
       '<div class="field full"><div class="checks" style="flex-direction:column;gap:10px">'+
         '<label class="chk"><input type="checkbox" id="hse"'+(bid.hse?' checked':'')+'> <span>Include HSE line on quote <span class="hint" style="margin:0;display:inline">(prints "HSE Reps and Truck Pushers Provided")</span></span></label>'+
@@ -372,6 +394,7 @@ function renderForm(bid, isNew){
       fld('price','Quoted Price $',true,'<div class="money"><span>$</span><input type="text" id="price" inputmode="decimal" placeholder="0.00" value="'+esc(bid.price!=null?money(bid.price):'')+'"></div>','Stored as a number; printed with commas and cents.')+
     '</div>'+
     '<div class="form-actions"><span class="left"><span class="req">*</span> Required. Save Draft needs only Rig/Job; Submit checks every required field.</span>'+
+      (isNew?'<button type="button" class="btn" id="btnFill" title="Demo: fill every field with sample data">Fill sample data</button>':'')+
       '<button type="button" class="btn" id="btnCancel">Cancel</button>'+
       '<button type="button" class="btn dark" id="btnDraft">'+(keepStatus?'Save Changes':'Save Draft')+'</button>'+
       '<button type="button" class="btn primary" id="btnSubmit">Submit &amp; Preview Quote</button>'+
@@ -392,6 +415,7 @@ function renderForm(bid, isNew){
   $all('#bidForm input, #bidForm select, #bidForm textarea').forEach(function(el){ el.addEventListener('input',function(){ var f=el.closest('.field'); if(f && f.id && f.id!=='f-rigOp') f.classList.remove('invalid'); }); });
   $('#price').onblur=function(){ var n=parseMoney(this.value); if(n!=null) this.value=money(n); };
   $('#btnCancel').onclick=function(){ go(isNew?'list':'quote/'+bid.id); };
+  if($('#btnFill')) $('#btnFill').onclick=function(){ renderForm(demoBid(),true); toast('Sample data filled. Save Draft or Submit.'); };
   $('#btnDraft').onclick=function(){ save(bid,isNew,false); };
   $('#btnSubmit').onclick=function(){ save(bid,isNew,true); };
 }
@@ -408,7 +432,7 @@ function wireCombo(id,list,noun){
   var inp=$('#'+id+'Search'), hid=$('#'+id), box=$('#'+id+'Combo .combo-list'), nw=$('#new'+cap(id)), lbl=$('#f-'+id+' label.lbl');
   var addLabel='+ Add new '+noun, plural=noun+'s', shown=[], active=-1;
   if(lbl) lbl.setAttribute('for',id+'Search');
-  var tokens=function(q){ q=q.toLowerCase().replace(/\bh\s*&\s*p\b/g,'helmerich & payne').trim(); return q?q.split(/\s+/):[]; };
+  var tokens=function(q){ q=q.toLowerCase().trim(); return q?q.split(/\s+/):[]; };
   var hl=function(s,tk){ var low=s.toLowerCase(), m=new Array(s.length).fill(false);
     tk.forEach(function(t){ var i=low.indexOf(t); while(i>=0){ for(var j=i;j<i+t.length;j++) m[j]=true; i=low.indexOf(t,i+t.length); } });
     var out='',run='',on=false; for(var k=0;k<s.length;k++){ if(m[k]!==on){ out+=on?'<mark>'+esc(run)+'</mark>':esc(run); run=''; on=m[k]; } run+=s[k]; }
@@ -467,7 +491,9 @@ function readForm(){
   return {quoteDate:v('quoteDate'), workStart:v('workStart'), rig:rig, operator:oper, billTo:bill, terminal:v('terminal'), pickup:v('pickup'), delivery:v('delivery'),
     distance:v('distance'), days:v('days'), scope:$all('input[name=scope]:checked').map(function(c){return c.value;}), equip:equip,
     hse:$('#hse').checked, truckLoad:$('#truckLoad').checked, rigOp:$('input[name=rigOp]:checked').value, rigOpOther:v('rigOpOther'),
-    daysNights:$('input[name=daysNights]:checked').value, priceRaw:v('price'), sales:v('sales'), notes:v('notes')};
+    daysNights:$('input[name=daysNights]:checked').value, priceRaw:v('price'), sales:v('sales'), notes:v('notes'),
+    moveType:v('moveType'), miles:v('miles'), workEnd:v('workEnd'), oldLease:v('oldLease'), newLease:v('newLease'), oldLat:v('oldLat'), oldLng:v('oldLng'), newLat:v('newLat'), newLng:v('newLng'),
+    pers:(function(){var o={};$all('.persq').forEach(function(i){o[i.getAttribute('data-p')]=i.value.trim();});return o;})()};
 }
 function save(bid,isNew,submit){
   $all('.field.invalid,.equip-row.invalid').forEach(function(f){f.classList.remove('invalid');});
@@ -503,10 +529,11 @@ function save(bid,isNew,submit){
   if(d.operator.indexOf('__new:')===0){ d.operator=d.operator.slice(6); if(operators.indexOf(d.operator)<0) operators.push(d.operator); }
   EQUIP.forEach(function(k){ if(d.equip[k]==='') d.equip[k]=null; });
   var target = isNew ? blankBid() : bid;
-  ['quoteDate','workStart','rig','operator','billTo','terminal','pickup','delivery','distance','days','scope','equip','hse','truckLoad','rigOp','rigOpOther','daysNights','sales','notes'].forEach(function(k){ target[k]=d[k]; });
+  ['quoteDate','workStart','rig','operator','billTo','terminal','pickup','delivery','distance','days','scope','equip','hse','truckLoad','rigOp','rigOpOther','daysNights','sales','notes','moveType','miles','workEnd','oldLease','newLease','oldLat','oldLng','newLat','newLng','pers'].forEach(function(k){ target[k]=d[k]; });
   target.price=price;
-  if(isNew){ target.id=nextBidId(); bids.push(target); }
-  if(submit){ if(target.status==='Draft') target.status='Submitted'; toast(target.id+' submitted. Quote ready to print.'); go('quote/'+target.id); }
+  if(isNew){ target.id=nextBidId(); target._demo=true; bids.push(target); }
+  persist();
+  if(submit){ if(target.status==='Draft') target.status='Submitted'; toast(target.id+' submitted (Open). Quote ready to print.'); go('quote/'+target.id); }
   else { toast(target.id+(isNew||target.status==='Draft'?' saved as Draft.':' saved.')); go('list'); }
 }
 
@@ -535,7 +562,7 @@ function renderQuote(b){
      '<button class="btn dark" id="qPrint">Print / Save as PDF</button>'+
      '<span class="spacer"></span>'+
      '<span class="meta"><b>'+esc(b.id)+'</b><span class="pill '+b.status+'">'+b.status+'</span></span>'+
-     (job ? '<button class="btn won" id="qJob">View Job '+esc(job)+' →</button>' :
+     (job ? '<span class="pill Won">Won, converted to Job #'+esc(job)+'</span> <a class="btn won" id="qJob" href="'+jobUrl(b)+'">Open Job #'+esc(job)+' →</a>' :
        '<button class="btn won" id="qWon"'+(b.status==='Draft'?' disabled title="Submit the bid first"':'')+'>✓ Mark Won</button>'+
        '<button class="btn lost" id="qLost"'+(b.status==='Lost'||b.status==='Draft'?' disabled':'')+'>✕ Mark Lost</button>')+
    '</div>'+
@@ -572,15 +599,33 @@ function renderQuote(b){
   $('#qBack').onclick=function(){ go('list'); };
   $('#qEdit').onclick=function(){ go('edit/'+b.id); };
   $('#qPrint').onclick=function(){ window.print(); };
-  if($('#qJob')) $('#qJob').onclick=function(){ go('job/'+b.id); };
   if($('#qWon')) $('#qWon').onclick=function(){ markWon(b); };
-  if($('#qLost')) $('#qLost').onclick=function(){ b.status='Lost'; toast(b.id+' marked Lost.'); renderQuote(b); };
+  if($('#qLost')) $('#qLost').onclick=function(){ b.status='Lost'; persist(); toast(b.id+' marked Lost.'); renderQuote(b); };
 }
 
 /* ---------- 4) WON -> JOB ---------- */
 function markWon(b){
+  var ov=document.createElement('div');ov.id='wonDlg';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center';
+  ov.innerHTML='<div class="card" style="max-width:460px;padding:20px 22px"><h3 style="margin:0 0 8px">Mark '+esc(b.id)+' as Won?</h3><p style="margin:0 0 14px">This creates a new job with status <b>Scheduled</b>, pre-filled from this bid (customer, operator, rig, move type, lease/well, ends and coordinates, terminal, mileage, dates and resource lines).</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="wonNo">Cancel</button><button class="btn won" id="wonYes">✓ Mark Won &amp; Create Job</button></div></div>';
+  document.body.appendChild(ov);
+  $('#wonNo').onclick=function(){ ov.remove(); };
+  $('#wonYes').onclick=function(){ ov.remove(); doWon(b); };
+}
+function doWon(b){
   b.status='Won';
-  if(!b.jobId){ var id=nextJobId(); jobs.push({id:id,bidId:b.id}); b.jobId=id; }
+  if(!b.jobId){
+    var id=nextJobId(); jobs.push({id:id,bidId:b.id}); b.jobId=id; b._demoJob=true;
+    var n=function(x){var m=String(x==null?'':x).match(/\d+/);return m?+m[0]:0;};
+    var start=b.workStart||todayISO(7), days=+b.days||3, end=b.workEnd||RRD.addD(start,days-1);
+    var crew=0; for(var k in (b.pers||{})) crew+=n(b.pers[k]);
+    var J={job:id,term:String(b.terminal||'308').slice(0,3),rig:b.rig,status:'Scheduled',date:start,days:days,end:end,bid:b.id,cust:b.billTo,oper:b.operator,type:b.moveType||'Full Rig Move',
+      miles:+b.miles||n(b.distance),rev:b.price||0,cost:Math.round((b.price||0)*0.76),crew:crew,from:b.pickup,to:b.delivery,demo:true,
+      src:{oldLease:b.oldLease,newLease:b.newLease,oldLat:b.oldLat,oldLng:b.oldLng,newLat:b.newLat,newLng:b.newLng,equip:b.equip,pers:b.pers||{},daysNights:b.daysNights,rigOp:rigOpText(b),notes:b.notes,scope:b.scope,distance:b.distance,sales:b.sales}};
+    var DJ=[];try{DJ=JSON.parse(localStorage.getItem('rrDemoJobs')||'[]');}catch(e){}
+    DJ.push(J); localStorage.setItem('rrDemoJobs',JSON.stringify(DJ));
+  }
+  persist();
+  toast(b.id+' marked Won. Job #'+b.jobId+' created (Scheduled).');
   go('job/'+b.id+'?new=1');
 }
 function renderJob(b,isNew){
@@ -612,10 +657,17 @@ function renderJob(b,isNew){
         m('Job revenue','$'+money(b.price),'Quoted Price')+
         m('Sales member',esc(b.sales),'Sales Member')+
         m('Terminal',esc(b.terminal),'Terminal')+
+        m('Move type',esc(b.moveType||'-'),'Move Type')+
+        m('Mileage',esc(b.miles||'-'),'Mileage')+
+        m('Old / New End Lease/Well',esc((b.oldLease||'-')+' → '+(b.newLease||'-')),'Lease/Well')+
+        m('Coordinates',esc((b.oldLat||'-')+', '+(b.oldLng||'-')+' → '+(b.newLat||'-')+', '+(b.newLng||'-')),'Old / New End Lat/Long')+
+        m('Move end date',esc(fmtLong(b.workEnd)||'-'),'Move End Date')+
+        m('Personnel lines',esc(Object.keys(b.pers||{}).filter(function(k){return b.pers[k];}).map(function(k){return k+' × '+b.pers[k];}).join(', ')||'-'),'Personnel')+
+        m('Status','<span class="pill Scheduled">Scheduled</span>','New jobs start Scheduled; the office marks them In Progress')+
         m('Source Bid #','<a href="#quote/'+esc(b.id)+'">'+esc(b.id)+'</a>','Bid #')+
       '</tbody></table></div>'+
-      '<div class="form-actions" style="border-top:0;padding-top:0"><span class="left">In the live system this would open the job in Dispatch. Not part of this demo.</span>'+
-        '<button class="btn" id="jQuote">View quote</button><button class="btn primary" id="jBack">Back to bids</button></div>'+
+      '<div class="form-actions" style="border-top:0;padding-top:0"><span class="left">Job #'+esc(b.jobId)+' is now on the Jobs list under <b>Scheduled</b>.</span>'+
+        '<button class="btn" id="jQuote">View quote</button><button class="btn" id="jBack">Back to bids</button>'+(b._demoJob?'<a class="btn primary" id="jOpen" href="'+jobUrl(b)+'">Open Job #'+esc(b.jobId)+' →</a>':'')+'</div>'+
     '</div>'+
    '</div>';
   $('#jBack').onclick=function(){ go('list'); };
@@ -624,7 +676,7 @@ function renderJob(b,isNew){
 
 /* ---------- router ---------- */
 function shotQ(q){ if(!q) return ''; q=q.replace(/\+/g,' '); try{ return decodeURIComponent(q); }catch(e){ return q; } } // q may be double-encoded so '&' survives, e.g. q=H%2526P
-function shotHook(p){ // demo/screenshot states, e.g. #new?demo=1&shot=rig-open&q=Helmerich
+function shotHook(p){ // demo/screenshot states, e.g. #new?demo=1&shot=rig-open&q=Sample
   if(!p.shot) return;
   if(p.shot==='rig-open') combos.rig.open(shotQ(p.q));
   if(p.shot==='op-open') combos.operator.open(shotQ(p.q));
@@ -644,7 +696,8 @@ function route(){
     case 'job':
       var id=path[1], bb=getBid(id); if(!bb){ var j=getJob(id); if(j) bb=getBid(j.bidId); }
       if(bb && !bb.jobId){ markWon(bb); return; }
-      if(bb && bb.jobId && !params['new'] && /^\d+$|^J-26-1/.test(bb.jobId)){ location.href='job-index.html?v=14'; return; }
+      if(bb && bb.jobId && !params['new'] && bb._demoJob){ location.href=jobUrl(bb); return; }
+      if(bb && bb.jobId && !params['new'] && /^\d+$|^J-26-1/.test(bb.jobId)){ location.href='job-index.html?v=15'; return; }
       bb?renderJob(bb,!!params['new']):notFound('Job '+id); break;
     default: renderList();
   }
