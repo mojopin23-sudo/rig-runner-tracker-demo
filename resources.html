@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><link rel="icon" href="logo.png?v=18"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=18"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resources | Rig Runner Tracker</title><style>
+<!DOCTYPE html><html><head><link rel="icon" href="logo.png?v=19"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=19"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resources | Rig Runner Tracker</title><style>
 :root{--red:#F3011B;--ink:#2A2A27;--red-dark:#c20016;--grey:#6b6b66;--line:#e2e2de;--bg:#f4f4f2;}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -207,7 +207,7 @@ table.kv input,table.kv select,table.kv textarea{width:100%;padding:6px;border:1
 .rolebox{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--grey)}.rolebox select{padding:5px;border-radius:6px;border:1px solid #cfcfca}
 @media(max-width:900px){.cols,.cols3{grid-template-columns:1fr}.nav{overflow-x:auto;max-width:100%;margin-left:0}.topbar{padding:8px 12px}main{padding:14px 10px 30px}.page-head h1{font-size:19px;width:100%}.brand .appname{font-size:18px}.brand img{height:32px}}
 </style></head><body>
-<script src="shell.js?v=18"></script><div class="subtabs" id="subtabs"></div><main id="main"></main>
+<script src="shell.js?v=19"></script><div class="subtabs" id="subtabs"></div><main id="main"></main>
 
 <div id="modal"></div><div id="toast"></div><script>const TERMS=["308 Alice","331 Jourdanton","335 Odessa","346 Kilgore"];
 const PT0=["Owner Operator","Company Driver","Rigger","Swamper","Crane Operator","Forklift Operator","Tandem / Pole Truck Operator","Pusher","Field Safety","Escort","Management","Dispatcher","Mechanic","Shop"];
@@ -259,7 +259,8 @@ function match(o,txt){const q=S.q.toLowerCase();return(!q||txt.toLowerCase().inc
 function personList(){
  const ps=D.people.filter(p=>!p.archived&&match(p,pname(p)+" "+p.empId+" "+p.phone));
  const tb=(arr)=>`<div class="card table-wrap"><table class="grid"><thead><tr><th><input type="checkbox" onchange="selAll(this,[${arr.map(p=>`'${p.id}'`)}])"></th><th>Name</th><th>Type</th><th>Terminal</th><th>Cell Phone</th><th>Employee ID</th></tr></thead><tbody>${arr.map(p=>`<tr onclick="openRec('${p.id}')"><td onclick="event.stopPropagation()"><input type="checkbox" ${S.sel.has(p.id)?"checked":""} onchange="tog('${p.id}',this.checked)"></td><td><b>${esc(p.last)}, ${esc(p.first)}</b></td><td>${esc(p.type)}</td><td>${p.terminal}</td><td>${esc(p.phone)}</td><td>${esc(p.empId)}</td></tr>`).join("")||'<tr><td colspan=6 class="hint">No matches</td></tr>'}</tbody></table></div>`;
- return `<div class="page-head"><h1>Personnel</h1><span class="sub">${ps.length} shown · ${S.sel.size} selected</span><span class="spacer"></span><button class="btn" onclick="massText('Organization')">Send Mass Organization Text</button><button class="btn" onclick="massText('Company')">Send Mass Company Text</button><button class="btn" onclick="massText('Owner Operator')">Send Mass Owner Operator Text</button><button class="btn primary" onclick="addPerson()">+ Add Personnel</button></div>${filters(D.ptypes.map(t=>t.n))}<div class="section-title">Company Personnel</div>${tb(ps.filter(p=>!p.oo))}<div class="section-title">Owner Operators</div>${tb(ps.filter(p=>p.oo))}`}
+ return `<div class="page-head"><h1>Personnel</h1><span class="sub">${ps.length} shown · ${S.sel.size} selected</span><span class="spacer"></span><button class="btn stxbtn2" onclick="stxSel()">💬 Send text to selected</button><button class="btn" onclick="massText('Organization')">Send Mass Organization Text</button><button class="btn" onclick="massText('Company')">Send Mass Company Text</button><button class="btn" onclick="massText('Owner Operator')">Send Mass Owner Operator Text</button><button class="btn primary" onclick="addPerson()">+ Add Personnel</button></div>${filters(D.ptypes.map(t=>t.n))}<div class="section-title">Company Personnel</div>${tb(ps.filter(p=>!p.oo))}<div class="section-title">Owner Operators</div>${tb(ps.filter(p=>p.oo))}`}
+function stxSel(){stxOpen(D.people.filter(p=>!p.archived&&S.sel.has(p.id)).map(p=>pname(p)))}
 function tog(id,on){on?S.sel.add(id):S.sel.delete(id);render()}
 function selAll(cb,ids){ids.forEach(i=>cb.checked?S.sel.add(i):S.sel.delete(i));render()}
 function massText(kind){const act=D.people.filter(p=>!p.archived);let r=S.sel.size?act.filter(p=>S.sel.has(p.id)):kind=="Organization"?act:kind=="Company"?act.filter(p=>!p.oo):act.filter(p=>p.oo);
@@ -340,4 +341,4 @@ function setRole(r){S.role=r;localStorage.setItem(KEY+"role",r);if(S.edit)S.edit
 function resetDemo(){modal("Reset demo data","Erase all changes and restore the sample data?",()=>{localStorage.removeItem(KEY);D=seed();S.sel.clear();go("Personnel");toast("Demo data reset")},"Reset")}
 document.addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
 {const q=new URLSearchParams(location.search),id=q.get("id"),tb=q.get("tab");if(tb)S.tab=tb;if(id){S.tab=id[0]=="u"?"Equipment":"Personnel";S.view=id}}render();
-</script><script>window.NOCRUMB=true;</script><script>rrChrome("Resources")</script></body></html>
+</script><script>window.NOCRUMB=true;</script><script>rrChrome("Resources")</script><script>window.STX_MANUAL=1</script><script src="sendtext.js?v=19"></script></body></html>

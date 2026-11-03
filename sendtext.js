@@ -9,18 +9,20 @@ function decorate(){tables().forEach(function(t){var hr=t.tHead.rows[0];if(!hr.q
     var td=document.createElement('td');td.className='stxc';td.innerHTML='<input type="checkbox" class="stx">';r.insertBefore(td,r.firstChild)})})}
 function buttons(){[].forEach.call(main.querySelectorAll('.row'),function(rw){if(rw.querySelector('.stxbtn'))return;var n=[].slice.call(rw.children).find(function(x){return /Send Notifications/.test(x.textContent)});if(!n)return;
   var b=document.createElement('span');b.className='btn sm stxbtn';b.style.cssText=n.getAttribute('style')||'';b.style.marginLeft='6px';b.textContent='💬 Send text to selected';n.after(b)})}
-function run(){decorate();buttons()}
+function run(){if(window.STX_MANUAL)return;decorate();buttons()}
 run();document.addEventListener('DOMContentLoaded',run);window.addEventListener('load',function(){run();setTimeout(run,600);setTimeout(run,1700)});
 new MutationObserver(function(){clearTimeout(run._t);run._t=setTimeout(run,30)}).observe(main,{childList:true,subtree:true});
 document.addEventListener('change',function(e){if(e.target.classList&&e.target.classList.contains('stxall')){var t=e.target.closest('table');t.querySelectorAll('input.stx').forEach(function(c){c.checked=e.target.checked})}},true);
 function toast(t){var e=document.getElementById('toast');if(e){e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('on')},2600)}else alert(t)}
 document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.stxbtn'))return;e.preventDefault();e.stopPropagation();
   var names=[];main.querySelectorAll('input.stx:checked').forEach(function(c){var n=name(c.closest('tr'));if(n&&names.indexOf(n)<0)names.push(n)});
-  if(!names.length){toast('Select at least one person first.');return}
+  open(names)},true);
+function open(names){if(!names.length){toast('Select at least one person first.');return}
   var ov=document.createElement('div');ov.id='stxov';ov.innerHTML='<div class="box"><h3>Send text to '+names.length+' '+(names.length>1?'people':'person')+'</h3><div class="to">'+names.map(function(n){return '<span>'+n.replace(/[<>&]/g,'')+'</span>'}).join('')+'</div><label style="font-size:12.5px;font-weight:700">Message</label><textarea id="stxmsg" placeholder="e.g. Report to the old end at 6:00 AM tomorrow."></textarea><div class="note">Demo only. No text is actually sent.</div><div class="act"><span class="btn" id="stxno">Cancel</span><span class="btn primary" id="stxgo">Send</span></div></div>';
   document.body.appendChild(ov);ov.querySelector('#stxmsg').focus();
   ov.querySelector('#stxno').onclick=function(){ov.remove()};
   ov.querySelector('#stxgo').onclick=function(){var m=ov.querySelector('#stxmsg');if(!m.value.trim()){m.style.borderColor='#c20016';m.focus();return}
     ov.querySelector('.box').innerHTML='<h3 style="color:#157347">✓ Text sent to '+names.length+' '+(names.length>1?'people':'person')+'</h3><p style="margin:0 0 10px">'+names.join(', ')+'</p><div class="note">Demo only. Nothing was actually sent.</div><div class="act"><span class="btn primary" id="stxok">Done</span></div>';
-    ov.querySelector('#stxok').onclick=function(){ov.remove()};toast('Text sent to '+names.length+' '+(names.length>1?'people':'person'))}},true);
+    ov.querySelector('#stxok').onclick=function(){ov.remove()};toast('Text sent to '+names.length+' '+(names.length>1?'people':'person'))}}
+window.stxOpen=open;
 })();
