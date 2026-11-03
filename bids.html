@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><link rel="icon" href="logo.png?v=8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=8">
+<head><link rel="icon" href="logo.png?v=9"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css?v=9">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bids | Rig Runner</title>
@@ -201,14 +201,14 @@ table.map td.f{font-weight:700;white-space:nowrap}
 </head>
 <body>
 
-<script src="shell.js?v=8"></script><main id="app"></main>
+<script src="shell.js?v=9"></script><main id="app"></main>
 
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
 'use strict';
-var LOGO = 'logo.png?v=8';
+var LOGO = 'logo.png?v=9';
 var TZ = 'America/Chicago';
 var TERMINALS = ['308 Alice','331 Jourdanton','335 Odessa','346 Kilgore'];
 var STATUSES = ['Draft','Submitted','Won','Lost'];
@@ -644,7 +644,7 @@ function route(){
     case 'job':
       var id=path[1], bb=getBid(id); if(!bb){ var j=getJob(id); if(j) bb=getBid(j.bidId); }
       if(bb && !bb.jobId){ markWon(bb); return; }
-      if(bb && bb.jobId && !params['new'] && /^\d+$|^J-26-1/.test(bb.jobId)){ location.href='job-index.html?v=8'; return; }
+      if(bb && bb.jobId && !params['new'] && /^\d+$|^J-26-1/.test(bb.jobId)){ location.href='job-index.html?v=9'; return; }
       bb?renderJob(bb,!!params['new']):notFound('Job '+id); break;
     default: renderList();
   }
