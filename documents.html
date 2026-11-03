@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="logo.png?v=16"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tracker · Company Documents</title><link rel="stylesheet" href="style.css?v=16"></head>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="logo.png?v=17"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tracker · Company Documents</title><link rel="stylesheet" href="style.css?v=17"></head>
 <body><main><div class="page-head"><h1>Company Documents</h1><span class="sub" id="sub"></span></div><input id="q" class="bigsearch" type="search" placeholder="Search documents by title or category…"><section class="card"><div class="filters"><label>Category<select id="cat"><option value="">All categories</option></select></label><span class="spacer"></span><span id="adm"></span></div><div id="tab"></div></section></main>
-<script src="app.js?v=16"></script><script>
+<script src="app.js?v=17"></script><script>
 $('#cat').innerHTML+=CATS.map(c=>`<option>${c}</option>`).join('');
 function draw(){const q=$('#q').value.toLowerCase(),c=$('#cat').value,adm=S.role==='Admin';
  const r=DOCS.filter(d=>(!q||(d.title+' '+d.cat).toLowerCase().includes(q))&&(!c||d.cat===c));
