@@ -19,3 +19,33 @@ function go(){if(/job-/.test(location.pathname))job();else unit()}
 if(/resources/.test(location.pathname)){new MutationObserver(function(){clearTimeout(window._pmT);window._pmT=setTimeout(unit,60)}).observe(document.body,{childList:true,subtree:true})}
 if(document.readyState==='complete')setTimeout(go,80);else window.addEventListener('load',function(){setTimeout(go,80)});
 })();
+/* v36: Upload Permit with simulated auto-read (demo only, client-side, fake values) */
+(function(){var K='rrPermitUploads',mem={};
+function jid(){return String((window.RRJOB&&RRJOB.id)||new URLSearchParams(location.search).get('id')||'214')}
+function all(){try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}}
+function save(a){try{localStorage.setItem(K,JSON.stringify(a))}catch(e){/* too big: keep file in memory only */localStorage.setItem(K,JSON.stringify(a.map(function(r){if(r.data){mem[r.id]=r.data;var c=Object.assign({},r);delete c.data;return c}return r})))}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var ST=['TX','NM','OK','LA'],TY=['Oversize / Overweight (OS/OW)','Oversize','Overweight','Superheavy'],TOWNS=['Odessa, TX','Kilgore, TX','Jourdanton, TX','Alice, TX','Midland, TX','Pecos, TX','Hobbs, NM','Carlsbad, NM'];
+function pick(a,n){return a[n%a.length]}
+function extract(f,i){var n=f.name.toLowerCase(),h=0;for(var c of f.name)h=(h*31+c.charCodeAt(0))>>>0;h+=i;
+ var st=(n.match(/\b(tx|nm|ok|la)\b/)||[])[1];st=st?st.toUpperCase():pick(ST,h);
+ var ty=/super/.test(n)?TY[3]:/overweight|\bow\b/.test(n)?TY[2]:/oversize|\bos\b/.test(n)?TY[1]:TY[0];
+ var no=(n.match(/(\d{5,})/)||[])[1];no=st+'-'+(ty===TY[3]?'SH':'OS')+'-'+(no?no.slice(-5):(10000+h%89999));
+ var unit=(n.match(/t-?(308|331|335|346)-?(\d\d)/)||[]);unit=unit[1]?'T-'+unit[1]+'-'+unit[2]:pick(['T-335-03','T-331-07','T-308-02','T-346-05'],h);
+ var d=new Date();var iso=function(x){return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};var e=new Date(d);e.setDate(d.getDate()+5);
+ var o=pick(TOWNS,h),de=pick(TOWNS,h+3);
+ return{id:'UP-'+Date.now().toString(36)+i,job:jid(),file:f.name,permitNo:no,state:st,type:ty,issued:iso(d),expires:iso(e),origin:o,dest:de,unit:unit,dims:(12+h%4)+"' W × "+(14+h%3)+"' H × "+(80+h%40)+"' L",weight:(120000+(h%60)*1000).toLocaleString()+' lb',cost:(ty===TY[3]?(900+h%500):(60+h%240)).toFixed(2),auto:true}}
+var F=['permitNo','state','type','issued','expires','origin','dest','unit','dims','weight'];
+function render(){var c=document.getElementById('pm-card');if(!c)return;var w=document.getElementById('pm-up');if(!w){w=document.createElement('div');w.id='pm-up';w.style.margin='12px 0';c.appendChild(w)}
+ var a=all().filter(function(r){return r.job===jid()}),tot=a.reduce(function(s,r){return s+(parseFloat(r.cost)||0)},0);
+ w.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><b>Uploaded Permits</b><span class="muted" style="font-size:12px">auto-read from the file; check and correct any field</span><span style="flex:1"></span><span id="pm-reading" style="display:none;color:#b45309;font-weight:600">⏳ Reading permit…</span><label class="btn sm dark" style="cursor:pointer">⊕ Upload Permit<input id="pm-file" type=file multiple accept="application/pdf,image/*" style="display:none"></label></div>'+
+ '<div style="overflow:auto"><table class="grid static" id="pm-uptab"><thead><tr><th></th><th>Permit #</th><th>State</th><th>Type</th><th>Issued</th><th>Expires</th><th>Origin</th><th>Destination</th><th>Unit</th><th>Dimensions</th><th>Weight</th><th class="num">Permit Cost</th><th>File</th></tr></thead><tbody>'+
+ (a.map(function(r){return '<tr data-up="'+r.id+'"><td>'+(r.auto?'<span class="pill" style="background:#e0f2fe;color:#075985;font-size:11px;padding:1px 6px;border-radius:9px">Auto-read</span>':'<span class="pill" style="background:#dcfce7;color:#166534;font-size:11px;padding:1px 6px;border-radius:9px">Checked</span>')+'</td>'+F.map(function(k){return '<td><input class="inp" data-k="'+k+'" value="'+esc(r[k])+'" style="width:'+({type:150,state:38,issued:88,expires:88,permitNo:96,unit:72,dims:130,weight:80}[k]||100)+'px;font-size:12px;padding:3px 5px"></td>'}).join('')+'<td class="num"><input class="inp" data-k="cost" value="'+esc(r.cost)+'" style="width:80px;text-align:right;font-size:12px;padding:3px 5px"></td><td><a href="#" data-view="'+r.id+'">📄 View PDF</a><div class="muted" style="font-size:11px">'+esc(r.file)+'</div></td></tr>'}).join('')||'<tr><td colspan=13 class="muted" style="text-align:center;padding:10px">No permits uploaded yet. Upload a PDF or photo to auto-read it.</td></tr>')+
+ '</tbody><tfoot><tr><td colspan=11 style="text-align:right;font-weight:700">Permit Costs Total</td><td class="num" style="font-weight:700" id="pm-uptot"><span>$</span><span>'+tot.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></td><td></td></tr></tfoot></table></div>';
+ w.querySelector('#pm-file').onchange=function(){var fs=[].slice.call(this.files);if(!fs.length)return;var rd=w.querySelector('#pm-reading');rd.style.display='';
+  Promise.all(fs.map(function(f,i){return new Promise(function(res){var fr=new FileReader();fr.onload=function(){var r=extract(f,i);r.data=fr.result;res(r)};fr.readAsDataURL(f)})})).then(function(rs){setTimeout(function(){save(all().concat(rs));render()},1400)})};
+ w.querySelectorAll('[data-up] input').forEach(function(i){i.onchange=function(){var id=i.closest('tr').dataset.up,b=all();b.forEach(function(r){if(r.id===id){r[i.dataset.k]=i.value;r.auto=false}});save(b);render()}});
+ w.querySelectorAll('[data-view]').forEach(function(l){l.onclick=function(ev){ev.preventDefault();var r=all().filter(function(x){return x.id===l.dataset.view})[0];var d=r&&(r.data||mem[r.id]);if(!d){alert('File not kept in this browser session.');return}fetch(d).then(function(x){return x.blob()}).then(function(bl){window.open(URL.createObjectURL(bl),'_blank')})}});}
+function hook(){render();var sb=[].slice.call(document.querySelectorAll('.sbar')).filter(function(x){var s=x.querySelector('span');return s&&s.textContent.trim()==='Permits'&&x.offsetParent})[0];
+ if(sb)[].slice.call(sb.querySelectorAll('.btn')).forEach(function(b){if(/Upload Permit/.test(b.textContent)){b.style.cursor='pointer';b.onclick=function(){var f=document.getElementById('pm-file');f&&f.click()}}})}
+var n=0,t=setInterval(function(){if(document.getElementById('pm-card')){clearInterval(t);hook()}else if(++n>40)clearInterval(t)},150);})();
