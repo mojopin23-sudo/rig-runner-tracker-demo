@@ -1,8 +1,8 @@
-<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=33"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Rig Move Calendar</title><link rel="stylesheet" href="style.css?v=33"></head>
-<body><main><div class="page-head"><h1>Rig Move Calendar</h1><span class="sub">Each bar starts on the anticipated move date and spans the job's days. Each bar: job #, terminal, rig, mileage. Click a bar to open the job.</span><span class="spacer"></span><a class="btn" href="index.html?v=33">Dashboard</a></div>
+<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=34"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Rig Move Calendar</title><link rel="stylesheet" href="style.css?v=34"></head>
+<body><main><div class="page-head"><h1>Rig Move Calendar</h1><span class="sub">Each bar starts on the anticipated move date and spans the job's days. Each bar: job #, terminal, rig, mileage. Click a bar to open the job.</span><span class="spacer"></span><a class="btn" href="index.html?v=34">Dashboard</a></div>
 <section class="card"><div class="calbar"><button class="btn" id="prev">&#9664;</button><h2 id="mtitle"></h2><button class="btn" id="nxt">&#9654;</button><button class="btn" id="tod">Today</button><button class="btn" id="rst" title="Undo demo date changes">Reset demo dates</button><span class="spacer" style="flex:1"></span><div class="legend" id="leg"></div></div>
 <div class="cal-dow"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div id="cal"></div></section></main>
-<script src="app.js?v=33"></script><script>
+<script src="app.js?v=34"></script><script>
 let ym=localStorage.rrCal||TODAY.slice(0,7);
 function render(){localStorage.rrCal=ym;const [y,m]=ym.split('-').map(Number);const first=new Date(y,m-1,1,12);
  $('#mtitle').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
@@ -12,7 +12,7 @@ function render(){localStorage.rrCal=ym;const [y,m]=ym.split('-').map(Number);co
   const bg=days.map((d,i)=>`<div class="${d.slice(0,7)!==ym?'out':i%6===0?'we':''} ${d===TODAY?'today':''}"></div>`).join('');
   const nums=days.map((d,i)=>`<div class="cal-day ${d.slice(0,7)!==ym?'out':''} ${d===TODAY?'today':''}" style="grid-column:${i+1}"><span>${+d.slice(8)}</span></div>`).join('');
   const evs=J.filter(j=>j.date<=days[6]&&j.end>=days[0]).map(j=>{const s=j.date<days[0]?0:days.indexOf(j.date),e=j.end>days[6]?6:days.indexOf(j.end);
-   return `<a class="cal-ev" href="${j.job==='214'?'job-1-rig-job-details.html?v=33':JOBURL(j.job)}" data-job="${j.job}" title="Job #${j.job} · ${TERMS[j.term]} · ${j.rig} · ${j.miles} mi${j.moved?' · date changed (demo)':''}" style="grid-column:${s+1}/${e+2};background:${TCOLOR[j.term]}${j.moved?';outline:3px dashed #111;outline-offset:-3px':''}">${/^\d/.test(j.job)?"#":""}${j.job} · ${j.term} · ${j.rig} <small>· ${j.miles} mi</small></a>`}).join('');
+   return `<a class="cal-ev" href="${j.job==='214'?'job-1-rig-job-details.html?v=34':JOBURL(j.job)}" data-job="${j.job}" title="Job #${j.job} · ${TERMS[j.term]} · ${j.rig} · ${j.miles} mi${j.moved?' · date changed (demo)':''}" style="grid-column:${s+1}/${e+2};background:${TCOLOR[j.term]}${j.moved?';outline:3px dashed #111;outline-offset:-3px':''}">${/^\d/.test(j.job)?"#":""}${j.job} · ${j.term} · ${j.rig} <small>· ${j.miles} mi</small></a>`}).join('');
   h+=`<div class="cal-week"><div class="cal-bg">${bg}</div>${nums}${evs}</div>`;start=addD(start,7)}
  $('#cal').innerHTML=h}
 const mv=n=>{const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');render()};

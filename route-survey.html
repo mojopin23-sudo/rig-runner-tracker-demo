@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=33"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Route Survey</title><link rel="stylesheet" href="style.css?v=33"><style>@media print{.noprint,header,nav,.topbar,.side{display:none!important}body{background:#fff}}</style></head>
-<body><main id="page"></main><script src="app.js?v=33"></script><script src="rscore.js?v=33"></script><script>
+<!doctype html><html lang="en"><head><link rel="icon" href="logo.png?v=34"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Route Survey</title><link rel="stylesheet" href="style.css?v=34"><style>@media print{.noprint,header,nav,.topbar,.side{display:none!important}body{background:#fff}}</style></head>
+<body><main id="page"></main><script src="app.js?v=34"></script><script src="rscore.js?v=34"></script><script>
 chrome('Forms');
 const q=new URLSearchParams(location.search),P=$('#page');
 function links(){const L=[{v:'job:214',t:'Job #214 · Sample Rig 27'}];
@@ -8,19 +8,19 @@ function links(){const L=[{v:'job:214',t:'Job #214 · Sample Rig 27'}];
  try{JSON.parse(localStorage.getItem('rrDemoBids')||'[]').forEach(b=>{if(b.id&&!b.jobId&&!L.some(x=>x.v==='bid:'+b.id))L.push({v:'bid:'+b.id,t:'Bid '+b.id+' · '+(b.rig||'')})})}catch(e){}
  return L}
 function mail(r){const to=prompt('Email Route Survey '+r.id+' (PDF attached) to:','dispatch@rigrunner.example');if(to)toast(RS.mailText(r,to))}
-function openLink(r){const [t,id]=r.link.split(':');return t==='job'?(id==='214'?'job-index.html?v=33':'job-index.html?v=33&job='+id):'bids.html?v=33#edit/'+id}
+function openLink(r){const [t,id]=r.link.split(':');return t==='job'?(id==='214'?'job-index.html?v=34':'job-index.html?v=34&job='+id):'bids.html?v=34#edit/'+id}
 const id=q.get('id')||q.get('pdf');
 if(id){const r=RS.all().find(x=>x.id===id);
- P.innerHTML=r?`<div class="noprint" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><a class="btn" href="forms.html?v=33">← Forms</a><a class="btn" href="${openLink(r)}">Open ${RS.esc(r.linkLabel.split(' · ')[0])}</a><span style="flex:1"></span><button class="btn" id="pdf">📄 PDF</button><button class="btn" id="em">✉ Email</button></div><section class="card"><div class="body" style="background:#fff">${RS.docHTML(r)}</div></section>`:'<h1>Route survey not found</h1>';
+ P.innerHTML=r?`<div class="noprint" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><a class="btn" href="forms.html?v=34">← Forms</a><a class="btn" href="${openLink(r)}">Open ${RS.esc(r.linkLabel.split(' · ')[0])}</a><span style="flex:1"></span><button class="btn" id="pdf">📄 PDF</button><button class="btn" id="em">✉ Email</button></div><section class="card"><div class="body" style="background:#fff">${RS.docHTML(r)}</div></section>`:'<h1>Route survey not found</h1>';
  if(r){$('#pdf').onclick=()=>window.print();$('#em').onclick=()=>mail(r);if(q.get('pdf'))setTimeout(()=>window.print(),400)}
 }else{
  const all=RS.all();
- P.innerHTML=`<div class="crumb"><a href="forms.html?v=33">← Forms</a></div><h1>Route Survey</h1><div class="sub">Pre-Move Route Risk Assessment · attaches to a job or bid</div>
+ P.innerHTML=`<div class="crumb"><a href="forms.html?v=34">← Forms</a></div><h1>Route Survey</h1><div class="sub">Pre-Move Route Risk Assessment · attaches to a job or bid</div>
  <section class="card" style="max-width:860px;margin-bottom:16px"><h2>New route survey<a class="more" href="#" id="demo">Fill sample data</a></h2><div class="body" id="rsroot">${RS.formHTML({links:links(),people:EMP.map(e=>[e.name,e.occ]),pre:q.get('link')||'',today:TODAY})}<div style="margin-top:12px;display:flex;gap:8px"><button class="btn primary" id="sub">Submit route survey</button></div></div></section>
- <section class="card" style="max-width:860px"><h2>Submissions (${all.length})</h2><div class="body">${table(['Survey','Linked to','Date','By',''],all.slice().reverse().map(r=>[`<a href="route-survey.html?v=33&id=${r.id}">${r.id}</a>`,RS.esc(r.linkLabel),r.date,RS.esc(r.name)+' · '+RS.esc(r.title),`<a class="btn sm" href="route-survey.html?v=33&pdf=${r.id}">📄 PDF</a> <a class="btn sm" href="#" data-em="${r.id}">✉ Email</a>`]))}</div></section>`;
+ <section class="card" style="max-width:860px"><h2>Submissions (${all.length})</h2><div class="body">${table(['Survey','Linked to','Date','By',''],all.slice().reverse().map(r=>[`<a href="route-survey.html?v=34&id=${r.id}">${r.id}</a>`,RS.esc(r.linkLabel),r.date,RS.esc(r.name)+' · '+RS.esc(r.title),`<a class="btn sm" href="route-survey.html?v=34&pdf=${r.id}">📄 PDF</a> <a class="btn sm" href="#" data-em="${r.id}">✉ Email</a>`]))}</div></section>`;
  const B=RS.bind($('#rsroot'));
  $('#demo').onclick=e=>{e.preventDefault();B.demo()};
  document.querySelectorAll('[data-em]').forEach(a=>a.onclick=e=>{e.preventDefault();mail(RS.all().find(x=>x.id===a.dataset.em))});
- $('#sub').onclick=()=>{const r=B.read();if(!r)return;RS.submit(r);toast('Route survey '+r.id+' submitted · attached to '+r.linkLabel.split(' · ')[0]);setTimeout(()=>location.href='route-survey.html?v=33&id='+r.id,700)};
+ $('#sub').onclick=()=>{const r=B.read();if(!r)return;RS.submit(r);toast('Route survey '+r.id+' submitted · attached to '+r.linkLabel.split(' · ')[0]);setTimeout(()=>location.href='route-survey.html?v=34&id='+r.id,700)};
 }
 </script></body></html>
