@@ -84,7 +84,7 @@ if(page!=='job-1-rig-job-details.html'){
     document.querySelectorAll('.corr').forEach(function(x){x.innerHTML='<span style="color:#8a8a85;font-style:italic">No correction requests. New job.</span>'});
     var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){var v=n.nodeValue.replace(/^(\s*)\d+ pending/,'$10 pending').replace(/\d+ of \d+ records/,'0 of 0 records').replace(/Totals \(\d+\)/,'Totals (0)');if(v!==n.nodeValue)n.nodeValue=v}
     if(page==='job-index.html'){kv('Directions','')}
-emptyTables(document.body,'#alloc,#addl,table.kv,#loads,#formwrap,#newwb,#modal,#xov');zeroMoney(document.body);
+emptyTables(document.body,'#alloc,#addl,#pm-queue,#pm-up,table.kv,#loads,#formwrap,#newwb,#modal,#xov');zeroMoney(document.body);
     if(page==='job-index.html'&&j.rev){var M='$'+Number(j.rev).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
       document.querySelectorAll('table.kv tr').forEach(function(r){var c=r.cells;if(!c||c.length<2)return;var l=c[0].textContent.trim();
         if(/^Job Price/.test(l)){c[1].textContent=M;c[1].classList.add('frombid');c[1].title='From bid '+j.bid}
