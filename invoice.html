@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Invoice · Tracker demo</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html><head><script src="seed.js?v=43"></script><meta charset="utf-8"><title>Invoice · Tracker demo</title><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{font-family:Arial,Helvetica,sans-serif;background:#eee;margin:0;color:#111}
 .bar{background:#222;color:#fff;padding:10px 16px;display:flex;gap:10px;align-items:center;font-size:14px}.bar a{color:#fff}.bar .sp{flex:1}
@@ -20,9 +20,9 @@ textarea{width:100%;min-height:60px;font:14px Arial;box-sizing:border-box;border
 .tag{font-size:10px;background:#e8f0ff;color:#234;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:400;font-style:normal}
 @media print{.bar,.tag,.ro{display:none}body{background:#fff}.pg{box-shadow:none;margin:0}textarea{border:0}}
 </style></head><body>
-<div class="bar"><a id="back" href="job-index.html?v=42">← Job Summary</a><span class="demo">Demo mockup · sample data</span><span class="sp"></span><span id="mode"></span><button onclick="print()">Print / PDF</button></div>
+<div class="bar"><a id="back" href="job-index.html?v=43">← Job Summary</a><span class="demo">Demo mockup · sample data</span><span class="sp"></span><span id="mode"></span><button onclick="print()">Print / PDF</button></div>
 <div class="pg" id="inv"></div>
-<script src="acore.js?v=42"></script><script>
+<script src="acore.js?v=43"></script><script>
 const CUST={"Sample Drilling Co.":{addr:"PO Box 1001",city:"Pleasanton",st:"TX",zip:"78064",contact:"Accounts Payable",email:"ap@sampledrilling.example",phone:"(555) 010-2001",vendor:"—",method:"Regular",portal:"—",summary:"—"},
 "Demo Energy LLC":{addr:"500 Example Ave, Suite 200",city:"Midland",st:"TX",zip:"79701",contact:"Pat Example",email:"billing@demoenergy.example",phone:"(555) 010-2002",vendor:"V-100245",method:"Regular + Summary",portal:"Sample e-invoice portal",summary:"summary@demoenergy.example"},
 "Example Resources Inc":{addr:"12 Placeholder Rd",city:"Longview",st:"TX",zip:"75601",contact:"Accounts Payable",email:"ap@exampleresources.example",phone:"(555) 010-2003",vendor:"—",method:"Summary",portal:"—",summary:"—"},
@@ -40,7 +40,7 @@ const md=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return `${m}/${d}/${y}`
 const money=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const sp=s=>{const m=String(s||'').match(/^(.*),\s*([A-Z]{2})$/);return m?[m[1],m[2]]:[s||'—','']};
 if(!J){document.getElementById('inv').innerHTML='<h2>Job not found</h2><p>Open an invoice from a Job Summary.</p>'}else{
- document.getElementById('back').href='job-index.html?v=42'+(J.job=='214'?'':'&id='+encodeURIComponent(J.job));
+ document.getElementById('back').href='job-index.html?v=43'+(J.job=='214'?'':'&id='+encodeURIComponent(J.job));
  const TK=atId&&window.AC?AC.ticket(J.job,atId):null;if(atId&&!TK){document.getElementById('inv').innerHTML='<h2>Additional ticket '+atId+' not found</h2>';throw 0}
  const BILL=TK?TK.billTo:J.cust,C=CUST[BILL]||{};const NK='rrInvNotes:'+J.job+(TK?':'+TK.id:addl?':addl':'');
  const seq=addl?'02':'01',num=TK?TK.inv:'INV-'+String(J.job).replace(/^J-/,'')+'-'+seq;
@@ -48,7 +48,7 @@ if(!J){document.getElementById('inv').innerHTML='<h2>Job not found</h2><p>Open a
  const LINES=TK?TK.charges.map((c,i)=>`<tr><td>${i+1}</td><td>${md(c.date)} · ${e(c.desc)}${c.orderedBy?' · ordered by '+e(c.orderedBy):''} <span class="tag">${e(c.id)}</span></td><td class="n">${money(c.price)}</td></tr>`).join(''):`<tr><td>1</td><td>${e(J.type)} · ${e(J.term)} · ${e(J.scope)}</td><td class="n">${money(J.price)}</td></tr>`,TOT=TK?TK.total:J.price;
  const T=x=>`<span class="tag">${x}</span>`,[fc,fs]=sp(J.from),[tc,ts]=sp(J.to);
  document.getElementById('inv').innerHTML=`
-<div class="hd"><img src="logo.png?v=42" alt="Rig Runner"><div class="co"><b>Rig Runner</b><br><i>100 Demo Way<br>Sample City, TX 77000</i></div>
+<div class="hd"><img src="logo.png?v=43" alt="Rig Runner"><div class="co"><b>Rig Runner</b><br><i>100 Demo Way<br>Sample City, TX 77000</i></div>
 <div class="ih"><h1>Invoice</h1><div>Invoice Date: <b>${new Date().toLocaleDateString('en-US')}</b></div><div><b>Invoice #:${num}</b></div><div><b>Job #:</b> ${e(J.job)} ${T('job')}</div><div><b>Salesperson:</b> ${e(J.sales||'S. Sample')} ${T('job')}</div></div></div>
 <div class="bt"><span class="k">Customer:</span><span>${e(BILL)} ${T('customer')}</span>${TK?`<span class="k">Additional Ticket:</span><span>${e(TK.id)} · Job #${e(J.job)}</span>`:''}
 <span class="k">Billing Address:</span><span>${e(C.addr)}<br>${e(C.city)}, ${e(C.st)} ${e(C.zip)} ${T('customer')}</span>

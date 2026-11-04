@@ -8,7 +8,7 @@ function decorate(){tables().forEach(function(t){var hr=t.tHead.rows[0];if(!hr.q
   [].forEach.call(t.tBodies[0].rows,function(r){if(r.querySelector('.stxc'))return;if(r.className==='njempty'){var c=r.cells[0];if(c&&c.colSpan&&!r.dataset.stx){c.colSpan=c.colSpan+1;r.dataset.stx=1}return}
     var td=document.createElement('td');td.className='stxc';td.innerHTML='<input type="checkbox" class="stx">';r.insertBefore(td,r.firstChild)})})}
 function buttons(){[].forEach.call(main.querySelectorAll('.row'),function(rw){if(rw.querySelector('.stxbtn'))return;var n=[].slice.call(rw.children).find(function(x){return /Send Notifications/.test(x.textContent)});if(!n)return;
-  var b=document.createElement('span');b.className='btn sm stxbtn';b.style.cssText=n.getAttribute('style')||'';b.style.marginLeft='6px';b.textContent='💬 Send text to selected';n.after(b)})}
+  var b=document.createElement('span');b.className='btn sm stxbtn';b.style.cssText=n.getAttribute('style')||'';b.style.marginLeft='6px';b.textContent='💬 Send Text to Selected';n.after(b)})}
 function run(){if(window.STX_MANUAL)return;decorate();buttons()}
 run();document.addEventListener('DOMContentLoaded',run);window.addEventListener('load',function(){run();setTimeout(run,600);setTimeout(run,1700)});
 new MutationObserver(function(){clearTimeout(run._t);run._t=setTimeout(run,30)}).observe(main,{childList:true,subtree:true});
