@@ -11,7 +11,7 @@ function enhance(){document.querySelectorAll('table').forEach(function(t){if(t.d
   var f=g(iF),num=(f.match(/(\d{5})/)||[])[1]||'';var q={kind:k,date:g(iD),eq:g(iE),type:g(iT),by:g(iB),file:f.replace(/^📄\s*/,''),num:num,job:(window.RRJOB&&RRJOB.id)||'214'};
   var td=document.createElement('td');td.style.whiteSpace='nowrap';
   td.innerHTML='<span class="btn sm dark rp-pdf">📄 PDF</span> <span class="btn sm primary rp-mail">✉ Email</span>';
-  td.querySelector('.rp-pdf').onclick=function(){location.href='record-pdf.html?v=38&'+new URLSearchParams(q)};
+  td.querySelector('.rp-pdf').onclick=function(){location.href='record-pdf.html?v=39&'+new URLSearchParams(q)};
   td.querySelector('.rp-mail').onclick=function(){var to=prompt('Email this '+(k=='JSA'?'JSA':'inspection record')+' to:','safety@sampledrilling.example');if(!to)return;
    var name=(k=='JSA'?'JSA-':'Inspection-')+(num||q.eq)+'.pdf';(window.toast||alert)('✉ '+(k=='JSA'?'JSA':'Inspection')+' '+(num?'#'+num:'for unit '+q.eq)+' emailed to '+to+'<br><small>Attached: '+name+'</small>',6000)};
   r.appendChild(td)})})}

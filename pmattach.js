@@ -1,7 +1,7 @@
 /* Permit Requests queue (open requests only) on the job summary, permit-request modal with Upload Document,
    the job's uploaded Permits table, and the unit record card. Sample data only. */
 (function(){
-var V='38';function E(s){return PM.esc(s)}
+var V='39';function E(s){return PM.esc(s)}
 function jid(){return String((window.RRJOB&&RRJOB.id)||new URLSearchParams(location.search).get('id')||'214')}
 function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;z-index:10001;pointer-events:none';document.body.appendChild(t);setTimeout(function(){t.remove()},3200)}
 function md(s){var p=String(s||'').split('-');return p.length==3?p[1]+'/'+p[2]+'/'+p[0]:(s||'')}
@@ -43,10 +43,10 @@ function openModal(id){var r=PM.get(id);if(!r)return;var old=document.getElement
 function uploads(){var id=jid(),w=document.getElementById('pm-up');
  if(!w){w=document.createElement('div');w.id='pm-up';w.style.margin='8px 0 14px';
   var sb=[].slice.call(document.querySelectorAll('.sbar')).filter(function(x){var s=x.querySelector('span');return s&&s.textContent.trim()==='Permits'&&!x.closest('form,#formwrap')})[0];
-  if(sb){var nx=sb.nextElementSibling;if(nx&&nx.tagName==='TABLE'&&/Uploaded By/.test(nx.textContent))nx.style.display='none';sb.after(w)}
+  if(sb){var nx=sb.nextElementSibling;if(nx&&nx.tagName==='TABLE'&&/Type/.test(nx.textContent))nx.remove();sb.after(w)}
   else{sb=document.createElement('div');sb.className='sbar';sb.innerHTML='<span>Permits</span><span class="btn dark">⊕ Upload Permit</span>';var m=document.querySelector('main')||document.body;m.appendChild(sb);sb.after(w)}
   [].slice.call(sb.querySelectorAll('.btn')).forEach(function(b){if(/Upload Permit/.test(b.textContent)){b.style.cursor='pointer';b.onclick=function(){var f=document.getElementById('pm-file');f&&f.click()}}});
-  if(id==='214'&&!localStorage.getItem(PM.UPK+'Seed')){localStorage.setItem(PM.UPK+'Seed','1');PM.saveUploads([{id:'UP-seed214',job:'214',date:'2026-10-30',permitNo:'TX-OS-88120',unit:'T-335-03',load:'Oversize/Overweight Permits (6) · Sample Rig 27 move',by:'Demo User',cost:'1980.00',file:'oversize-overweight-permits-job-214.pdf',auto:false}].concat(PM.uploads()))}}
+  if(PM.uploads().some(function(r){return r.id==='UP-seed214'}))PM.saveUploads(PM.uploads().filter(function(r){return r.id!=='UP-seed214'}));}
  var a=PM.uploads().filter(function(r){return r.job===id}),tot=a.reduce(function(s,r){return s+(parseFloat(r.cost)||0)},0);
  w.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span class="muted" style="font-size:12px">Uploaded permits · permit number and cost are auto-read from the file; check and correct any field</span><span style="flex:1"></span><span class="pm-reading" id="pm-reading">⏳ Reading permit…</span><input id="pm-file" type=file multiple accept="application/pdf,image/*" style="display:none"></div>'+
  '<div style="overflow:auto"><table class="grid static" id="pm-uptab"><thead><tr><th>Date</th><th>Permit Number</th><th>Unit</th><th>Load</th><th>Uploaded By</th><th class="num">Cost</th><th>File</th></tr></thead><tbody>'+
