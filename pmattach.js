@@ -1,7 +1,7 @@
 /* Permit Requests queue (open requests only) on the job summary, permit-request modal with Upload Document,
    the job's uploaded Permits table, and the unit record card. Sample data only. */
 (function(){
-var V='40';function E(s){return PM.esc(s)}
+var V='41';function E(s){return PM.esc(s)}
 function jid(){return String((window.RRJOB&&RRJOB.id)||new URLSearchParams(location.search).get('id')||'214')}
 function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;z-index:10001;pointer-events:none';document.body.appendChild(t);setTimeout(function(){t.remove()},3200)}
 function md(s){var p=String(s||'').split('-');return p.length==3?p[1]+'/'+p[2]+'/'+p[0]:(s||'')}
