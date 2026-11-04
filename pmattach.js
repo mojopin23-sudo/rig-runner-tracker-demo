@@ -42,7 +42,7 @@ function openModal(id){var r=PM.get(id);if(!r)return;var old=document.getElement
 /* ---------- lower Permits section: uploaded permits only ---------- */
 function uploads(){var id=jid(),w=document.getElementById('pm-up');
  if(!w){w=document.createElement('div');w.id='pm-up';w.style.margin='8px 0 14px';
-  var sb=[].slice.call(document.querySelectorAll('.sbar')).filter(function(x){var s=x.querySelector('span');return s&&s.textContent.trim()==='Permits'})[0];
+  var sb=[].slice.call(document.querySelectorAll('.sbar')).filter(function(x){var s=x.querySelector('span');return s&&s.textContent.trim()==='Permits'&&!x.closest('form,#formwrap')})[0];
   if(sb){var nx=sb.nextElementSibling;if(nx&&nx.tagName==='TABLE'&&/Uploaded By/.test(nx.textContent))nx.style.display='none';sb.after(w)}
   else{sb=document.createElement('div');sb.className='sbar';sb.innerHTML='<span>Permits</span><span class="btn dark">⊕ Upload Permit</span>';var m=document.querySelector('main')||document.body;m.appendChild(sb);sb.after(w)}
   [].slice.call(sb.querySelectorAll('.btn')).forEach(function(b){if(/Upload Permit/.test(b.textContent)){b.style.cursor='pointer';b.onclick=function(){var f=document.getElementById('pm-file');f&&f.click()}}});
