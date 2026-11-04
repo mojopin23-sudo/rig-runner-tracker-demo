@@ -1,7 +1,7 @@
 /* Permit Requests queue (open requests only) on the job summary, permit-request modal with Upload Document,
    the job's uploaded Permits table, and the unit record card. Sample data only. */
 (function(){
-var V='39';function E(s){return PM.esc(s)}
+var V='40';function E(s){return PM.esc(s)}
 function jid(){return String((window.RRJOB&&RRJOB.id)||new URLSearchParams(location.search).get('id')||'214')}
 function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;z-index:10001;pointer-events:none';document.body.appendChild(t);setTimeout(function(){t.remove()},3200)}
 function md(s){var p=String(s||'').split('-');return p.length==3?p[1]+'/'+p[2]+'/'+p[0]:(s||'')}
@@ -39,6 +39,15 @@ function openModal(id){var r=PM.get(id);if(!r)return;var old=document.getElement
  m.onclick=function(e){if(e.target===m)m.remove()};m.querySelector('#pmm-x').onclick=function(){m.remove()};
  var f=m.querySelector('#pmm-file');if(f)f.onchange=function(){var file=f.files[0];if(!file)return;m.querySelector('#pmm-read').style.display='inline';m.querySelector('#pmm-hint').style.display='none';f.parentNode.style.opacity='.5';f.disabled=true;
   PM.uploadForRequest(id,file).then(function(u){m.remove();queue();uploads();toast('Permit '+u.permitNo+' uploaded · '+id+' closed and moved to Permits');var t=document.getElementById('pm-up');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});var row=document.querySelector('[data-up="'+u.id+'"]');if(row){row.style.transition='background 2s';row.style.background='#fff3c4';setTimeout(function(){row.style.background=''},2500)}})}}
+
+/* v40: Job Costs 'Permit Costs' = uploaded permits total; Total Costs and Net Profit recalc */
+function syncCosts(tot){var tb=[].slice.call(document.querySelectorAll('table.kv')).filter(function(t){return /Permit Costs/.test(t.textContent)&&/Total Costs/.test(t.textContent)})[0];if(!tb)return;
+ var num=function(c){return parseFloat(String(c.textContent).replace(/[^0-9.\-]/g,''))||0},rows=[].slice.call(tb.rows),R={},sum=0,done=false;
+ rows.forEach(function(r){var l=r.cells[0].textContent.trim();R[l]=r;if(l==='Permit Costs'){r.cells[1].textContent=money(tot);r.cells[1].title='From the uploaded permits table';r.cells[1].style.fontWeight='700'}});
+ rows.some(function(r){var l=r.cells[0].textContent.trim();if(l==='Total Costs')return true;if(!r.classList.contains('ind'))sum+=num(r.cells[1]);return false});
+ if(R['Total Costs'])R['Total Costs'].cells[1].textContent=money(sum);
+ var inv=R['TOTAL INVOICE']?num(R['TOTAL INVOICE'].cells[1]):0,net=inv-sum;
+ if(R['Net Profit'])R['Net Profit'].cells[1].textContent=(net<0?'-':'')+money(Math.abs(net))+' ('+(inv?(net/inv*100).toFixed(1):'0.0')+'%)'}
 /* ---------- lower Permits section: uploaded permits only ---------- */
 function uploads(){var id=jid(),w=document.getElementById('pm-up');
  if(!w){w=document.createElement('div');w.id='pm-up';w.style.margin='8px 0 14px';
@@ -52,6 +61,7 @@ function uploads(){var id=jid(),w=document.getElementById('pm-up');
  '<div style="overflow:auto"><table class="grid static" id="pm-uptab"><thead><tr><th>Date</th><th>Permit Number</th><th>Unit</th><th>Load</th><th>Uploaded By</th><th class="num">Cost</th><th>File</th></tr></thead><tbody>'+
  (a.map(function(r){var I=function(k,wd,al){return '<input class="inp" data-k="'+k+'" value="'+E(r[k])+'" style="width:'+wd+'px;font-size:12px;padding:3px 5px'+(al?';text-align:right':'')+'">'};return '<tr data-up="'+E(r.id)+'"><td>'+I('date',92)+'</td><td>'+I('permitNo',110)+' '+(r.auto?'<span class="pm-tag" style="background:#e0f2fe;color:#075985">Auto-read</span>':'<span class="pm-tag" style="background:#dcfce7;color:#166534">Checked</span>')+(r.reqId?'<div class="muted" style="font-size:11px">from '+E(r.reqId)+'</div>':'')+'</td><td>'+I('unit',80)+'</td><td>'+I('load',240)+'</td><td>'+E(r.by)+'</td><td class="num">'+I('cost',80,1)+'</td><td><a href="#" data-view="'+E(r.id)+'">📄 View PDF</a><div class="muted" style="font-size:11px">'+E(r.file)+'</div></td></tr>'}).join('')||'<tr><td colspan=7 class="muted" style="text-align:center;padding:10px">No permits uploaded yet.</td></tr>')+
  '</tbody><tfoot><tr><td colspan=5 style="text-align:right;font-weight:700">Permit Costs Total</td><td class="num" style="font-weight:700" id="pm-uptot">'+money(tot)+'</td><td></td></tr></tfoot></table></div>';
+ syncCosts(tot);
  w.querySelector('#pm-file').onchange=function(){var fs=[].slice.call(this.files);if(!fs.length)return;w.querySelector('#pm-reading').style.display='inline';PM.uploadStandalone(fs,id).then(function(){uploads()})};
  w.querySelectorAll('[data-up] input').forEach(function(i){i.onchange=function(){var uid=i.closest('tr').dataset.up,b=PM.uploads();b.forEach(function(r){if(r.id===uid){r[i.dataset.k]=i.value;r.auto=false}});PM.saveUploads(b);uploads()}});
  w.querySelectorAll('[data-view]').forEach(function(l){l.onclick=function(ev){ev.preventDefault();PM.viewUpload(l.dataset.view)}})}
@@ -62,7 +72,7 @@ function unit(){var h=[].slice.call(document.querySelectorAll('h1')).find(functi
  function it(r){return '<div style="margin:3px 0"><a href="permit-request.html?v='+V+'&id='+E(r.id)+'">'+E(r.id)+'</a> · '+E(r.load||'')+' · requested '+md(r.reqDate)+' · '+E(String(r.linkLabel||'').split(' · ')[0])+' '+(PM.isOpen(r)?'<span class="pill" style="background:#fde68a;color:#7c4a03">Open</span>':'<span class="pill Won">Closed — permit '+E(r.permitNo||'')+' uploaded</span>')+'</div>'}
  c.innerHTML='<h3 style="margin:0 0 8px">Permit Requests <span class="pill" style="background:#c8102e;color:#fff">'+op.length+' open</span></h3>'+(op.map(it).join('')||'<div style="color:#888">No open permit requests for this unit.</div>')+(cl.length?'<div style="margin-top:8px;font-size:12px;color:#666;font-weight:700">Closed</div>'+cl.map(it).join(''):'')+'<div style="margin-top:8px"><a class="btn sm" href="permit-request.html?v='+V+'&unit='+encodeURIComponent(u)+'">+ New Permit Request</a></div>';
  var head=h.closest('.page-head')||h;head.after(c)}
-function go(){if(/job-/.test(location.pathname)){queue();uploads();setTimeout(function(){queue();uploads()},700);var o=new URLSearchParams(location.search).get('pr');if(o)openModal(o)}else unit()}
+function go(){if(/job-/.test(location.pathname)){queue();uploads();setTimeout(function(){queue();uploads()},700);setTimeout(uploads,1600);var o=new URLSearchParams(location.search).get('pr');if(o)openModal(o)}else unit()}
 if(/resources/.test(location.pathname)){new MutationObserver(function(){clearTimeout(window._pmT);window._pmT=setTimeout(unit,60)}).observe(document.body,{childList:true,subtree:true})}
 window.addEventListener('storage',function(e){if(e.key===PM.KEY&&/job-/.test(location.pathname))queue()});
 if(document.readyState==='complete')setTimeout(go,80);else window.addEventListener('load',function(){setTimeout(go,80)});
