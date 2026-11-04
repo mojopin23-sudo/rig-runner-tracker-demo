@@ -6,7 +6,7 @@ if(!id||id==='214')return;
 var DJ=[];try{DJ=JSON.parse(localStorage.getItem('rrDemoJobs')||'[]')}catch(e){}
 var j=DJ.find(function(x){return x.job===id});
 var main=document.querySelector('main');
-if(!j){if(main)main.innerHTML='<h1 class="jt">Job #'+String(id).replace(/[<>&"]/g,'')+' not found</h1><p>This demo job doesn\'t exist in this browser. Create one from <a href="bids.html?v=36#list">Bids</a>: open a submitted bid and Mark as Won.</p>';window.RRJOB={missing:true};return}
+if(!j){if(main)main.innerHTML='<h1 class="jt">Job #'+String(id).replace(/[<>&"]/g,'')+' not found</h1><p>This demo job doesn\'t exist in this browser. Create one from <a href="bids.html?v=37#list">Bids</a>: open a submitted bid and Mark as Won.</p>';window.RRJOB={missing:true};return}
 var s=j.src||{};window.RRJOB={id:j.job,date:j.date,job:j};
 // keep this job's saved state separate from Job #214
 var NS='rrnj:'+j.job+':',P=Storage.prototype,gi=P.getItem,si=P.setItem,ri=P.removeItem;
@@ -53,7 +53,7 @@ function chrome(){
 document.body.querySelectorAll('a[href]').forEach(function(a){var h=a.getAttribute('href');if(/^job-(\d|index|time)[\w-]*\.html/.test(h)&&!/[?&]id=/.test(h))a.setAttribute('href',h+(h.indexOf('?')<0?'?':'&')+'id='+encodeURIComponent(j.job))});
 // 2) header: status pill, badge
 var st=document.querySelector('#status')||document.querySelector('h1.jt .pill');if(st){st.textContent=j.status;st.className='pill '+({'In Progress':'Won',Scheduled:'Submitted',Complete:'Complete'}[j.status]||'Submitted')}
-var h1=document.querySelector('h1.jt');if(h1&&!document.getElementById('frombid')){var bd=document.createElement('div');bd.className='njbar';bd.innerHTML='<a id="frombid" class="njbadge" href="bids.html?v=36#quote/'+esc(j.bid)+'">⇠ Created from Bid #'+esc(j.bid)+'</a><span class="njleg"><i></i>Highlighted fields were pre-filled from the bid.</span><span style="flex:1"></span><button type="button" class="btn sm" id="njreset">↺ Reset demo</button>';h1.after(bd)}
+var h1=document.querySelector('h1.jt');if(h1&&!document.getElementById('frombid')){var bd=document.createElement('div');bd.className='njbar';bd.innerHTML='<a id="frombid" class="njbadge" href="bids.html?v=37#quote/'+esc(j.bid)+'">⇠ Created from Bid #'+esc(j.bid)+'</a><span class="njleg"><i></i>Highlighted fields were pre-filled from the bid.</span><span style="flex:1"></span><button type="button" class="btn sm" id="njreset">↺ Reset demo</button>';h1.after(bd)}
 }
 chrome();
 var css=document.createElement('style');css.textContent='.frombid{background:#fff8d6!important;box-shadow:inset 0 0 0 1px #e8cf5a;border-radius:4px}.njbar{display:flex;gap:12px;align-items:center;margin:4px 0 10px;flex-wrap:wrap}.njbadge{display:inline-flex;background:#fff3c4;color:#5e4500;border:1px solid #e0b800;border-radius:999px;padding:3px 12px;font-weight:600;font-size:13px;text-decoration:none}.njleg{font-size:12px;color:#6b6b66}.njleg i{display:inline-block;width:11px;height:11px;background:#fff8d6;border:1px solid #e0b800;vertical-align:-1px;margin-right:4px}';document.head.appendChild(css);
@@ -66,14 +66,14 @@ if(page==='job-1-rig-job-details.html'||page===''){
     if(t==='Days'&&i&&i.tagName==='INPUT'){i.value=j.days;i.setAttribute('value',j.days);pf(i)}
     if(t==='Location Directions'&&i){i.value='';i.textContent=''}});
   var sd=document.getElementById('sdate');if(sd){sd.value=j.date;sd.setAttribute('value',j.date);pf(sd)}
-  var lb=[].slice.call(main.querySelectorAll('a')).find(function(a){return a.textContent===j.bid});if(lb){lb.href='bids.html?v=36#quote/'+j.bid;pf(lb)}
+  var lb=[].slice.call(main.querySelectorAll('a')).find(function(a){return a.textContent===j.bid});if(lb){lb.href='bids.html?v=37#quote/'+j.bid;pf(lb)}
   var al=document.getElementById('alloc');if(al){var E=s.equip||{},rows='',tot=0;
     ['Crane','Tandem','Pole Truck','Forklift','Haul Truck'].forEach(function(k){var q=+E[k]||0;tot+=q;
       rows+='<tr><td>'+k+'</td><td class="num frombid">'+q+'</td>'+(k==='Haul Truck'?'<td class="vis">Trucks/trailers are linked to drivers, not assigned here</td>':'<td class="asg" data-t="'+k+'"></td>')+'</tr>'});
     al.tBodies[0].innerHTML=rows;if(al.tFoot)al.tFoot.rows[0].cells[1].textContent=tot}
 } else if(page==='job-index.html'){
   kv('Anticipated Move Date',fd(j.date));kv('Duration',String(j.days));kv('Miles',String(j.miles));kv('Originating Terminal',term);kv('Job Type',j.type);
-  kv('Linked Bid','<a href="bids.html?v=36#quote/'+esc(j.bid)+'">'+esc(j.bid)+'</a>',true);
+  kv('Linked Bid','<a href="bids.html?v=37#quote/'+esc(j.bid)+'">'+esc(j.bid)+'</a>',true);
   kv('Job created on',today);kv('Job last Edited on',today);kv('Assigned Dispatcher','Not assigned');kv('Route Survey','Not started');
   ['Anticipated Move Date','Duration','Miles','Originating Terminal','Job Type','Linked Bid'].forEach(function(l){[].slice.call(main.querySelectorAll('td,th,div,span,b,dt')).forEach(function(e){if(e.children.length===0&&e.textContent.trim()===l&&e.nextElementSibling)pf(e.nextElementSibling)})});
   var w=document.createTreeWalker(main,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){n.nodeValue=n.nodeValue.replace(/Total Miles: 38\b/,'Total Miles: '+j.miles).replace(/\(38 mi\)/,'('+j.miles+' mi)')}
@@ -94,5 +94,5 @@ emptyTables(document.body,'#alloc,#addl,table.kv,#loads,#formwrap,#newwb,#modal,
   run();document.addEventListener('DOMContentLoaded',function(){swapText(document.body);chrome();run()});window.addEventListener('load',function(){swapText(document.body);chrome();run();setTimeout(run,500);setTimeout(run,1500)});
 }
 document.addEventListener('click',function(e){if(e.target&&e.target.id==='njreset'){if(!confirm('Reset demo? This removes bids and jobs created in this demo.'))return;
-  var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(/^rrnj:|^rrDemo|^rrBidStatus/.test(k))ks.push(k)}ks.forEach(function(k){ri.call(localStorage,k)});location.href='bids.html?v=36#list'}});
+  var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(/^rrnj:|^rrDemo|^rrBidStatus/.test(k))ks.push(k)}ks.forEach(function(k){ri.call(localStorage,k)});location.href='bids.html?v=37#list'}});
 })();
