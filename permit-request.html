@@ -1,26 +1,26 @@
-<!doctype html><html lang="en"><head><script src="seed.js?v=47"></script><link rel="icon" href="logo.png?v=47"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Permit Request</title><link rel="stylesheet" href="style.css?v=47"><style>@media print{.noprint,header,nav,.topbar,.side{display:none!important}body{background:#fff}}</style></head>
-<body><main id="page"></main><script src="app.js?v=47"></script><script src="pmcore.js?v=47"></script><script>
+<!doctype html><html lang="en"><head><script src="seed.js?v=48"></script><link rel="icon" href="logo.png?v=48"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Permit Request</title><link rel="stylesheet" href="style.css?v=48"><style>@media print{.noprint,header,nav,.topbar,.side{display:none!important}body{background:#fff}}</style></head>
+<body><main id="page"></main><script src="app.js?v=48"></script><script src="pmcore.js?v=48"></script><script>
 chrome('Forms');
 const q=new URLSearchParams(location.search),P=$('#page');
 function jobs(){return JOBS.slice().sort((a,b)=>a.job==='214'?-1:b.job==='214'?1:0).map(j=>({v:'job:'+j.job,t:'Job #'+j.job+' · '+j.rig+' · '+(TERMS[j.term]||j.term)}))}
 const PEOPLE=EMP.map(e=>[e.name,e.occ]);
 function mail(r){const to=prompt('Email Permit Request '+r.id+' (PDF attached) to:','dispatch@rigrunner.example');if(to)toast(PM.mailText(r,to))}
-function jobHref(r){const id=r.link.slice(4);return id==='214'?'job-index.html?v=47':'job-index.html?v=47&id='+encodeURIComponent(id)}
-function unitHref(r){const i=EQ.findIndex(x=>x.unit===r.unit);return 'resources.html?v=47&id=u'+(i+1)}
+function jobHref(r){const id=r.link.slice(4);return id==='214'?'job-index.html?v=48':'job-index.html?v=48&id='+encodeURIComponent(id)}
+function unitHref(r){const i=EQ.findIndex(x=>x.unit===r.unit);return 'resources.html?v=48&id=u'+(i+1)}
 const id=q.get('id')||q.get('pdf');
 if(id){const r=PM.get(id);
- P.innerHTML=r?`<div class="noprint" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><a class="btn" href="permit-request.html?v=47">← Permit Requests</a><a class="btn" href="${jobHref(r)}">Open ${PM.esc(r.linkLabel.split(' · ')[0])}</a><a class="btn" href="${unitHref(r)}">Open unit ${PM.esc(r.unit)}</a><span style="flex:1"></span><button class="btn" id="pdf">📄 PDF</button><button class="btn" id="em">✉ Email</button></div>
+ P.innerHTML=r?`<div class="noprint" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><a class="btn" href="permit-request.html?v=48">← Permit Requests</a><a class="btn" href="${jobHref(r)}">Open ${PM.esc(r.linkLabel.split(' · ')[0])}</a><a class="btn" href="${unitHref(r)}">Open unit ${PM.esc(r.unit)}</a><span style="flex:1"></span><button class="btn" id="pdf">📄 PDF</button><button class="btn" id="em">✉ Email</button></div>
  ${PM.isOpen(r)?`<section class="card noprint" style="margin-bottom:12px;border:2px solid #c8102e"><div class="body" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="pill" style="background:#fde68a;color:#7c4a03">Open</span><label class="btn primary" style="cursor:pointer">⬆ Upload Document<input id="upf" type=file accept="application/pdf,image/*" style="display:none"></label><span id="rd" style="display:none;color:#b45309;font-weight:700">⏳ Reading permit… pulling permit number and cost</span><span class="muted" id="hint" style="font-size:12px">Upload the issued permit. The request closes and the permit moves to the job's Permits table.</span></div></section>`:`<section class="card noprint" style="margin-bottom:12px"><div class="body"><span class="pill Won">Closed — permit uploaded</span> Permit <b>${PM.esc(r.permitNo||'')}</b> uploaded ${PM.esc(r.closedOn||'')} by ${PM.esc(r.closedBy||'')} · <a href="${jobHref(r)}">see the job's Permits table</a></div></section>`}
  <section class="card"><div class="body" style="background:#fff">${PM.docHTML(r)}</div></section>`:'<h1>Permit Request Not Found</h1>';
  if(r&&$('#upf'))$('#upf').onchange=function(){const f=this.files[0];if(!f)return;$('#rd').style.display='inline';$('#hint').style.display='none';this.disabled=true;PM.uploadForRequest(r.id,f).then(u=>{toast('Permit '+u.permitNo+' uploaded · '+r.id+' closed');setTimeout(()=>location.href=jobHref(r)+'#pm-up',900)})};
  if(r){$('#pdf').onclick=()=>window.print();$('#em').onclick=()=>mail(r);if(q.get('pdf'))setTimeout(()=>window.print(),400);}
 }else{
  const all=PM.all();
- P.innerHTML=`<div class="crumb"><a href="forms.html?v=47">← Forms</a></div><h1>Permit Request</h1><div class="sub">Oversize / overweight permit · links to a job and a unit</div>
+ P.innerHTML=`<div class="crumb"><a href="forms.html?v=48">← Forms</a></div><h1>Permit Request</h1><div class="sub">Oversize / overweight permit · links to a job and a unit</div>
  <section class="card" style="max-width:860px;margin-bottom:16px"><h2>New Permit Request<a class="more" href="#" id="demo">Fill sample data</a></h2><div class="body" id="pmroot">${PM.formHTML({jobs:jobs(),people:PEOPLE,pre:q.get('link')||'',unit:q.get('unit')||'',today:TODAY})}<div style="margin-top:12px;display:flex;gap:8px"><button class="btn primary" id="sub">Submit Permit Request</button></div></div></section>`;
  const B=PM.bind($('#pmroot'),{people:PEOPLE});
  $('#demo').onclick=e=>{e.preventDefault();B.demo()};
  document.querySelectorAll('[data-em]').forEach(a=>a.onclick=e=>{e.preventDefault();mail(PM.get(a.dataset.em))});
- $('#sub').onclick=()=>{const r=B.read();if(!r)return;PM.submit(r);toast('Permit request '+r.id+' submitted · on '+r.linkLabel.split(' · ')[0]+' and unit '+r.unit);setTimeout(()=>location.href='permit-request.html?v=47&id='+r.id,700)};
+ $('#sub').onclick=()=>{const r=B.read();if(!r)return;PM.submit(r);toast('Permit request '+r.id+' submitted · on '+r.linkLabel.split(' · ')[0]+' and unit '+r.unit);setTimeout(()=>location.href='permit-request.html?v=48&id='+r.id,700)};
 }
 </script></body></html>

@@ -1,4 +1,4 @@
-if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=47');
+if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=48');
 const D30=[...Array(30)].map((_,i)=>addD(TODAY,i-15));const D7=PERIOD.slice(0,7);
 const dh=d=>new Date(d+'T12:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
 const row=(term,cells)=>({term,cells});
@@ -11,7 +11,7 @@ function equipmentInventoryRows(){
  const units=Array.isArray(d&&d.units)?d.units:EQ.map((q,i)=>({id:'u'+(i+1),name:q.unit,terminal:TERMS[q.term],inv:[{a:'Chains',b:'8',c:'2026-01-05'}]}));
  return units.filter(u=>!u.archived).flatMap(u=>(Array.isArray(u.inv)?u.inv:[]).map(v=>{
   const term=String(u.terminal||''),code=term.slice(0,3),f=u.files&&v.k&&u.files[v.k];
-  const unit='<a href="resources.html?v=47&id='+encodeURIComponent(u.id)+'">'+esc(u.name)+'</a>';
+  const unit='<a href="resources.html?v=48&id='+encodeURIComponent(u.id)+'">'+esc(u.name)+'</a>';
   const pdf=f?esc(f.name)+(f.session?' <span class="muted">(session only)</span>':f.data?'':' <span class="muted">(open in Resources)</span>'):'—';
   return row(code,[esc(v.a),esc(v.b),unit,esc(TERMS[code]||term),v.c?fd(v.c):'—',pdf])
  }))
@@ -43,7 +43,7 @@ const REP=[
 ['Jobs & Bids','oo','Owner Operator Uploads',()=>['Submitted By','Date of Service','Waybill #','Master Ticket #','Bill-to Customer','Files','Notes'],()=>[['Owen Riggs','346','J-26-1186'],['Owen Riggs','346','J-26-1177'],['Shane Whitlow','335','J-26-1184'],['Rudy Saenz','331','214']].map(([n,t,j],i)=>row(t,[n,fd(addD(TODAY,-i-1)),'WB-'+(88300+i),'MT-'+(5100+i),jobOf(j).cust,'<a href="#" onclick="return false">'+(2+i%2)+' files</a>',i%2?'Fuel receipt attached':''])),'Submitted By'],
 ['Equipment','eqdates','Equipment Dates',()=>['Status','Ownership','Unit','Year','Make','VIN','Plate #','Permit #','Registration','Annual Inspection','Ninety-Day Inspection','DOT Inspection'],()=>equipmentDateRows(),'Ownership'],
 ['Equipment','inventory','Equipment Inventory',()=>['Item','Qty','Assigned To','Terminal','Assigned Date','PDF'],()=>equipmentInventoryRows(),'Item'],
-['Equipment','maint','Maintenance Requests',()=>['ID','Date','Submitted By','Type','Unit','Status','Completed','Notes'],()=>(window.MR?MR.all():MAINT).map(m=>row(m.term,[`<a href="maint-request.html?v=47&id=${m.id}" data-mr>${m.id}</a>`,fd(m.date),m.by,m.type,m.unit,tag(m.status),m.done?fd(m.done):'—',(m.photos&&m.photos.length?'📷'+m.photos.length+' · ':'')+m.notes])),'Status'],
+['Equipment','maint','Maintenance Requests',()=>['ID','Date','Submitted By','Type','Unit','Status','Completed','Notes'],()=>(window.MR?MR.all():MAINT).map(m=>row(m.term,[`<a href="maint-request.html?v=48&id=${m.id}" data-mr>${m.id}</a>`,fd(m.date),m.by,m.type,m.unit,tag(m.status),m.done?fd(m.done):'—',(m.photos&&m.photos.length?'📷'+m.photos.length+' · ':'')+m.notes])),'Status'],
 ['Equipment','inspect','Inspection Reports',()=>['PDF','Type','Equipment','Engine Hours','Date','Job #','Rig','Submitted By'],()=>EQ.map((q,n)=>{const e=EMP.filter(x=>x.term===q.term)[n%2];const j=jobOf(e.job);return row(q.term,['<a href="#" onclick="return false">PDF</a>',n%2?'Post-trip':'Pre-trip',q.unit,4200+n*311,fd(addD(TODAY,-n%3)),j.job,j.rig,e.name])}),'Type'],
 ['Safety & Comms','gcnm','Good Catch / Near Miss (formerly SIF)',()=>['Date','Submitter','Job','Type','Potential','Severity','Description','View'],()=>GC.map(g=>row(g.term,[fd(g.date),g.by,g.job,g.type,tag(g.pot),g.sev,g.desc,'<a href="#" onclick="toast(\'Opens report (mock)\');return false">View</a>'])),'Type'],
 ['Safety & Comms','notif','Notifications',()=>['Date','Job','Sender','Title','Recipients'],()=>NOTIF.map(n=>row(n.term,[fd(n.date),n.job,n.sender,n.title,n.rcp])),'Sender']
@@ -55,7 +55,7 @@ function render(){
   $('#page').innerHTML=`<h1>Reports</h1><div class="sub">${REP.length} reports · every report has a required Terminal filter</div><div class="wgrid">${gs.map(g=>`<section class="card"><div class="body rgroup"><h3>${g}</h3>${REP.filter(r=>r.group===g).map(r=>`<a href="?r=${r.key}">${r.name} &rarr;</a>`).join('')}</div></section>`).join('')}</div>`;return}
  const r=REP.find(x=>x.key===k),cols=r.cols(),fi=cols.indexOf(r.fcol),all=r.rows();
  const opts=[...new Set(all.map(x=>strip(x.cells[fi])))].sort();
- $('#page').innerHTML=`<div><a href="reports.html?v=47">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">${k==='inventory'?'Read-only per-unit assignments maintained in Resources &rarr; Equipment':k==='eqdates'?'Registration, Annual Inspection, and Ninety-Day Inspection dates from Resources &rarr; Equipment':'Mock data'}</div><section class="card"><div class="filters">
+ $('#page').innerHTML=`<div><a href="reports.html?v=48">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">${k==='inventory'?'Read-only per-unit assignments maintained in Resources &rarr; Equipment':k==='eqdates'?'Registration, Annual Inspection, and Ninety-Day Inspection dates from Resources &rarr; Equipment':'Mock data'}</div><section class="card"><div class="filters">
  <label>Terminal *<select id="rt"><option value="all">All terminals</option>${Object.entries(TERMS).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></label>
  <label>${r.fcol}<select id="rf"><option value="">All</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select></label>
  <label>Search<input id="rs" placeholder="Filter rows"></label><span class="spacer"></span><span id="rc" class="muted"></span><button class="btn primary" onclick="toast('Export to Excel/PDF (stub)')">Export</button></div><div id="rtab"></div></section>`;
