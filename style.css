@@ -46,6 +46,7 @@ footer.appfoot{text-align:center;color:var(--grey);font-size:12px;padding:14px;b
 .table-wrap{overflow-x:auto}
 table.grid{width:100%;border-collapse:collapse;font-size:13.5px}
 table.grid th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--grey);background:#fafaf8;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid th.sortable{cursor:pointer;user-select:none}table.grid th.sortable:hover{color:var(--ink);background:#f3f1ea}table.grid th.sortable .sa{font-size:10px;color:var(--red);margin-left:3px}
 table.grid td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
 table.grid tbody tr{cursor:pointer}
 table.grid tbody tr:hover{background:#fff6f7}

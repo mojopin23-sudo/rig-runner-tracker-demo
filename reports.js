@@ -1,4 +1,4 @@
-if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=46');
+if(new URLSearchParams(location.search).get('r')==='waybills')location.replace('waybill-report.html?v=47');
 const D30=[...Array(30)].map((_,i)=>addD(TODAY,i-15));const D7=PERIOD.slice(0,7);
 const dh=d=>new Date(d+'T12:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
 const row=(term,cells)=>({term,cells});
@@ -11,10 +11,19 @@ function equipmentInventoryRows(){
  const units=Array.isArray(d&&d.units)?d.units:EQ.map((q,i)=>({id:'u'+(i+1),name:q.unit,terminal:TERMS[q.term],inv:[{a:'Chains',b:'8',c:'2026-01-05'}]}));
  return units.filter(u=>!u.archived).flatMap(u=>(Array.isArray(u.inv)?u.inv:[]).map(v=>{
   const term=String(u.terminal||''),code=term.slice(0,3),f=u.files&&v.k&&u.files[v.k];
-  const unit='<a href="resources.html?v=46&id='+encodeURIComponent(u.id)+'">'+esc(u.name)+'</a>';
+  const unit='<a href="resources.html?v=47&id='+encodeURIComponent(u.id)+'">'+esc(u.name)+'</a>';
   const pdf=f?esc(f.name)+(f.session?' <span class="muted">(session only)</span>':f.data?'':' <span class="muted">(open in Resources)</span>'):'—';
   return row(code,[esc(v.a),esc(v.b),unit,esc(TERMS[code]||term),v.c?fd(v.c):'—',pdf])
  }))
+}
+function equipmentDateRows(){
+ return EQ.map(q=>{
+  const d=unitDates(q);
+  const dates=[d.reg,d.dot,d.insp,d.ninety].filter(Boolean);
+  const m=dates.slice().sort()[0]||'';
+  const st=!m?'—':m<TODAY?'Expired':m<=addD(TODAY,30)?'Expiring':'Valid';
+  return row(q.term,[tag(st),q.own,q.unit,q.year,q.make,q.vin,q.plate,q.permit,d.reg?fd(d.reg):'—',d.insp?fd(d.insp):'—',d.ninety?fd(d.ninety):'—',d.dot?fd(d.dot):'—']);
+ })
 }
 const REP=[
 ['Personnel','p30','30 Day Personnel View',()=>['Resource','Occupation'].concat(D30.map(dh)),()=>EMP.map((e,n)=>row(e.term,[e.name,e.occ].concat(D30.map((d,i)=>(n+i)%5===0?'Off':(d>TODAY?'Sched':e.job.slice(5)))))),'Occupation'],
@@ -32,9 +41,9 @@ const REP=[
 ['Jobs & Bids','waybills','Waybills',()=>['Waybill #','Job #','Equipment Type','Equipment ID','Date','Employee','Customer','Hours','Miles','Loads','Loaded Miles'],()=>EMP.filter(e=>e.occ==='Driver'||e.occ==='Owner Operator').map((e,n)=>{const j=jobOf(e.job);return row(e.term,['WB-'+(88200+n),j.job,'Tractor','T-'+e.term+'-'+(10+n),fd(addD(TODAY,-1)),e.name,j.cust,11+n%3,j.miles*2,3+n%3,j.miles*(3+n%3)])}),'Employee'],
 ['Jobs & Bids','rigfolder','Rig Folder',()=>['Rig','Job','Document','Uploaded By','Date'],()=>JOBS.flatMap(j=>['Rig layout.pdf','Route survey.pdf'].map((d,i)=>row(j.term,[j.rig,j.job,`<a href="#" onclick="toast('Opens PDF (mock)');return false">${d}</a>`,DISPATCH[j.term],fd(addD(j.date,-3-i))]))),'Rig'],
 ['Jobs & Bids','oo','Owner Operator Uploads',()=>['Submitted By','Date of Service','Waybill #','Master Ticket #','Bill-to Customer','Files','Notes'],()=>[['Owen Riggs','346','J-26-1186'],['Owen Riggs','346','J-26-1177'],['Shane Whitlow','335','J-26-1184'],['Rudy Saenz','331','214']].map(([n,t,j],i)=>row(t,[n,fd(addD(TODAY,-i-1)),'WB-'+(88300+i),'MT-'+(5100+i),jobOf(j).cust,'<a href="#" onclick="return false">'+(2+i%2)+' files</a>',i%2?'Fuel receipt attached':''])),'Submitted By'],
-['Equipment','eqdates','Equipment Dates',()=>['Status','Ownership','Unit','Year','Make','VIN','Plate #','Permit #','Registration Exp','DOT Insp','Equipment Insp'],()=>EQ.map(q=>{const m=[q.reg,q.dot,q.insp].sort()[0];return row(q.term,[tag(m<TODAY?'Expired':m<=addD(TODAY,30)?'Expiring':'Valid'),q.own,q.unit,q.year,q.make,q.vin,q.plate,q.permit,fd(q.reg),fd(q.dot),fd(q.insp)])}),'Ownership'],
+['Equipment','eqdates','Equipment Dates',()=>['Status','Ownership','Unit','Year','Make','VIN','Plate #','Permit #','Registration','Annual Inspection','Ninety-Day Inspection','DOT Inspection'],()=>equipmentDateRows(),'Ownership'],
 ['Equipment','inventory','Equipment Inventory',()=>['Item','Qty','Assigned To','Terminal','Assigned Date','PDF'],()=>equipmentInventoryRows(),'Item'],
-['Equipment','maint','Maintenance Requests',()=>['ID','Date','Submitted By','Type','Unit','Status','Completed','Notes'],()=>(window.MR?MR.all():MAINT).map(m=>row(m.term,[`<a href="maint-request.html?v=46&id=${m.id}" data-mr>${m.id}</a>`,fd(m.date),m.by,m.type,m.unit,tag(m.status),m.done?fd(m.done):'—',(m.photos&&m.photos.length?'📷'+m.photos.length+' · ':'')+m.notes])),'Status'],
+['Equipment','maint','Maintenance Requests',()=>['ID','Date','Submitted By','Type','Unit','Status','Completed','Notes'],()=>(window.MR?MR.all():MAINT).map(m=>row(m.term,[`<a href="maint-request.html?v=47&id=${m.id}" data-mr>${m.id}</a>`,fd(m.date),m.by,m.type,m.unit,tag(m.status),m.done?fd(m.done):'—',(m.photos&&m.photos.length?'📷'+m.photos.length+' · ':'')+m.notes])),'Status'],
 ['Equipment','inspect','Inspection Reports',()=>['PDF','Type','Equipment','Engine Hours','Date','Job #','Rig','Submitted By'],()=>EQ.map((q,n)=>{const e=EMP.filter(x=>x.term===q.term)[n%2];const j=jobOf(e.job);return row(q.term,['<a href="#" onclick="return false">PDF</a>',n%2?'Post-trip':'Pre-trip',q.unit,4200+n*311,fd(addD(TODAY,-n%3)),j.job,j.rig,e.name])}),'Type'],
 ['Safety & Comms','gcnm','Good Catch / Near Miss (formerly SIF)',()=>['Date','Submitter','Job','Type','Potential','Severity','Description','View'],()=>GC.map(g=>row(g.term,[fd(g.date),g.by,g.job,g.type,tag(g.pot),g.sev,g.desc,'<a href="#" onclick="toast(\'Opens report (mock)\');return false">View</a>'])),'Type'],
 ['Safety & Comms','notif','Notifications',()=>['Date','Job','Sender','Title','Recipients'],()=>NOTIF.map(n=>row(n.term,[fd(n.date),n.job,n.sender,n.title,n.rcp])),'Sender']
@@ -46,13 +55,18 @@ function render(){
   $('#page').innerHTML=`<h1>Reports</h1><div class="sub">${REP.length} reports · every report has a required Terminal filter</div><div class="wgrid">${gs.map(g=>`<section class="card"><div class="body rgroup"><h3>${g}</h3>${REP.filter(r=>r.group===g).map(r=>`<a href="?r=${r.key}">${r.name} &rarr;</a>`).join('')}</div></section>`).join('')}</div>`;return}
  const r=REP.find(x=>x.key===k),cols=r.cols(),fi=cols.indexOf(r.fcol),all=r.rows();
  const opts=[...new Set(all.map(x=>strip(x.cells[fi])))].sort();
- $('#page').innerHTML=`<div><a href="reports.html?v=46">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">${k==='inventory'?'Read-only per-unit assignments maintained in Resources &rarr; Equipment':'Mock data'}</div><section class="card"><div class="filters">
+ $('#page').innerHTML=`<div><a href="reports.html?v=47">&larr; All reports</a></div><h1>${r.name}</h1><div class="sub">${k==='inventory'?'Read-only per-unit assignments maintained in Resources &rarr; Equipment':k==='eqdates'?'Registration, Annual Inspection, and Ninety-Day Inspection dates from Resources &rarr; Equipment':'Mock data'}</div><section class="card"><div class="filters">
  <label>Terminal *<select id="rt"><option value="all">All terminals</option>${Object.entries(TERMS).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></label>
  <label>${r.fcol}<select id="rf"><option value="">All</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select></label>
  <label>Search<input id="rs" placeholder="Filter rows"></label><span class="spacer"></span><span id="rc" class="muted"></span><button class="btn primary" onclick="toast('Export to Excel/PDF (stub)')">Export</button></div><div id="rtab"></div></section>`;
  $('#rt').value=S.t;if(q.get('status'))$('#rf').value=q.get('status');
+ let sortI=-1,sortDir=1;
+ const cellKey=v=>{const t=strip(v).replace(/\s+/g,' ').trim();if(!t||t==='—')return null;const m=t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)return m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');return t.toLowerCase()};
  const draw=()=>{const f=$('#rf').value,s=$('#rs').value.toLowerCase();
-  const rows=all.filter(x=>inT(x)&&(!f||strip(x.cells[fi])===f)&&(!s||strip(x.cells.join(' ')).toLowerCase().includes(s)));
-  $('#rc').textContent=rows.length+' rows';$('#rtab').innerHTML=table(cols,rows.map(x=>x.cells));$('#rtab').querySelectorAll('a[data-mr]').forEach(a=>{const tr=a.closest('tr');tr.style.cursor='pointer';tr.title='Open request detail';tr.onclick=e=>{if(e.target.tagName!=='A')location.href=a.href}})};
+  let rows=all.filter(x=>inT(x)&&(!f||strip(x.cells[fi])===f)&&(!s||strip(x.cells.join(' ')).toLowerCase().includes(s)));
+  if(k==='eqdates'&&sortI>=0)rows=rows.slice().sort((a,b)=>{const A=cellKey(a.cells[sortI]),B=cellKey(b.cells[sortI]);if(A==null&&B==null)return 0;if(A==null)return 1;if(B==null)return -1;return A<B?-sortDir:A>B?sortDir:0});
+  $('#rc').textContent=rows.length+' rows';$('#rtab').innerHTML=table(cols,rows.map(x=>x.cells));
+  if(k==='eqdates'){$('#rtab').querySelectorAll('thead th').forEach((th,i)=>{th.classList.add('sortable');th.title='Sort by this column';if(sortI===i)th.insertAdjacentHTML('beforeend',sortDir===1?' <span class="sa">▲</span>':' <span class="sa">▼</span>');th.addEventListener('click',()=>{sortDir=sortI===i?-sortDir:1;sortI=i;draw()})})}
+  $('#rtab').querySelectorAll('a[data-mr]').forEach(a=>{const tr=a.closest('tr');tr.style.cursor='pointer';tr.title='Open request detail';tr.onclick=e=>{if(e.target.tagName!=='A')location.href=a.href}})};
  $('#rt').onchange=e=>{S.t=e.target.value;$('#tsel').value=S.t;draw()};$('#rf').onchange=draw;$('#rs').oninput=draw;draw();
 }
