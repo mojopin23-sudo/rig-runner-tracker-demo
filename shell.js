@@ -1,7 +1,7 @@
 (function(){
 // Rig Runner Tracker - dashboard mockup. ALL DATA IS FAKE.
-const URLS={jobs:'jobs.html?v=44',job:'job-index.html?v=44',bids:'bids.html?v=44',res:'resources.html?v=44'};
-const JOBURL=j=>'job-index.html?v=44';const BIDURL=b=>'bids.html?v=44#quote/'+b;
+const URLS={jobs:'jobs.html?v=45',job:'job-index.html?v=45',bids:'bids.html?v=45',res:'resources.html?v=45'};
+const JOBURL=j=>'job-index.html?v=45';const BIDURL=b=>'bids.html?v=45#quote/'+b;
 const TERMS={'308':'308 Alice','331':'331 Jourdanton','335':'335 Odessa','346':'346 Kilgore'};
 const TODAY='2026-11-02';
 const S={get t(){return localStorage.rrT||'all'},set t(v){localStorage.rrT=v},get role(){return localStorage.rrRole||'Admin'},set role(v){localStorage.rrRole=v}};
@@ -69,14 +69,11 @@ const MAINT=[['MR-0931','2026-10-27','Wade Callister','Brakes','T-308-14','Open'
 ['MR-0936','2026-10-30','Mario Gallegos','Engine warning','T-335-03','Open'],['MR-0937','2026-10-31','Andre Pham','Winch line','C-335-01','In Progress'],['MR-0925','2026-10-18','Kyle Brandt','A/C','T-335-09','Completed'],
 ['MR-0938','2026-11-01','Travis Ellery','Fifth wheel','T-346-05','Open']].map(([id,date,by,type,unit,status])=>({id,date,by,type,unit,status,term:unit.split('-')[1],done:status==='Completed'?addD(date,3):'',notes:status==='Completed'?'Repaired at shop':'Awaiting parts'}));
 const EQ=[['T-308-14','308',2019,'Kenworth','1XKAD49X0KJ2271','RR-4471','OS-77812','2026-11-18','2027-03-02','2026-12-01'],['C-308-02','308',2016,'Grove','1G9CR4511G4410','RR-3310','OS-77801','2027-05-10','2026-11-09','2027-01-20'],
-['T-331-07','331',2021,'Peterbilt','1XPBD49X1MD5531','RR-5120','OS-77840','2026-11-25','2027-04-14','2027-02-01'],['T-331-11','331',2018,'Mack','1M2GR4GC5JM0071','RR-4022','OS-77851','2027-02-11','2027-06-30','2026-11-14'],
+['T-331-07','331',2013,'WESTERNSTAR','5KJNALBG9DPBY2900','R438617 TX','OS-77840','2026-11-25','2027-04-14','2027-02-01'],['T-331-11','331',2018,'Mack','1M2GR4GC5JM0071','RR-4022','OS-77851','2027-02-11','2027-06-30','2026-11-14'],
 ['T-335-03','335',2020,'Kenworth','1XKAD49X2LJ3392','RR-4901','OS-77866','2026-10-29','2027-01-05','2027-03-15'],['C-335-01','335',2017,'Link-Belt','LB9213330088','RR-3555','OS-77870','2027-07-01','2026-11-21','2027-02-11'],
 ['T-346-05','346',2022,'Peterbilt','1XPBD49X4ND7718','RR-5333','OS-77890','2027-04-20','2027-05-01','2026-11-28'],['T-346-09','346',2015,'Freightliner','1FUJGLDR5FL0912','RR-2988','OS-77895','2027-08-08','2026-12-30','2027-04-04'],['F-308-04','308',2020,'Sellick','SLK2020FK00418','RR-5011','OS-77815','2027-03-03','2027-02-02','2027-01-01'],['P-331-02','331',2019,'Kenworth','1XKAD49X9KJ6612','RR-4780','OS-77844','2027-01-19','2026-11-30','2027-05-05'],['W-335-06','335',2018,'Peterbilt','1XPBD49X7JD4410','RR-4412','OS-77872','2026-12-12','2027-03-20','2027-02-28'],['C-346-01','346',2021,'Grove','1G9CR4511M4471','RR-5402','OS-77899','2027-06-06','2027-01-11','2026-12-20']]
 .map(([unit,term,year,make,vin,plate,permit,reg,dot,insp],i)=>({unit,term,year,make,vin,plate,permit,reg,dot,insp,own:i%4===3?'Owner Operator':'Company'}));
-const INV=[['SN-77120','308','H2S Monitor','Personal gas monitor','Luis Barrientos','2025-11-10','2026-11-10'],['SN-77131','308','Fall Harness','Full body harness','Corey Nash','2024-11-20','2026-11-20'],
-['SN-77144','331','H2S Monitor','Personal gas monitor','Jesse Okafor','2025-11-06','2026-11-06'],['SN-77152','331','Fire Extinguisher','10 lb ABC, truck T-331-11','Rudy Saenz','2025-10-30','2026-10-30'],
-['SN-77163','335','Fall Harness','Full body harness','Kyle Brandt','2024-12-01','2026-12-01'],['SN-77170','335','First Aid Kit','Class B kit, C-335-01','Andre Pham','2025-11-15','2026-11-15'],
-['SN-77188','346','H2S Monitor','Personal gas monitor','Marcus Hollins','2025-11-25','2026-11-25']].map(([serial,term,item,desc,to,issued,exp])=>({serial,term,item,desc,to,issued,exp}));
+
 const COURSES=['H2S','First Aid/CPR','PEC SafeLand','Rigging','Forklift'];
 const TRAIN=EMP.map((e,i)=>({name:e.name,term:e.term,prim:e.occ,sec:i%3===0?'Swamper':'—',c:COURSES.map((c,k)=>addD(TODAY,((i*37+k*53)%400)-20))}));
 const GC=[['2026-11-01','Luis Barrientos','J-26-1182','Near Miss','High','Serious','Load shifted on lowboy during turn'],['2026-10-30','Hector Villareal','J-26-1182','Good Catch','Medium','Moderate','Spotted frayed sling before lift'],
@@ -94,22 +91,22 @@ EMP.forEach(e=>{e.h=PERIOD.map((_,i)=>hrs(e,i));e.tot=e.h.reduce((a,b)=>a+b,0);e
 // ---------- chrome ----------
 function chrome(active){
  {const p=new URLSearchParams(location.search).get('t');if(p&&(p==='all'||TERMS[p]))S.t=p;}
- const nav=[['Dashboard','index.html?v=44'],['Calendar','calendar.html?v=44'],['Bids',URLS.bids],['Jobs',URLS.jobs],['Resources',URLS.res],['Reports','reports.html?v=44'],['Forms','forms.html?v=44'],['Documents','documents.html?v=44'],['Admin','admin.html?v=44']];
+ const nav=[['Dashboard','index.html?v=45'],['Calendar','calendar.html?v=45'],['Bids',URLS.bids],['Jobs',URLS.jobs],['Resources',URLS.res],['Reports','reports.html?v=45'],['Forms','forms.html?v=45'],['Documents','documents.html?v=45'],['Admin','admin.html?v=45']];
  const mnav=`<button class="hamb" onclick="document.body.classList.toggle('navopen')" aria-label="Menu">&#9776;</button>`;
- document.body.insertAdjacentHTML('afterbegin',`<header class="topbar">${mnav}<a class="brand" href="index.html?v=44"><img src="logo.png?v=44" alt="Rig Runner"><span class="divider"></span><span class="appname">Tracker</span></a>
+ document.body.insertAdjacentHTML('afterbegin',`<header class="topbar">${mnav}<a class="brand" href="index.html?v=45"><img src="logo.png?v=45" alt="Rig Runner"><span class="divider"></span><span class="appname">Tracker</span></a>
  <nav class="nav">${nav.map(([n,h])=>`<a href="${h}" class="${n===active?'active':''}">${n}</a>`).join('')}</nav><span class="spacer"></span>
  <div class="gs"><input id="gq" type="search" placeholder="Search jobs, bids, people, reports, forms, docs…" oninput="rrGsearch(this.value)" onfocus="rrGsearch(this.value)"><div id="gres"></div></div>
  <span class="tsel"><label for="tsel">Terminal</label><select id="tsel"><option value="all">View All</option>${Object.entries(TERMS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></span>
  <span class="demo-badge">Demo mockup · sample data</span>
  <span class="user"><span class="avatar">RT</span><span class="who"><b>Ray Tolbert</b><select id="rsel" title="Role (demo switcher)">${['Admin','Dispatch','Management'].map(r=>`<option value="${r}">${r==='Management'?'Management (read-only)':r}</option>`).join('')}</select></span></span></header>`);
- if(active!=='Dashboard'&&!window.NOCRUMB)document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="crumb"><a href="index.html?v=44">&larr; Back to Dashboard</a></div>');
+ if(active!=='Dashboard'&&!window.NOCRUMB)document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="crumb"><a href="index.html?v=45">&larr; Back to Dashboard</a></div>');
  document.body.insertAdjacentHTML('beforeend','<footer class="appfoot">&copy; Rig Runner 2026 · Tracker demo · all names and figures are fictional</footer>'+(document.getElementById('toast')?'':'<div class="toast" id="toast"></div>'));
  $('#tsel').value=S.t;$('#tsel').onchange=e=>{S.t=e.target.value;rr()};
  $('#rsel').value=S.role;$('#rsel').onchange=e=>{S.role=e.target.value;rr()};
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
 const go=u=>location.href=u;
-const R=k=>'reports.html?v=44&r='+k;
+const R=k=>'reports.html?v=45&r='+k;
 function table(cols,rows,link){return `<div class="table-wrap"><table class="grid"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr class="${link?'click':''}" ${link?`onclick="go('${link(i)}')"`:''}>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="muted">No rows for this terminal.</td></tr>`}</tbody></table></div>`}
 // ---------- forms ----------
 const F_TERM=['Terminal','sel',Object.values(TERMS)];
@@ -143,19 +140,19 @@ function gsearch(q){q=q.trim().toLowerCase();const box=$('#gres');if(q.length<2)
  const m=s=>String(s).toLowerCase().includes(q);
  const G=[['Jobs',JOBS.filter(j=>m(j.job+' '+j.rig+' '+j.cust+' '+j.status+' '+j.term)).map(j=>[j.job+' · '+j.rig,j.status+' · '+TERMS[j.term],URLS.job])],
  ['Bids',BIDS.filter(b=>m(b.bid+' '+b.rig+' '+b.cust+' '+b.status)).map(b=>[b.bid+' · '+b.rig,b.status+' · '+b.cust,BIDURL(b.bid)])],
- ['Resources',EMP.filter(e=>m(e.name+' '+e.occ)).map(e=>[e.name,e.occ+' · '+TERMS[e.term],'resources.html?v=44&id=p'+(EMP.indexOf(e)+1)]).concat(EQ.filter(x=>m(x.unit+' '+x.make)).map(x=>[x.unit,x.year+' '+x.make,'resources.html?v=44&id=u'+(EQ.indexOf(x)+1)]))],
- ['Reports',REPNAMES.filter(r=>m(r[1])).map(r=>[r[1],'Report','reports.html?v=44&r='+r[0]])],
- ['Forms',FORMS.filter(f=>m(f.name+' '+f.group)).map(f=>[f.name,f.group+' form','forms.html?v=44&fill='+f.id])],
- ['Documents',DOCS.filter(d=>m(d.title+' '+d.cat)).map(d=>[d.title,d.cat,'documents.html?v=44&q='+encodeURIComponent(d.title)])],['Jobs list',[['All jobs','Jobs list','jobs.html?v=44']].filter(x=>m('jobs list all'))]].filter(g=>g[1].length);
+ ['Resources',EMP.filter(e=>m(e.name+' '+e.occ)).map(e=>[e.name,e.occ+' · '+TERMS[e.term],'resources.html?v=45&id=p'+(EMP.indexOf(e)+1)]).concat(EQ.filter(x=>m(x.unit+' '+x.make)).map(x=>[x.unit,x.year+' '+x.make,'resources.html?v=45&id=u'+(EQ.indexOf(x)+1)]))],
+ ['Reports',REPNAMES.filter(r=>m(r[1])).map(r=>[r[1],'Report','reports.html?v=45&r='+r[0]])],
+ ['Forms',FORMS.filter(f=>m(f.name+' '+f.group)).map(f=>[f.name,f.group+' form','forms.html?v=45&fill='+f.id])],
+ ['Documents',DOCS.filter(d=>m(d.title+' '+d.cat)).map(d=>[d.title,d.cat,'documents.html?v=45&q='+encodeURIComponent(d.title)])],['Jobs list',[['All jobs','Jobs list','jobs.html?v=45']].filter(x=>m('jobs list all'))]].filter(g=>g[1].length);
  box.innerHTML=G.length?G.map(([g,r])=>`<div class="gh">${g} (${r.length})</div>`+r.slice(0,5).map(([t,s,u])=>`<a href="${u}"><b>${t}</b><span>${s}</span></a>`).join('')).join(''):'<div class="gh">No results</div>';box.style.display='block'}
 document.addEventListener("click",e=>{if(!e.target.closest(".gs")){const b=document.getElementById("gres");if(b)b.style.display="none"}});
 
 function rr(){if(typeof render==='function')render();else location.reload()}
 window.rrGsearch=gsearch;
 // cache-busting for any internal link
-document.addEventListener('click',e=>{const l=e.target.closest&&e.target.closest('a[href]');if(!l)return;const h=l.getAttribute('href');if(!h||l.hasAttribute('download')||/^(https?:|#|mailto:|javascript:|blob:|data:)/.test(h)||/[?&]v=/.test(h))return;e.preventDefault();const [p,hash]=h.split('#');location.href=p+(p.includes('?')?'&':'?')+'v=44'+(hash?'#'+hash:'')},true);
+document.addEventListener('click',e=>{const l=e.target.closest&&e.target.closest('a[href]');if(!l)return;const h=l.getAttribute('href');if(!h||l.hasAttribute('download')||/^(https?:|#|mailto:|javascript:|blob:|data:)/.test(h)||/[?&]v=/.test(h))return;e.preventDefault();const [p,hash]=h.split('#');location.href=p+(p.includes('?')?'&':'?')+'v=45'+(hash?'#'+hash:'')},true);
 
-window.rrChrome=chrome;window.RR={JOBS,BIDS,EMP,EQ,TERMS,TCOLOR,CUST,OPER,DISPATCH,ROUTES,INV,MAINT,TRAIN,COURSES,fd,addD};
+window.rrChrome=chrome;window.RR={JOBS,BIDS,EMP,EQ,TERMS,TCOLOR,CUST,OPER,DISPATCH,ROUTES,MAINT,TRAIN,COURSES,fd,addD};
 })();
 
 (function(){function fx(r){(r||document).querySelectorAll&&(r||document).querySelectorAll('input.inp.date').forEach(function(i){if(i.type!=='date'){var v=i.getAttribute('value')||i.value||'',m=v.match(/^(\d\d)\/(\d\d)\/(\d{4})$/);i.type='date';i.removeAttribute('placeholder');i.value=m?m[3]+'-'+m[1]+'-'+m[2]:v;i.title='Pick a date'}})}

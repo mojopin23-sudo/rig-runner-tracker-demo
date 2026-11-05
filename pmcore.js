@@ -3,10 +3,10 @@
 var KEY='rrPermits2';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var PM={KEY:KEY,esc:esc};
-PM.UNITS=[["T-308-14","2019 Kenworth","308"],["C-308-02","2016 Grove","308"],["T-331-07","2021 Peterbilt","331"],["T-331-11","2018 Mack","331"],["T-335-03","2020 Kenworth","335"],["C-335-01","2017 Link-Belt","335"],["T-346-05","2022 Peterbilt","346"],["T-346-09","2015 Freightliner","346"],["F-308-04","2020 Sellick","308"],["P-331-02","2019 Kenworth","331"],["W-335-06","2018 Peterbilt","335"],["C-346-01","2021 Grove","346"]];
+PM.UNITS=[["T-308-14","2019 Kenworth","308"],["C-308-02","2016 Grove","308"],["T-331-07","2013 WESTERNSTAR","331"],["T-331-11","2018 Mack","331"],["T-335-03","2020 Kenworth","335"],["C-335-01","2017 Link-Belt","335"],["T-346-05","2022 Peterbilt","346"],["T-346-09","2015 Freightliner","346"],["F-308-04","2020 Sellick","308"],["P-331-02","2019 Kenworth","331"],["W-335-06","2018 Peterbilt","335"],["C-346-01","2021 Grove","346"]];
 PM.TERMS={'308':'308 Alice','331':'331 Jourdanton','335':'335 Odessa','346':'346 Kilgore'};
 PM.TIRES=[];for(var t=11;t<=17;t+=0.5)PM.TIRES.push(t+' in');
-PM.sample=function(){return {id:'PR-26-2001',link:'job:214',linkLabel:'Job #214 · Sample Rig 27',jobTitle:'Sample Rig 27',unit:'T-331-07',unitLabel:'T-331-07 · 2021 Peterbilt · 331 Jourdanton',name:'Dale Pruitt',title:'Driver',reqDate:'2026-10-27',load:'Substructure box',len:'68 ft',wid:'14 ft 6 in',hgt:'15 ft 2 in',ohf:'0 ft',ohr:'6 ft',axTractor:'3',axTrailer:'3',steerTire:'12.5 in',notes:'Daylight travel only.',date:'2026-10-27'}};
+PM.sample=function(){return {id:'PR-26-2001',link:'job:214',linkLabel:'Job #214 · Sample Rig 27',jobTitle:'Sample Rig 27',unit:'T-331-07',unitLabel:'T-331-07 · 2013 WESTERNSTAR · 331 Jourdanton',name:'Dale Pruitt',title:'Driver',reqDate:'2026-10-27',load:'Substructure box',len:'68 ft',wid:'14 ft 6 in',hgt:'15 ft 2 in',ohf:'0 ft',ohr:'6 ft',axTractor:'3',axTrailer:'3',steerTire:'12.5 in',notes:'Daylight travel only.',date:'2026-10-27'}};
 PM.all=function(){var a;try{a=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}if(!a){a=[PM.sample()];localStorage.setItem(KEY,JSON.stringify(a))}return a};
 PM.save=function(a){localStorage.setItem(KEY,JSON.stringify(a))};
 PM.get=function(id){return PM.all().find(function(x){return x.id===id})};
@@ -38,7 +38,7 @@ PM.bind=function(root,o){var f=root.querySelector('#pmform');var P={};(o.people|
   e.textContent='';r.linkLabel=f.link.options[f.link.selectedIndex].text;r.unitLabel=PM.unitLabel(r.unit);return r}}};
 function row(a,b){return '<tr><td style="padding:4px 8px;border:1px solid #ccc;background:#f4f4f2;font-weight:700;width:38%">'+a+'</td><td style="padding:4px 8px;border:1px solid #ccc">'+esc(b||'—')+'</td></tr>'}
 function sec(t,rows){return '<h3 style="background:#c8102e;color:#fff;margin:14px 0 0;padding:5px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em">'+t+'</h3><table style="width:100%;border-collapse:collapse;font-size:13px">'+rows+'</table>'}
-PM.docHTML=function(r,logo){return '<div style="font-family:Arial;color:#222;max-width:760px;margin:auto"><div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid #c8102e;padding-bottom:8px"><img src="'+(logo||'logo.png?v=44')+'" style="height:44px" alt="Rig Runner"><div style="flex:1"><div style="font-size:18px;font-weight:800">Permit Request</div><div style="font-size:12px;color:#666">Oversize / Overweight · '+esc(r.id)+' · requested '+esc(r.reqDate)+'</div></div></div>'+
+PM.docHTML=function(r,logo){return '<div style="font-family:Arial;color:#222;max-width:760px;margin:auto"><div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid #c8102e;padding-bottom:8px"><img src="'+(logo||'logo.png?v=45')+'" style="height:44px" alt="Rig Runner"><div style="flex:1"><div style="font-size:18px;font-weight:800">Permit Request</div><div style="font-size:12px;color:#666">Oversize / Overweight · '+esc(r.id)+' · requested '+esc(r.reqDate)+'</div></div></div>'+
  sec('Linked to',row('Job',r.linkLabel)+row('Job title',r.jobTitle)+row('Unit',r.unitLabel))+
  sec('Requested by',row('Name',r.name)+row('Title',r.title)+row('Date requested',r.reqDate))+
  sec('Load',row('Load description',r.load)+row('Length',r.len)+row('Width',r.wid)+row('Height',r.hgt)+row('Front overhang',r.ohf)+row('Rear overhang',r.ohr))+
@@ -51,7 +51,8 @@ PM.UPK='rrPermitUploads';PM.mem={};
 PM.isOpen=function(r){return r&&r.status!=='closed'};
 PM.openByJob=function(id){return PM.byJob(id).filter(PM.isOpen)};
 PM.jobOf=function(r){return String(r.link||'').replace(/^job:/,'')};
-PM.UPSEED=[{id:'UP-seed-214a',job:'214',file:'TX-OS-48213_T-331-11.pdf',permitNo:'TX-OS-48213',unit:'T-331-11',load:'Mud pump skid',date:'2026-10-30',by:'Brett Mahaffey',cost:'90.00'}];
+PM.DEMO={permitNo:'260915294671',unit:'T-331-07',load:'Crew House',date:'2026-09-15',by:'Alfredo Aguilar',cost:'291.67',file:'260915294671.pdf'};
+PM.UPSEED=[Object.assign({id:'UP-seed-214a',job:'214'},PM.DEMO)];
 PM.uploads=function(){try{var a=JSON.parse(localStorage.getItem(PM.UPK)||'null');if(!a){a=PM.UPSEED.slice();localStorage.setItem(PM.UPK,JSON.stringify(a))}return a}catch(e){return[]}};
 PM.saveUploads=function(a){try{localStorage.setItem(PM.UPK,JSON.stringify(a))}catch(e){localStorage.setItem(PM.UPK,JSON.stringify(a.map(function(r){if(r.data){PM.mem[r.id]=r.data;var c=Object.assign({},r);delete c.data;return c}return r})))}};
 PM.USER='Demo User';
@@ -64,11 +65,18 @@ PM.extract=function(f,i,job){var n=f.name.toLowerCase(),h=0;for(var c of f.name)
  var cm=n.match(/\$?(\d{2,4}(?:\.\d\d)?)\s*(?:usd|dollars)/);
  return {id:'UP-'+Date.now().toString(36)+(i||0),job:String(job),file:f.name,permitNo:no,unit:unit,load:(sh?'Superheavy':'Oversize / Overweight')+' load',date:iso,by:PM.USER,cost:(cm?parseFloat(cm[1]):(sh?(900+h%500):(60+h%240))).toFixed(2),auto:true}};
 PM.readFile=function(f){return new Promise(function(res){var fr=new FileReader();fr.onload=function(){res(fr.result)};fr.onerror=function(){res(null)};fr.readAsDataURL(f)})};
-/* Upload a permit document against a request: simulated reader, then the request closes and a permit row is created. */
-PM.uploadForRequest=function(id,f){var r=PM.get(id);return PM.readFile(f).then(function(data){return new Promise(function(res){setTimeout(function(){
- var u=PM.extract(f,0,PM.jobOf(r));u.unit=r.unit;u.load=r.load||'';u.reqId=r.id;u.data=data;PM.saveUploads(PM.uploads().concat([u]));
- var a=PM.all();a.forEach(function(x){if(x.id===id){x.status='closed';x.closedOn=u.date;x.closedBy=PM.USER;x.permitId=u.id;x.permitNo=u.permitNo}});PM.save(a);res(u)},1600)})})};
-PM.uploadStandalone=function(fs,job){return Promise.all(fs.map(function(f,i){return PM.readFile(f).then(function(d){var u=PM.extract(f,i,job);u.data=d;return u})})).then(function(rs){return new Promise(function(res){setTimeout(function(){PM.saveUploads(PM.uploads().concat(rs));res(rs)},1400)})})};
-PM.viewUpload=function(id){var r=PM.uploads().filter(function(x){return x.id===id})[0];var d=r&&(r.data||PM.mem[r.id]);if(!d){alert('Sample permit on file (demo). Uploaded permits open their own PDF.');return}fetch(d).then(function(x){return x.blob()}).then(function(b){window.open(URL.createObjectURL(b),'_blank')})};
+/* Recognize the authorized demo permit from its PDF text, including after a rename.
+   The filename/size path also works in browsers without DecompressionStream. */
+PM.isDemoPermit=function(f){if(/260915294671/.test(f.name)||f.size===106750)return Promise.resolve(true);
+ if(!f.arrayBuffer||typeof DecompressionStream==='undefined')return Promise.resolve(false);
+ return f.arrayBuffer().then(async function(buf){var b=new Uint8Array(buf),raw='';for(var i=0;i<b.length;i+=8192)raw+=String.fromCharCode.apply(null,b.subarray(i,i+8192));if(raw.indexOf('260915294671')>=0)return true;
+  var re=/stream\r?\n/g,m;while((m=re.exec(raw))){var end=raw.indexOf('endstream',re.lastIndex);if(end<0)break;var stream=b.slice(re.lastIndex,end);re.lastIndex=end+9;try{var out=await new Response(new Blob([stream]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer();var text=new TextDecoder().decode(out);if(text.indexOf('260915294671')>=0)return true}catch(e){}}
+  return false}).catch(function(){return false})};
+/* Upload a permit document against a request: demo reader, then the request closes and a permit row is created. */
+PM.uploadForRequest=function(id,f){var r=PM.get(id);return Promise.all([PM.readFile(f),PM.isDemoPermit(f)]).then(function(ar){var data=ar[0],demo=ar[1];return new Promise(function(res){setTimeout(function(){
+ var u=PM.extract(f,0,PM.jobOf(r));if(demo)Object.assign(u,PM.DEMO,{file:f.name});else{u.unit=r.unit;u.load=r.load||''}u.reqId=r.id;u.data=data;PM.saveUploads(PM.uploads().concat([u]));
+ var a=PM.all();a.forEach(function(x){if(x.id===id){x.status='closed';x.closedOn=u.date;x.closedBy=u.by;x.permitId=u.id;x.permitNo=u.permitNo}});PM.save(a);res(u)},1600)})})};
+PM.uploadStandalone=function(fs,job){return Promise.all(fs.map(function(f,i){return Promise.all([PM.readFile(f),PM.isDemoPermit(f)]).then(function(ar){var u=PM.extract(f,i,job);if(ar[1])Object.assign(u,PM.DEMO,{file:f.name});u.data=ar[0];return u})})).then(function(rs){return new Promise(function(res){setTimeout(function(){PM.saveUploads(PM.uploads().concat(rs));res(rs)},1400)})})};
+PM.viewUpload=function(id){var r=PM.uploads().filter(function(x){return x.id===id})[0];var d=r&&(r.data||PM.mem[r.id]);if(!d&&r&&r.id==='UP-seed-214a'){window.open('permits/260915294671.pdf?v=45','_blank');return}if(!d){alert('Sample permit on file (demo). Uploaded permits open their own PDF.');return}fetch(d).then(function(x){return x.blob()}).then(function(b){window.open(URL.createObjectURL(b),'_blank')})};
 window.PM=PM;
 })();

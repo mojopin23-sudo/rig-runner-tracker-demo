@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><script src="seed.js?v=44"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="logo.png?v=44"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tracker · Manage Daily Log</title><link rel="stylesheet" href="style.css?v=44"><style>main{max-width:none!important}</style></head>
+<!doctype html><html lang="en"><head><script src="seed.js?v=45"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="logo.png?v=45"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tracker · Manage Daily Log</title><link rel="stylesheet" href="style.css?v=45"><style>main{max-width:none!important}</style></head>
 <body><main>
 <div class="page-head"><h1>Manage Daily Log</h1><span class="sub" id="sub"></span><span class="spacer"></span>
 <label style="font-size:12.5px;font-weight:700">Terminal <select id="dlt"><option value="all">All</option><option value="308">308 Alice</option><option value="331">331 Jourdanton</option><option value="335">335 Odessa</option><option value="346">346 Kilgore</option></select></label>
@@ -6,7 +6,7 @@
 <div class="muted" style="margin:-4px 0 10px">Rows are employees, one column per day. A day with a job assignment fills in the job # and rig automatically. Other days take a status. Per diem fills in from approved time records and accrues only when the time ticket requesting it is approved. The last column shows the job the per diem was charged to (read-only). Sample data only.</div>
 <section class="card" id="tor" style="margin-bottom:12px"></section>
 <section class="card"><div class="table-wrap" id="dl"></div><div class="muted" style="margin-top:8px">Legend: <span class="pill ok">Job</span> assigned (prefilled) · <span class="pill warn">Per diem pending</span> ticket not yet approved · <span class="pill">Status</span> chosen from the list · <span class="pill" style="background:#dff3e4">🏖 Approved time off</span></div></section></main>
-<script src="app.js?v=44"></script><script>
+<script src="app.js?v=45"></script><script>
 const DLS=['PTO','Vacation','Sick','FMLA','Sales','Office','Shop','Route Survey','Travel From Home','Travel to Home','Safety Meeting','Pre-Rig Meeting','New Hire','No-show / Call','No-show / No call','Terminated'];
 const DLE=[['Callister, Wade','331'],['Barrientos, Luis','331'],['Nash, Corey','335'],['Pruitt, Dale','335'],['Okafor, Jesse','308'],['Gallegos, Mario','335'],['Pham, Andre','335'],['Ellery, Travis','346'],['Hollins, Marcus','346'],['Riggs, Owen','346'],['Salinas, Marco','331'],['Whitaker, Dale','308']];
 const DLJ={'214':'Sample Rig 27','211':'Sample Rig 41','219':'Demo Rig X05'};
